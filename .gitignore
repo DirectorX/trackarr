@@ -1,0 +1,15 @@
+# misc
+.idea
+
+# configuration
+*.json
+*.db
+
+# vendor files
+vendor/
+
+# dist folder
+dist/
+
+# Web package
+web/rice-box.go
