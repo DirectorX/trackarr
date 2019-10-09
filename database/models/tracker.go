@@ -23,7 +23,7 @@ func NewOrExistingTracker(db *gorm.DB, name string) (*Tracker, error) {
 	tracker := &Tracker{}
 
 	if err := db.FirstOrInit(&tracker, Tracker{Name: name}).Error; err != nil {
-		log.WithError(err).Errorf("Failed to unexpectedly tracker with name: %q", name)
+		log.WithError(err).Errorf("Failed unexpectedly finding existing tracker with name: %q", name)
 		return nil, err
 	}
 
