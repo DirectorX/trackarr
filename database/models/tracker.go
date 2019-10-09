@@ -2,27 +2,30 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/l3uddz/trackarr/logger"
+)
+
+var (
+	log = logger.GetLogger("dbm")
 )
 
 // Tracker - Model representation of an autodl tracker file
 type Tracker struct {
 	gorm.Model
-	Tracker string `sql:"type:varchar(256);not null"`
+	Name    string `sql:"type:varchar(256);unique;not null"`
+	Version string `sql:"type:varchar(256);not null"`
 }
 
-// // general
-// Id   int    `gorm:"primary_key;not null"`
-// Name string `sql:"type:text"`
+/* Methods */
 
-// // subscriber
-// IsSubscriber      bool `sql:"default:false"`
-// SubscribedPackage Package
-// SubscribedExpiry  time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+// NewOrExistingTracker - Return an existing or new tracker
+func NewOrExistingTracker(db *gorm.DB, name string) (*Tracker, error) {
+	tracker := &Tracker{}
 
-// // logic bools
-// IsVip   bool `sql:"default:false"`
-// IsAdmin bool `sql:"default:false"`
+	if err := db.FirstOrInit(&tracker, Tracker{Name: name}).Error; err != nil {
+		log.WithError(err).Errorf("Failed to unexpectedly tracker with name: %q", name)
+		return nil, err
+	}
 
-// // timestamps
-// LastSeen  time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
-// CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	return tracker, nil
+}
