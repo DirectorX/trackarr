@@ -88,7 +88,7 @@ func PullTrackers(trackersPath string) error {
 // getAvailableTrackers - Retrieve all available trackers from autodl-community repository
 func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	// retrieve trackers page
-	log.Infof("Loading available trackers from %q", trackersRepository)
+	log.Infof("Fetching available trackers from %q", trackersRepository)
 	body, err := web.GetBody(web.GET, trackersRepository, 30)
 	if err != nil {
 		return nil, err
