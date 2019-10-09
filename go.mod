@@ -3,6 +3,7 @@ module github.com/l3uddz/trackarr
 go 1.13
 
 require (
+	github.com/jinzhu/gorm v1.9.11
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect

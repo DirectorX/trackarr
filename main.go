@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/l3uddz/trackarr/autodl"
 	"github.com/l3uddz/trackarr/config"
+	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/sirupsen/logrus"
 )
@@ -27,6 +28,11 @@ func init() {
 	// Init Config
 	if err := config.Init(flagConfigPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
+	}
+
+	// Init Database
+	if err := database.Init(flagDbPath); err != nil {
+		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
 	// Init Autodl
