@@ -31,8 +31,8 @@ func PullTrackers(trackersPath string) error {
 	// ensure tracker directory exists
 	if _, err := os.Stat(trackersPath); os.IsNotExist(err) {
 		if err := os.Mkdir(trackersPath, 0700); err != nil {
-			// fail entirely as we were unable to create the tracker directory
-			log.WithError(err).Fatalf("Failed to create tracker directory: %q", trackersPath)
+			log.WithError(err).Errorf("Failed to create tracker directory: %q", trackersPath)
+			return err
 		} else {
 			log.Infof("Created tracker directory: %q", trackersPath)
 		}

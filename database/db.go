@@ -18,7 +18,7 @@ var (
 
 /* Public */
 
-// Init - Init connection to the database
+// Init - Initialize connection to the database
 func Init(dbPath string) error {
 	var err error
 	DB, err = gorm.Open("sqlite3", dbPath)
