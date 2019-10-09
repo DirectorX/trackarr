@@ -79,7 +79,7 @@ func PullTrackers(trackersPath string) error {
 		}
 	}
 
-	log.Infof("Pulled %d new/changed trackers with %d failures", trackerPulls, trackerErrors)
+	log.Infof("Pulled %d trackers with %d failures", trackerPulls, trackerErrors)
 	return nil
 }
 
