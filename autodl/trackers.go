@@ -95,7 +95,8 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	}
 
 	// parse trackers from body
-	rxp := regexp.MustCompile(`title="(?P<Name>.+)\.tracker" id="(?P<Version>.+)" href="(?P<URL>.+\.tracker)">.+</a>`)
+	rxp := regexp.MustCompile(
+		`title="(?P<Name>.+)\.tracker" id="(?P<Version>.+)" href="(?P<URL>.+\.tracker)">.+</a>`)
 	matches := rxp.FindAllStringSubmatch(body, -1)
 
 	// build trackers map
@@ -105,7 +106,8 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 		tracker := &AutodlTracker{
 			Name:    match[1],
 			Version: match[2],
-			URL:     fmt.Sprintf("https://raw.githubusercontent.com%s", strings.Replace(match[3], "/blob/", "/", -1)),
+			URL: fmt.Sprintf("https://raw.githubusercontent.com%s",
+				strings.Replace(match[3], "/blob/", "/", -1)),
 		}
 		log.Tracef("Available tracker: %q - Version: %q - URL: %s", tracker.Name, tracker.Version, tracker.URL)
 
