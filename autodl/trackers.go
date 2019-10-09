@@ -1,6 +1,8 @@
 package autodl
 
 import (
+	"regexp"
+
 	"github.com/l3uddz/trackarr/utils/web"
 )
 
@@ -25,6 +27,16 @@ func getLatestTrackers() error {
 		return err
 	}
 
-	log.Info(body)
+	// parse trackers from body
+	rxp := regexp.MustCompile(`title="(?P<Name>.+)\.tracker" id="(?P<Version>.+)" href="(?P<URL>.+\.tracker)">.+</a>`)
+	matches := rxp.FindAllStringSubmatch(body, -1)
+
+	// iterate through matches
+	trackers := 0
+	for _, match := range matches {
+		trackers++
+		log.Infof("Tracker: %s - Value: %s", match[1], match[2])
+	}
+	log.Infof("Found %d trackers", trackers)
 	return nil
 }
