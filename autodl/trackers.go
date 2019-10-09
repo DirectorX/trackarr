@@ -9,6 +9,7 @@ import (
 
 	"github.com/l3uddz/trackarr/database"
 	models "github.com/l3uddz/trackarr/database/models"
+	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"github.com/l3uddz/trackarr/utils/web"
 )
 
@@ -75,11 +76,17 @@ func PullTrackers(trackersPath string) error {
 
 			trackerPulls++
 		} else {
-			log.Tracef("No pull required for tracker: %q", trackerData.Name)
+			log.Tracef("No pull required for tracker: %s", trackerData.Name)
 		}
 	}
 
-	log.Infof("Pulled %d trackers with %d failures", trackerPulls, trackerErrors)
+	if trackerPulls > 0 || trackerErrors > 0 {
+		log.Infof("Pulled %d %s with %d %s", trackerPulls, stringutils.Pluralize("tracker", trackerPulls),
+			trackerErrors, stringutils.Pluralize("failure", trackerErrors))
+	} else {
+		log.Infof("Trackers are up to date")
+	}
+
 	return nil
 }
 
@@ -88,7 +95,7 @@ func PullTrackers(trackersPath string) error {
 // getAvailableTrackers - Retrieve all available trackers from autodl-community repository
 func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	// retrieve trackers page
-	log.Infof("Fetching available trackers from %q", trackersRepository)
+	log.Infof("Finding available trackers from: %s", trackersRepository)
 	body, err := web.GetBody(web.GET, trackersRepository, 30)
 	if err != nil {
 		return nil, err
@@ -114,7 +121,7 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 		// add tracker to map
 		trackers[tracker.Name] = tracker
 	}
-	log.Infof("Found %d available trackers", len(trackers))
+	log.Infof("Found %d trackers", len(trackers))
 	return &trackers, nil
 }
 
