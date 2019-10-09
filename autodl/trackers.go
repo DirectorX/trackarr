@@ -2,9 +2,13 @@ package autodl
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
+	"github.com/l3uddz/trackarr/database"
+	models "github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/utils/web"
 )
 
@@ -22,27 +26,69 @@ const trackersRepository = "https://github.com/autodl-community/autodl-trackers/
 
 /* Public */
 
-// PullTrackers - Process the autodl-community trackers folder looking for new/changed trackers to pull down
+// PullTrackers - Process all available trackers looking for new/changed trackers to pull
 func PullTrackers(trackersPath string) error {
+	// ensure tracker directory exists
+	if _, err := os.Stat(trackersPath); os.IsNotExist(err) {
+		if err := os.Mkdir(trackersPath, 0700); err != nil {
+			// fail entirely as we were unable to create the tracker directory
+			log.WithError(err).Fatalf("Failed to create tracker directory: %q", trackersPath)
+		} else {
+			log.Infof("Created tracker directory: %q", trackersPath)
+		}
+	}
+
 	// retrieve trackers
-	trackers, err := getLatestTrackers()
+	trackers, err := getAvailableTrackers()
 	if err != nil {
 		return err
 	}
 
-	// iterate trackers looking for new/changes
+	// process found trackers
+	trackerPulls := 0
+	trackerErrors := 0
 	for _, trackerData := range *trackers {
-		log.Debugf("Processing: %s", trackerData.Name)
+		log.Debugf("Processing tracker: %s", trackerData.Name)
+
+		// retrieve tracker from database
+		tracker, err := models.NewOrExistingTracker(database.DB, trackerData.Name)
+		if err != nil {
+			log.WithError(err).Errorf("Failed retrieving tracker from database: %q", trackerData.Name)
+			continue
+		}
+
+		// grab tracker if required
+		trackerPath := filepath.Join(trackersPath, trackerData.Name+".tracker")
+		if _, err := os.Stat(trackerPath); os.IsNotExist(err) || tracker.Version != trackerData.Version {
+			// the tracker file did not exist, or we were using an old version, we must download it
+			log.Infof("Pulling tracker: %s -> %q", trackerData.Name, trackerPath)
+
+			if err := pullTracker(trackerData.URL, trackerPath); err != nil {
+				// failed to pull this tracker
+				trackerErrors++
+				continue
+			}
+
+			// update tracker in database
+			tracker.Version = trackerData.Version
+			database.DB.Save(&tracker)
+
+			trackerPulls++
+		} else {
+			log.Tracef("No pull required for tracker: %q", trackerData.Name)
+		}
 	}
 
+	log.Infof("Pulled %d new/changed trackers with %d failures", trackerPulls, trackerErrors)
 	return nil
 }
 
 /* Private */
 
-func getLatestTrackers() (*map[string]*AutodlTracker, error) {
+// getAvailableTrackers - Retrieve all available trackers from autodl-community repository
+func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	// retrieve trackers page
-	log.Infof("Loading latest trackers from %q", trackersRepository)
+	log.Infof("Loading available trackers from %q", trackersRepository)
 	body, err := web.GetBody(web.GET, trackersRepository, 30)
 	if err != nil {
 		return nil, err
@@ -61,11 +107,38 @@ func getLatestTrackers() (*map[string]*AutodlTracker, error) {
 			Version: match[2],
 			URL:     fmt.Sprintf("https://raw.githubusercontent.com%s", strings.Replace(match[3], "/blob/", "/", -1)),
 		}
-		log.Tracef("Tracker: %q - Version: %q - URL: %s", tracker.Name, tracker.Version, tracker.URL)
+		log.Tracef("Available tracker: %q - Version: %q - URL: %s", tracker.Name, tracker.Version, tracker.URL)
 
 		// add tracker to map
 		trackers[tracker.Name] = tracker
 	}
-	log.Infof("Found %d trackers in total", len(trackers))
+	log.Infof("Found %d available trackers", len(trackers))
 	return &trackers, nil
+}
+
+// pullTracker - Download a tracker and save to specified path
+func pullTracker(url string, path string) error {
+	// download tracker
+	trackerData, err := web.GetBody(web.GET, url, 30)
+	if err != nil {
+		log.WithError(err).Errorf("Failed pulling tracker: %s", url)
+		return err
+	}
+
+	// TODO: validate tracker is in expected XML format that we are able to parse later on
+
+	// save to tracker file
+	file, err := os.Create(path)
+	if err != nil {
+		log.WithError(err).Errorf("Failed creating tracker: %q", path)
+		return err
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(trackerData); err != nil {
+		log.WithError(err).Errorf("Failed writing tracker: %q", path)
+		return err
+	}
+
+	return nil
 }

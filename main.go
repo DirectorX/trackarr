@@ -4,7 +4,6 @@ import (
 	"github.com/l3uddz/trackarr/autodl"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
-	models "github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/sirupsen/logrus"
 )
@@ -45,11 +44,4 @@ func init() {
 /* Main */
 func main() {
 	log.Info("Initialized")
-
-	if test, err := models.NewOrExistingTracker(database.DB, "testing2"); err != nil {
-		log.Fatal("Failed finding an existing tracker...")
-	} else {
-		test.Version = "3"
-		database.DB.Save(test)
-	}
 }
