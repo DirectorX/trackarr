@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"github.com/antchfx/xmlquery"
 	"github.com/l3uddz/trackarr/logger"
-	listutils "github.com/l3uddz/trackarr/utils/lists"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
@@ -19,12 +18,17 @@ var (
 /* Struct */
 
 type Parser struct {
-	/* privates */
+	/* private */
 	trackerName     string
 	trackerFilePath string
 
 	/* public */
 	Tracker *TrackerInfo
+}
+
+type TrackerInfo struct {
+	Settings []string
+	Servers  []TrackerServer
 }
 
 /* Public */
@@ -58,8 +62,13 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 		return nil, errors.Wrap(err, "failed parsing tracker file doc root")
 	}
 
-	// parse required tracker settings
+	// parse tracker settings
 	if err := parseTrackerSettings(doc, trackerInfo); err != nil {
+		return nil, err
+	}
+
+	// parse tracker servers
+	if err := parseTrackerServers(doc, trackerInfo); err != nil {
 		return nil, err
 	}
 
@@ -71,32 +80,3 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 }
 
 /* Private */
-
-func parseTrackerSettings(doc *xmlquery.Node, tracker *TrackerInfo) error {
-	skipSettings := []string{
-		"description",
-	}
-
-	for _, n := range xmlquery.Find(doc, "//settings/*[name()]") {
-		// strip gazelle_ prefix
-		settingName := strings.Replace(n.Data, "gazelle_", "", -1)
-
-		// skip specific settings
-		if listutils.StringListContains(skipSettings, settingName, true) {
-			log.Debugf("Skipping tracker setting: %q", settingName)
-			continue
-		}
-
-		log.Debugf("Found tracker setting: %q", settingName)
-
-		// add setting to list
-		tracker.Settings = append(tracker.Settings, settingName)
-	}
-
-	// were settings parsed?
-	if len(tracker.Settings) == 0 {
-		return errors.New("failed parsing tracker settings")
-	}
-
-	return nil
-}
