@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
 
 	"github.com/l3uddz/trackarr/logger"
@@ -56,7 +57,7 @@ func setConfigDefaults(check bool) error {
 	if check && added > 0 {
 		if err := viper.WriteConfig(); err != nil {
 			log.WithError(err).Error("Failed saving configuration with new options...")
-			return err
+			return errors.Wrap(err, "failed saving updated configuration")
 		}
 
 		log.Info("Configuration was saved with new options!")
@@ -90,7 +91,7 @@ func Init(configFilePath string) error {
 			// set the default config to be written
 			if err := setConfigDefaults(false); err != nil {
 				log.WithError(err).Error("Failed to add config defaults")
-				return err
+				return errors.Wrap(err, "failed adding config defaults")
 			}
 
 			// write default config
@@ -104,18 +105,18 @@ func Init(configFilePath string) error {
 		}
 
 		log.WithError(err).Error("Configuration read error")
-		return err
+		return errors.Wrap(err, "failed reading config")
 	}
 
 	if err := viper.Unmarshal(&Config); err != nil {
 		log.WithError(err).Error("Configuration decode error")
-		return err
+		return errors.Wrap(err, "failed decoding config")
 	}
 
 	// Set defaults (checking whether new options were added)
 	if err := setConfigDefaults(true); err != nil {
 		log.WithError(err).Error("Failed to add new config defaults")
-		return err
+		return errors.Wrap(err, "failed adding new config defaults")
 	}
 
 	return nil

@@ -6,6 +6,7 @@ import (
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/logger"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
+	"github.com/pkg/errors"
 )
 
 /* Vars */
@@ -24,7 +25,7 @@ func Init(dbPath string) error {
 	DB, err = gorm.Open("sqlite3", dbPath)
 	if err != nil {
 		log.WithError(err).Fatalf("Failed initializing database connection to %q", dbPath)
-		return err
+		return errors.Wrap(err, "failed initializing database connection")
 	}
 
 	// migrate

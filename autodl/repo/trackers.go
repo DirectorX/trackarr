@@ -1,7 +1,9 @@
-package autodl
+package repo
 
 import (
 	"fmt"
+	"github.com/l3uddz/trackarr/logger"
+	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -23,6 +25,10 @@ type AutodlTracker struct {
 }
 
 /* Vars / Const */
+var (
+	log = logger.GetLogger("autodl")
+)
+
 const trackersRepository = "https://github.com/autodl-community/autodl-trackers/tree/master/trackers"
 
 /* Public */
@@ -33,7 +39,7 @@ func PullTrackers(trackersPath string) error {
 	if _, err := os.Stat(trackersPath); os.IsNotExist(err) {
 		if err := os.Mkdir(trackersPath, 0700); err != nil {
 			log.WithError(err).Errorf("Failed to create tracker directory: %q", trackersPath)
-			return err
+			return errors.Wrap(err, "failed creating tracker directory")
 		} else {
 			log.Infof("Created tracker directory: %q", trackersPath)
 		}
@@ -55,7 +61,7 @@ func PullTrackers(trackersPath string) error {
 		tracker, err := models.NewOrExistingTracker(database.DB, trackerData.Name)
 		if err != nil {
 			log.WithError(err).Errorf("Failed retrieving tracker from database: %q", trackerData.Name)
-			continue
+			return errors.Wrap(err, "failed retrieving tracker from database")
 		}
 
 		// grab tracker if required
@@ -131,7 +137,7 @@ func pullTracker(url string, path string) error {
 	trackerData, err := web.GetBody(web.GET, url, 30)
 	if err != nil {
 		log.WithError(err).Errorf("Failed pulling tracker: %s", url)
-		return err
+		return errors.Wrap(err, "failed downloading tracker")
 	}
 
 	// TODO: validate tracker is in expected XML format that we are able to parse later on
@@ -140,13 +146,13 @@ func pullTracker(url string, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		log.WithError(err).Errorf("Failed creating tracker: %q", path)
-		return err
+		return errors.Wrap(err, "failed creating tracker file")
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(trackerData); err != nil {
 		log.WithError(err).Errorf("Failed writing tracker: %q", path)
-		return err
+		return errors.Wrap(err, "failed writing tracker file")
 	}
 
 	return nil

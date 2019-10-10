@@ -1,7 +1,7 @@
 package web
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -56,7 +56,7 @@ func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
 	// validate response
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving body for page: %q", url)
-		return "", err
+		return "", errors.Wrap(err, "failed retrieving page body")
 	}
 
 	// process response
@@ -64,7 +64,7 @@ func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.WithError(err).Errorf("Failed reading response body for page: %q", url)
-		return "", err
+		return "", errors.Wrap(err, "failed reading page response body")
 	}
 
 	body := string(bodyBytes)
