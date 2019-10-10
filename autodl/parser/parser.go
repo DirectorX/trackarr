@@ -4,6 +4,7 @@ import (
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/pkg/errors"
 	"os"
+	"path/filepath"
 )
 
 var (
@@ -22,14 +23,15 @@ type Parser struct {
 
 func Init(tracker string, trackersPath string) (*Parser, error) {
 	// validate tracker file exists
-	if _, err := os.Stat(trackersPath); os.IsNotExist(err) {
+	trackerFilePath := filepath.Join(trackersPath, tracker+".tracker")
+	if _, err := os.Stat(trackerFilePath); os.IsNotExist(err) {
 		log.WithError(err).Errorf("Failed initializing parser for tracker: %q", tracker)
-		return nil, errors.Wrapf(err, "failed to initialize parser for: %q", trackersPath)
+		return nil, errors.Wrapf(err, "failed to initialize parser for: %q", trackerFilePath)
 	}
 
 	// parser tracker file
 
-	return &Parser{trackerName: tracker, trackerFilePath: trackersPath}, nil
+	return &Parser{trackerName: tracker, trackerFilePath: trackerFilePath}, nil
 }
 
 /* Private */
