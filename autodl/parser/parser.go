@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"encoding/xml"
 	"github.com/antchfx/xmlquery"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/pkg/errors"
@@ -23,7 +22,7 @@ type Parser struct {
 	trackerFilePath string
 
 	/* public */
-	Tracker *TrackerInfo
+	Tracker TrackerInfo
 }
 
 type TrackerInfo struct {
@@ -48,12 +47,8 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 		return nil, errors.Wrapf(err, "failed reading tracker file: %q", trackerFilePath)
 	}
 
-	// decode tracker file
-	trackerInfo := &TrackerInfo{}
-	if err := xml.Unmarshal([]byte(trackerData), &trackerInfo); err != nil {
-		log.WithError(err).Errorf("Failed decoding tracker file: %q", trackerFilePath)
-		return nil, errors.Wrapf(err, "failed decoding tracker file: %q", trackerFilePath)
-	}
+	// parse tracker info
+	trackerInfo := TrackerInfo{}
 
 	// get tracker doc root for xpath queries
 	doc, err := xmlquery.Parse(strings.NewReader(string(trackerData)))
@@ -63,12 +58,12 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 	}
 
 	// parse tracker settings
-	if err := parseTrackerSettings(doc, trackerInfo); err != nil {
+	if err := parseTrackerSettings(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
 
 	// parse tracker servers
-	if err := parseTrackerServers(doc, trackerInfo); err != nil {
+	if err := parseTrackerServers(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
 
