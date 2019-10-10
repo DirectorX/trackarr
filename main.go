@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/l3uddz/trackarr/autodl"
+	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/logger"
@@ -35,6 +36,17 @@ func init() {
 		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
+	// Test parser
+	p, err := parser.Init("PassThePopcorn", flagTrackerPath)
+	if err != nil {
+		log.Fatal("Failed initializing tracker")
+	} else {
+		log.Info("Initialized tracker")
+		log.Info(p.Tracker)
+	}
+
+	logrus.Exit(0)
+
 	// Init Autodl
 	if err := autodl.Init(flagTrackerPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize autodl")
@@ -44,4 +56,5 @@ func init() {
 /* Main */
 func main() {
 	log.Info("Initialized")
+
 }
