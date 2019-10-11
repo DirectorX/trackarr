@@ -7,8 +7,8 @@ import (
 
 /* Struct */
 type TrackerIgnore struct {
-	rxp      *regexp.Regexp
-	expected bool
+	Rxp      *regexp.Regexp
+	Expected bool
 }
 
 /* Private */
@@ -38,8 +38,8 @@ func parseTrackerIgnores(doc *xmlquery.Node, tracker *TrackerInfo) error {
 
 		// add regex to list
 		tracker.IgnoreLines = append(tracker.IgnoreLines, TrackerIgnore{
-			rxp:      rxp,
-			expected: expected,
+			Rxp:      rxp,
+			Expected: expected,
 		})
 	}
 	return nil

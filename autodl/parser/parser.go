@@ -26,9 +26,11 @@ type Parser struct {
 }
 
 type TrackerInfo struct {
-	Settings    []string
-	Servers     []TrackerServer
-	IgnoreLines []TrackerIgnore
+	Settings          []string
+	Servers           []TrackerServer
+	IgnoreLines       []TrackerIgnore
+	LinePatterns      []TrackerPattern
+	MultiLinePatterns []TrackerPattern
 }
 
 /* Public */
@@ -70,6 +72,11 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 
 	// parse tracker ignore lines
 	if err := parseTrackerIgnores(doc, &trackerInfo); err != nil {
+		return nil, err
+	}
+
+	// parse tracker patterns
+	if err := parseTrackerPatterns(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
 
