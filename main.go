@@ -37,7 +37,7 @@ func init() {
 	}
 
 	// Test parser
-	p, err := parser.Init("PassThePopcorn", flagTrackerPath)
+	p, err := parser.Init("BTN", flagTrackerPath)
 	if err != nil {
 		log.Fatal("Failed initializing tracker")
 	} else {
