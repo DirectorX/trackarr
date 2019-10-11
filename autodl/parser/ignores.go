@@ -21,6 +21,7 @@ func parseTrackerIgnores(doc *xmlquery.Node, tracker *TrackerInfo) error {
 			log.Errorf("Failed parsing %q from tracker ignore: %s", "value", n.OutputXML(true))
 			continue
 		}
+
 		expected := false
 		if n.SelectAttr("expected") != "false" {
 			expected = true
