@@ -20,13 +20,13 @@ type HTTPMethod int
 
 const (
 	// GET - Use GET HTTP method
-	GET HTTPMethod = iota
+	GET HTTPMethod = iota + 1
 	// POST - Use POST HTTP method
-	POST HTTPMethod = iota
+	POST
 	// PUT - Use PUT HTTP method
-	PUT HTTPMethod = iota
+	PUT
 	// DELETE - Use DELETE HTTP method
-	DELETE HTTPMethod = iota
+	DELETE
 )
 
 /* Public */

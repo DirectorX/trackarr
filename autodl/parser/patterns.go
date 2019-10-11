@@ -11,8 +11,8 @@ import (
 type MessagePatternType int
 
 const (
-	LinePattern      MessagePatternType = iota
-	MultiLinePattern MessagePatternType = iota
+	LinePattern MessagePatternType = iota + 1
+	MultiLinePattern
 )
 
 /* Struct */
