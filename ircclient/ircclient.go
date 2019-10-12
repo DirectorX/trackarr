@@ -27,7 +27,7 @@ type IRCClient struct {
 	/* private */
 	conn     *irc.Connection
 	cfg      *config.TrackerConfiguration
-	parser   *parser.Parser
+	tracker  *parser.TrackerInfo
 	log      *logrus.Entry
 	cleanRxp *regexp.Regexp
 	/* public */
@@ -35,13 +35,13 @@ type IRCClient struct {
 
 /* Public */
 
-func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) {
-	log.Tracef("Initializing IRC client for parser: %s", p.Tracker.LongName)
+func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, error) {
+	log.Tracef("Initializing IRC client for parser: %s", t.LongName)
 
 	// set variables
-	logName := p.Tracker.LongName
-	if p.Tracker.ShortName != nil {
-		logName = *p.Tracker.ShortName
+	logName := t.LongName
+	if t.ShortName != nil {
+		logName = *t.ShortName
 	}
 
 	cleanRxp, err := regexp.Compile(RegexMessageClean)
@@ -69,7 +69,7 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 	client := &IRCClient{
 		conn:     conn,
 		cfg:      c,
-		parser:   p,
+		tracker:  t,
 		log:      ircLogger,
 		cleanRxp: cleanRxp,
 	}
@@ -92,8 +92,8 @@ func (c *IRCClient) setConfigPrecedence() {
 	if c.cfg.IRC.Host != nil && c.cfg.IRC.Port != nil {
 		log.Debugf("Using host and port from tracker config: %s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
 		serverString := fmt.Sprintf("%s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
-		c.parser.Tracker.Servers = nil
-		c.parser.Tracker.Servers = []string{
+		c.tracker.Servers = nil
+		c.tracker.Servers = []string{
 			serverString,
 		}
 	}
@@ -101,14 +101,14 @@ func (c *IRCClient) setConfigPrecedence() {
 	// set channels from config
 	if len(c.cfg.IRC.Channels) >= 1 {
 		log.Debugf("Using channels from tracker config: %s", strings.Join(c.cfg.IRC.Channels, ", "))
-		c.parser.Tracker.Channels = nil
-		c.parser.Tracker.Channels = c.cfg.IRC.Channels
+		c.tracker.Channels = nil
+		c.tracker.Channels = c.cfg.IRC.Channels
 	}
 
 	// set announcers from config
 	if len(c.cfg.IRC.Announcers) >= 1 {
 		log.Debugf("Using announcers from tracker config: %s", strings.Join(c.cfg.IRC.Announcers, ", "))
-		c.parser.Tracker.Announcers = nil
-		c.parser.Tracker.Announcers = c.cfg.IRC.Announcers
+		c.tracker.Announcers = nil
+		c.tracker.Announcers = c.cfg.IRC.Announcers
 	}
 }

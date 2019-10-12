@@ -18,29 +18,29 @@ var (
 	log *logrus.Entry
 )
 
-/* Init */
+/* Parse */
 func init() {
 	// Setup cmd flags
 	cmdInit()
 
-	// Init Logging
+	// Parse Logging
 	if err := logger.Init(flagLogLevel, flagLogPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize logging")
 	}
 
 	log = logger.GetLogger("app")
 
-	// Init Config
+	// Parse Config
 	if err := config.Init(flagConfigPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
 	}
 
-	// Init Database
+	// Parse Database
 	if err := database.Init(flagDbPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
-	// Init Autodl
+	// Parse Autodl
 	if err := autodl.Init(flagTrackerPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize autodl")
 	}
@@ -59,7 +59,7 @@ func waitForSignal() {
 func main() {
 	log.Info("Initialized core")
 
-	// validate we have atleast one active tracker
+	// validate we have at-least one active tracker
 	oneActive := false
 	for _, tracker := range config.Config.Trackers {
 		if tracker.Enabled {
@@ -83,27 +83,30 @@ func main() {
 			continue
 		}
 
-		// load parser
-		log.Debugf("Initializing parser: %s", trackerName)
-		p, err := parser.Init(trackerName, flagTrackerPath)
+		// parse tracker
+		log.Debugf("Parsing tracker: %s", trackerName)
+		t, err := parser.Parse(trackerName, flagTrackerPath)
 		if err != nil {
-			log.WithError(err).Fatalf("Failed initializing parser for tracker: %s", trackerName)
+			log.WithError(err).Fatalf("Failed parsing tracker: %s", trackerName)
+			continue
 		}
-		log.Debugf("Initialized parser: %s", trackerName)
+		log.Debugf("Parsed tracker: %s", trackerName)
 
 		// TODO: validate tracker settings are configured (authkey / passkey / torrent_pass etc...)
 
 		// load irc client
 		log.Debugf("Initializing irc client: %s", trackerName)
-		c, err := ircclient.Init(p, &tracker)
+		c, err := ircclient.Init(t, &tracker)
 		if err != nil {
 			log.WithError(err).Fatalf("Failed initializing irc client for tracker: %s", trackerName)
+			continue
 		}
 		log.Debugf("Initialized irc client: %s", trackerName)
 
 		// start client
 		if err := c.Start(); err != nil {
 			log.WithError(err).Errorf("Failed starting irc client for tracker: %s", trackerName)
+			continue
 		} else {
 			// add client to slice
 			ircClients = append(ircClients, c)

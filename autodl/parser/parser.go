@@ -16,10 +16,6 @@ var (
 
 /* Struct */
 
-type Parser struct {
-	Tracker TrackerInfo
-}
-
 type TrackerInfo struct {
 	LongName          string
 	ShortName         *string
@@ -34,12 +30,12 @@ type TrackerInfo struct {
 
 /* Public */
 
-func Init(tracker string, trackersPath string) (*Parser, error) {
+func Parse(tracker string, trackersPath string) (*TrackerInfo, error) {
 	// validate tracker file exists
 	trackerFilePath := filepath.Join(trackersPath, tracker+".tracker")
 	if _, err := os.Stat(trackerFilePath); os.IsNotExist(err) {
-		log.WithError(err).Errorf("Failed initializing parser for tracker: %q", tracker)
-		return nil, errors.Wrapf(err, "failed to initialize parser: %q", trackerFilePath)
+		log.WithError(err).Errorf("Failed locating tracker file: %q", tracker)
+		return nil, errors.Wrapf(err, "failed locating tracker file: %q", trackerFilePath)
 	}
 
 	// read tracker file
@@ -91,9 +87,7 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 		len(trackerInfo.LinePatterns),
 		len(trackerInfo.MultiLinePatterns))
 
-	return &Parser{
-		Tracker: trackerInfo,
-	}, nil
+	return &trackerInfo, nil
 }
 
 /* Private */

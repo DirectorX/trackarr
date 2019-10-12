@@ -12,7 +12,7 @@ import (
 func (c *IRCClient) Start() error {
 
 	// iterate servers
-	for _, serverString := range c.parser.Tracker.Servers {
+	for _, serverString := range c.tracker.Servers {
 		connString := ""
 		useSsl := false
 
