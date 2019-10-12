@@ -10,6 +10,5 @@ type TrackerIrcConfiguration struct {
 	Channels   []string
 	Announcers []string
 	Host       *string
-	Port       int
-	TLS        bool
+	Port       *string
 }

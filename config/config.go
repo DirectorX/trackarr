@@ -63,8 +63,6 @@ func setConfigDefaults(check bool) error {
 				Channels: []string{
 					"#ipt.announce",
 				},
-				Port: 6667,
-				TLS:  true,
 			},
 		},
 	}, check)
