@@ -17,15 +17,18 @@ var (
 /* Struct */
 
 type TrackerInfo struct {
-	LongName          string
-	ShortName         *string
-	Settings          []string
-	Servers           []string
-	Channels          []string
-	Announcers        []string
+	LongName   string
+	ShortName  *string
+	Settings   []string
+	Servers    []string
+	Channels   []string
+	Announcers []string
+
 	IgnoreLines       []TrackerIgnore
 	LinePatterns      []TrackerPattern
 	MultiLinePatterns []TrackerPattern
+
+	LineMatchedRules *xmlquery.Node
 }
 
 /* Public */
@@ -86,6 +89,11 @@ func Parse(tracker string, trackersPath string) (*TrackerInfo, error) {
 	log.Debugf("Parsed %d tracker linepatterns / %d multilinepatterns",
 		len(trackerInfo.LinePatterns),
 		len(trackerInfo.MultiLinePatterns))
+
+	// parse tracker match rules
+	if err := parseTrackerRules(doc, &trackerInfo); err != nil {
+		return nil, err
+	}
 
 	return &trackerInfo, nil
 }
