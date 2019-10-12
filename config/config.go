@@ -25,6 +25,11 @@ var (
 	Config       *Configuration
 	log          = logger.GetLogger("cfg")
 	newOptionLen = 0
+
+	// ldflags (set by makefile or goreleaser)
+	Version string
+	Commit  string
+	Date    string
 )
 
 /* Private */

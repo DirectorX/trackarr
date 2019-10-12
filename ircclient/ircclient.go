@@ -63,6 +63,7 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 	}
 
 	conn.PingFreq = 3 * time.Minute
+	conn.Version = "trackarr " + config.Version
 
 	// initialize irc client
 	client := &IRCClient{
