@@ -3,6 +3,7 @@ package ircclient
 import (
 	"fmt"
 	"github.com/l3uddz/trackarr/autodl/parser"
+	"github.com/l3uddz/trackarr/autodl/processor"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/pkg/errors"
@@ -25,11 +26,12 @@ const RegexMessageClean = `\x0f|\x1f|\x02|\x03(?:[\d]{1,2}(?:,[\d]{1,2})?)?`
 
 type IRCClient struct {
 	/* private */
-	conn     *irc.Connection
-	cfg      *config.TrackerConfiguration
-	tracker  *parser.TrackerInfo
-	log      *logrus.Entry
-	cleanRxp *regexp.Regexp
+	conn      *irc.Connection
+	cfg       *config.TrackerConfiguration
+	tracker   *parser.TrackerInfo
+	log       *logrus.Entry
+	cleanRxp  *regexp.Regexp
+	processor *processor.Processor
 	/* public */
 }
 
@@ -65,11 +67,12 @@ func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, er
 
 	// initialize irc client
 	client := &IRCClient{
-		conn:     conn,
-		cfg:      c,
-		tracker:  t,
-		log:      ircLogger,
-		cleanRxp: cleanRxp,
+		conn:      conn,
+		cfg:       c,
+		tracker:   t,
+		log:       ircLogger,
+		cleanRxp:  cleanRxp,
+		processor: processor.New(ircLogger, t),
 	}
 
 	// set config precedence

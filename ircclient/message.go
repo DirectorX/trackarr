@@ -8,9 +8,9 @@ import (
 /* Private */
 
 func (c *IRCClient) handleMessage(event *irc.Event) {
-	// ignore messages if not from an known channel / announcer
 	channelName := event.Arguments[0]
 
+	// ignore messages if not from an known channel / announcer
 	if !listutils.StringListContains(c.tracker.Channels, channelName, false) {
 		log.Tracef("Ignoring message from channel %s -> %s", channelName, event.Message())
 		return
@@ -24,7 +24,10 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	c.log.Tracef("%s -> %s", channelName, cleanMessage)
 
 	// process message
-
+	if err := c.processor.ProcessLine(cleanMessage); err != nil {
+		c.log.WithError(err).Errorf("Failed processing line from %s -> %s", channelName, cleanMessage)
+		return
+	}
 }
 
 func (c IRCClient) cleanMessage(message string) string {
