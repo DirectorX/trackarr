@@ -36,8 +36,6 @@ type IRCClient struct {
 /* Public */
 
 func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, error) {
-	log.Tracef("Initializing IRC client for parser: %s", t.LongName)
-
 	// set variables
 	logName := t.LongName
 	if t.ShortName != nil {

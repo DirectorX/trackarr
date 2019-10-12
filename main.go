@@ -74,6 +74,7 @@ func main() {
 
 	// load trackers
 	ircClients := make([]*ircclient.IRCClient, 0)
+	connectedClients := 0
 
 	log.Infof("Initializing trackers...")
 	for trackerName, tracker := range config.Config.Trackers {
@@ -110,7 +111,15 @@ func main() {
 		} else {
 			// add client to slice
 			ircClients = append(ircClients, c)
+			connectedClients++
 		}
+	}
+
+	// were there connected clients?
+	if connectedClients < 1 {
+		log.Fatal("Failed to establish a connection to any of the enabled trackers...")
+	} else {
+		log.Infof("Connected to %d trackers!", connectedClients)
 	}
 
 	// wait for shutdown signal
