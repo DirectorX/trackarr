@@ -45,6 +45,7 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 
 	// set callbacks
 	conn.AddCallback("001", client.handleConnected)
+	conn.AddCallback("366", client.handleJoined)
 	conn.AddCallback("PRIVMSG", client.handlePrivMsg)
 
 	return client, nil
