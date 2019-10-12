@@ -57,10 +57,14 @@ func setConfigDefaults(check bool) error {
 	// tracker settings
 	added += setConfigDefault("trackers", map[string]TrackerConfiguration{
 		"IPTorrents": {
+			Enabled: true,
 			IRC: TrackerIrcConfiguration{
 				Nickname: "thebigmuncho",
-				Port:     6667,
-				TLS:      true,
+				Channels: []string{
+					"#ipt.announce",
+				},
+				Port: 6667,
+				TLS:  true,
 			},
 		},
 	}, check)

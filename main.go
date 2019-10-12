@@ -59,10 +59,17 @@ func waitForSignal() {
 func main() {
 	log.Info("Initialized core")
 
-	// validate we have some configured trackers
-	trackersCount := len(config.Config.Trackers)
-	if trackersCount < 1 {
-		log.Fatalf("You must configure at-least one tracker")
+	// validate we have atleast one active tracker
+	oneActive := false
+	for _, tracker := range config.Config.Trackers {
+		if tracker.Enabled {
+			oneActive = true
+			break
+		}
+	}
+
+	if !oneActive {
+		log.Fatalf("At-least one tracker must be enabled...")
 	}
 
 	// load trackers
@@ -70,6 +77,12 @@ func main() {
 
 	log.Infof("Initializing trackers...")
 	for trackerName, tracker := range config.Config.Trackers {
+		// skip disabled trackers
+		if !tracker.Enabled {
+			log.Debugf("Skipping disabled tracker: %s", trackerName)
+			continue
+		}
+
 		// load parser
 		log.Debugf("Initializing parser: %s", trackerName)
 		p, err := parser.Init(trackerName, flagTrackerPath)
