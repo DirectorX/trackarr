@@ -57,7 +57,7 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 	ircLogger := logger.GetLogger(logName)
 	if c.Verbose {
 		conn.Debug = true
-		conn.Log.SetOutput(ircLogger.Writer())
+		conn.Log.SetOutput(ircLogger.WriterLevel(logrus.TraceLevel))
 	} else {
 		conn.Log.SetOutput(ioutil.Discard)
 	}
