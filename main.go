@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/l3uddz/trackarr/autodl"
-	"github.com/l3uddz/trackarr/autodl/ircclient"
 	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
+	"github.com/l3uddz/trackarr/ircclient"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/sirupsen/logrus"
 )
