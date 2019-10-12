@@ -20,11 +20,11 @@ func parseTrackerSettings(doc *xmlquery.Node, tracker *TrackerInfo) error {
 
 		// skip specific settings
 		if listutils.StringListContains(skipSettings, settingName, true) {
-			log.Debugf("Skipping tracker setting: %q", settingName)
+			log.Tracef("Skipping tracker setting: %q", settingName)
 			continue
 		}
 
-		log.Debugf("Found tracker setting: %q", settingName)
+		log.Tracef("Found tracker setting: %q", settingName)
 
 		// add setting to list
 		tracker.Settings = append(tracker.Settings, settingName)

@@ -66,21 +66,27 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 	if err := parseTrackerSettings(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
+	log.Debugf("Parsed %d tracker settings", len(trackerInfo.Settings))
 
 	// parse tracker servers
 	if err := parseTrackerServers(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
+	log.Debugf("Parsed %d tracker servers", len(trackerInfo.Servers))
 
 	// parse tracker ignore lines
 	if err := parseTrackerIgnores(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
+	log.Debugf("Parsed %d tracker ignore lines", len(trackerInfo.IgnoreLines))
 
 	// parse tracker patterns
 	if err := parseTrackerPatterns(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
+	log.Debugf("Parsed %d tracker linepatterns / %d multilinepatterns",
+		len(trackerInfo.LinePatterns),
+		len(trackerInfo.MultiLinePatterns))
 
 	return &Parser{
 		Tracker: trackerInfo,

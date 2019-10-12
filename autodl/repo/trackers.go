@@ -55,7 +55,7 @@ func PullTrackers(trackersPath string) error {
 	trackerPulls := 0
 	trackerErrors := 0
 	for _, trackerData := range *trackers {
-		log.Debugf("Processing tracker: %s", trackerData.Name)
+		log.Tracef("Processing tracker: %s", trackerData.Name)
 
 		// retrieve tracker from database
 		tracker, err := models.NewOrExistingTracker(database.DB, trackerData.Name)

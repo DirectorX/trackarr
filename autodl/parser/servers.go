@@ -30,7 +30,7 @@ func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
 			log.Errorf("Failed parsing %q from tracker server: %s", "serverNames", n.OutputXML(true))
 			continue
 		}
-		log.Debugf("Found tracker server hosts: %s", strings.Join(serverHosts, ", "))
+		log.Tracef("Found tracker server hosts: %s", strings.Join(serverHosts, ", "))
 
 		// parse server channels
 		channelNames := n.SelectAttr("channelNames")
@@ -44,7 +44,7 @@ func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
 			log.Errorf("Failed parsing %q from tracker server: %s", "channelNames", n.OutputXML(true))
 			continue
 		}
-		log.Debugf("Found tracker server channels: %s", strings.Join(serverChannels, ", "))
+		log.Tracef("Found tracker server channels: %s", strings.Join(serverChannels, ", "))
 
 		// parse server announcers
 		announcerNames := n.SelectAttr("announcerNames")
@@ -58,7 +58,7 @@ func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
 			log.Errorf("Failed parsing %q from tracker server: %s", "announcerNames", n.OutputXML(true))
 			continue
 		}
-		log.Debugf("Found tracker server announcers: %s", strings.Join(serverAnnouncers, ", "))
+		log.Tracef("Found tracker server announcers: %s", strings.Join(serverAnnouncers, ", "))
 
 		// add server to list
 		tracker.Servers = append(tracker.Servers, TrackerServer{

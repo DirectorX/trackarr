@@ -54,21 +54,24 @@ func main() {
 	}
 
 	// load trackers
-	log.Infof("Initializing %d trackers...", trackersCount)
+	log.Infof("Initializing trackers...")
 
 	for trackerName, tracker := range config.Config.Trackers {
 		// load parser
-		log.Debugf("Loading parser for tracker: %s", trackerName)
+		log.Debugf("Initializing parser: %s", trackerName)
 		p, err := parser.Init(trackerName, flagTrackerPath)
 		if err != nil {
 			log.WithError(err).Fatalf("Failed initializing parser for tracker: %s", trackerName)
 		}
+		log.Debugf("Initialized parser: %s", trackerName)
 
 		// load irc client
+		log.Debugf("Initializing irc client: %s", trackerName)
 		c, err := ircclient.Init(p, &tracker)
 		if err != nil {
 			log.WithError(err).Fatalf("Failed initializing irc client for tracker: %s", trackerName)
 		}
+		log.Debugf("Initialized irc client: %s", trackerName)
 
 		// start client
 		c.Start()

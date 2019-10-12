@@ -27,7 +27,7 @@ func parseTrackerIgnores(doc *xmlquery.Node, tracker *TrackerInfo) error {
 			expected = true
 		}
 
-		log.Debugf("Found tracker ignore (expected: %v): %s", expected, ignoreRegex)
+		log.Tracef("Found tracker ignore (expected: %v): %s", expected, ignoreRegex)
 
 		// compile regex
 		rxp, err := regexp.Compile(ignoreRegex)

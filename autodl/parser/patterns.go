@@ -72,7 +72,7 @@ func parsePatterns(nodes []*xmlquery.Node, patternType MessagePatternType, track
 			continue
 		}
 
-		log.Debugf("Found tracker %s (optional: %v): %s", patternTypeString, optional, lineRegex)
+		log.Tracef("Found tracker %s (optional: %v): %s", patternTypeString, optional, lineRegex)
 
 		// parse pattern vars
 		var lineVars []string
@@ -83,7 +83,7 @@ func parsePatterns(nodes []*xmlquery.Node, patternType MessagePatternType, track
 				log.Errorf("Failed parsing tracker %s var from: %s", patternTypeString, v.OutputXML(true))
 				continue
 			}
-			log.Debugf("Found tracker %s var: %s", patternTypeString, varName)
+			log.Tracef("Found tracker %s var: %s", patternTypeString, varName)
 			lineVars = append(lineVars, varName)
 		}
 

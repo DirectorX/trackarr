@@ -19,18 +19,18 @@ func parseTrackerDetails(doc *xmlquery.Node, tracker *TrackerInfo, trackerName s
 	longName := trackerInfo.SelectAttr("longName")
 
 	if shortName == "" {
-		log.Debugf("Failed to parse tracker %q from: %s", "shortName", trackerInfo.OutputXML(true))
+		log.Warnf("Failed to parse tracker %q from: %s", "shortName", trackerInfo.OutputXML(true))
 	} else {
 		tracker.ShortName = &shortName
-		log.Debugf("Found tracker short name: %s", *tracker.ShortName)
+		log.Tracef("Found tracker short name: %s", *tracker.ShortName)
 	}
 
 	if longName == "" {
-		log.Debugf("Failed to parse tracker %q from: %s", "longName", trackerInfo.OutputXML(true))
+		log.Warnf("Failed to parse tracker %q from: %s", "longName", trackerInfo.OutputXML(true))
 		tracker.LongName = trackerName
 	} else {
 		tracker.LongName = longName
-		log.Debugf("Found tracker long name: %s", tracker.LongName)
+		log.Tracef("Found tracker long name: %s", tracker.LongName)
 	}
 
 	return nil

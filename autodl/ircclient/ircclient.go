@@ -26,7 +26,7 @@ type IRCClient struct {
 /* Public */
 
 func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) {
-	log.Tracef("Initializing irc connection for tracker: %s", p.Tracker.LongName)
+	log.Tracef("Initializing IRC client for tracker: %s", p.Tracker.LongName)
 
 	// set variables
 	logName := p.Tracker.LongName
@@ -49,17 +49,6 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 	return client, nil
 }
 
-func (c *IRCClient) Start() {
-	c.log.Info("Starting irc connection")
-}
 
-func (c *IRCClient) Stop() {
-	c.log.Warn("Stopping irc connection")
-}
 
 /* Private */
-func (c *IRCClient) handlePrivMsg(event *irc.Event) {
-	channelName := event.Arguments[0]
-
-	c.log.Info("Private message from %s: %s", channelName, event.Message())
-}
