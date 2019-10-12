@@ -21,9 +21,9 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.4.0
+	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc // indirect
 	golang.org/x/sys v0.0.0-20191008105621-543471e840be // indirect
-	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

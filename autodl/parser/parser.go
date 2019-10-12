@@ -17,15 +17,12 @@ var (
 /* Struct */
 
 type Parser struct {
-	/* private */
-	trackerName     string
-	trackerFilePath string
-
-	/* public */
 	Tracker TrackerInfo
 }
 
 type TrackerInfo struct {
+	LongName          string
+	ShortName         *string
 	Settings          []string
 	Servers           []TrackerServer
 	IgnoreLines       []TrackerIgnore
@@ -60,6 +57,11 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 		return nil, errors.Wrap(err, "failed parsing tracker file doc root")
 	}
 
+	// parse tracker details
+	if err := parseTrackerDetails(doc, &trackerInfo, tracker); err != nil {
+		return nil, err
+	}
+
 	// parse tracker settings
 	if err := parseTrackerSettings(doc, &trackerInfo); err != nil {
 		return nil, err
@@ -81,9 +83,7 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 	}
 
 	return &Parser{
-		trackerName:     tracker,
-		trackerFilePath: trackerFilePath,
-		Tracker:         trackerInfo,
+		Tracker: trackerInfo,
 	}, nil
 }
 

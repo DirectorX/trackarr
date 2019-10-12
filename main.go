@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/l3uddz/trackarr/autodl"
+	"github.com/l3uddz/trackarr/autodl/ircclient"
 	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
@@ -37,7 +38,7 @@ func init() {
 	}
 
 	// Test parser
-	p, err := parser.Init("BTN", flagTrackerPath)
+	p, err := parser.Init("IPTorrents", flagTrackerPath)
 	if err != nil {
 		log.Fatal("Failed initializing tracker")
 	} else {
@@ -45,6 +46,14 @@ func init() {
 		log.Info(p.Tracker)
 	}
 
+	// Test irc
+	client, err := ircclient.Init(p)
+	if err != nil {
+		log.Fatal("Failed initializing tracker irc client")
+	} else {
+		log.Info("Initialized tracker irc client")
+	}
+	client.Start()
 	logrus.Exit(0)
 
 	// Init Autodl
