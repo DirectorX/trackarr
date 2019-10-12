@@ -1,12 +1,12 @@
 package config
 
 type TrackerConfiguration struct {
-	Nickname string
-	IRC      TrackerIrcConfiguration
+	IRC TrackerIrcConfiguration
 }
 
 type TrackerIrcConfiguration struct {
-	Host *string
-	Port int
-	TLS  bool
+	Nickname string
+	Host     *string
+	Port     int
+	TLS      bool
 }

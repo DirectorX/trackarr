@@ -15,7 +15,7 @@ import (
 
 type Configuration struct {
 	Server   ServerConfiguration
-	Trackers map[string]TrackerIrcConfiguration
+	Trackers map[string]TrackerConfiguration
 }
 
 /* Vars */
@@ -57,10 +57,10 @@ func setConfigDefaults(check bool) error {
 	// tracker settings
 	added += setConfigDefault("trackers", map[string]TrackerConfiguration{
 		"IPTorrents": {
-			Nickname: "thebigmuncho",
 			IRC: TrackerIrcConfiguration{
-				Port: 6667,
-				TLS:  true,
+				Nickname: "thebigmuncho",
+				Port:     6667,
+				TLS:      true,
 			},
 		},
 	}, check)

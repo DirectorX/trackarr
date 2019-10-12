@@ -37,25 +37,6 @@ func init() {
 		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
-	// Test parser
-	p, err := parser.Init("IPTorrents", flagTrackerPath)
-	if err != nil {
-		log.Fatal("Failed initializing tracker")
-	} else {
-		log.Info("Initialized tracker")
-		log.Info(p.Tracker)
-	}
-
-	// Test irc
-	client, err := ircclient.Init(p)
-	if err != nil {
-		log.Fatal("Failed initializing tracker irc client")
-	} else {
-		log.Info("Initialized tracker irc client")
-	}
-	client.Start()
-	logrus.Exit(0)
-
 	// Init Autodl
 	if err := autodl.Init(flagTrackerPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize autodl")
@@ -64,6 +45,32 @@ func init() {
 
 /* Main */
 func main() {
-	log.Info("Initialized")
+	log.Info("Initialized core")
 
+	// validate we have some configured trackers
+	trackersCount := len(config.Config.Trackers)
+	if trackersCount < 1 {
+		log.Fatalf("You must configure at-least one tracker")
+	}
+
+	// load trackers
+	log.Infof("Initializing %d trackers...", trackersCount)
+
+	for trackerName, tracker := range config.Config.Trackers {
+		// load parser
+		log.Debugf("Loading parser for tracker: %s", trackerName)
+		p, err := parser.Init(trackerName, flagTrackerPath)
+		if err != nil {
+			log.WithError(err).Fatalf("Failed initializing parser for tracker: %s", trackerName)
+		}
+
+		// load irc client
+		c, err := ircclient.Init(p, &tracker)
+		if err != nil {
+			log.WithError(err).Fatalf("Failed initializing irc client for tracker: %s", trackerName)
+		}
+
+		// start client
+		c.Start()
+	}
 }
