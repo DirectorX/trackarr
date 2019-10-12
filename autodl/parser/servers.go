@@ -6,14 +6,6 @@ import (
 	"strings"
 )
 
-/* Struct */
-
-type TrackerServer struct {
-	Servers    []string
-	Channels   []string
-	Announcers []string
-}
-
 /* Private */
 
 func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
@@ -60,12 +52,11 @@ func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
 		}
 		log.Tracef("Found tracker server announcers: %s", strings.Join(serverAnnouncers, ", "))
 
-		// add server to list
-		tracker.Servers = append(tracker.Servers, TrackerServer{
-			Servers:    serverHosts,
-			Channels:   serverChannels,
-			Announcers: serverAnnouncers,
-		})
+		// add parsed details to lists
+		tracker.Servers = append(tracker.Servers, serverHosts...)
+		tracker.Channels = append(tracker.Channels, serverChannels...)
+		tracker.Announcers = append(tracker.Announcers, serverAnnouncers...)
+
 	}
 
 	// were servers parsed?

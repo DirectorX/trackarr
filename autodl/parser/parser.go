@@ -24,7 +24,9 @@ type TrackerInfo struct {
 	LongName          string
 	ShortName         *string
 	Settings          []string
-	Servers           []TrackerServer
+	Servers           []string
+	Channels          []string
+	Announcers        []string
 	IgnoreLines       []TrackerIgnore
 	LinePatterns      []TrackerPattern
 	MultiLinePatterns []TrackerPattern
@@ -72,7 +74,8 @@ func Init(tracker string, trackersPath string) (*Parser, error) {
 	if err := parseTrackerServers(doc, &trackerInfo); err != nil {
 		return nil, err
 	}
-	log.Debugf("Parsed %d tracker servers", len(trackerInfo.Servers))
+	log.Debugf("Parsed %d tracker servers, %d channels and %d announcers", len(trackerInfo.Servers),
+		len(trackerInfo.Channels), len(trackerInfo.Announcers))
 
 	// parse tracker ignore lines
 	if err := parseTrackerIgnores(doc, &trackerInfo); err != nil {

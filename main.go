@@ -8,6 +8,9 @@ import (
 	"github.com/l3uddz/trackarr/ircclient"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/sirupsen/logrus"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -43,6 +46,15 @@ func init() {
 	}
 }
 
+/* Misc */
+
+func waitForSignal() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt)
+	signal.Notify(sigs, syscall.SIGTERM)
+	<-sigs
+}
+
 /* Main */
 func main() {
 	log.Info("Initialized core")
@@ -54,8 +66,9 @@ func main() {
 	}
 
 	// load trackers
-	log.Infof("Initializing trackers...")
+	ircClients := make([]*ircclient.IRCClient, 0)
 
+	log.Infof("Initializing trackers...")
 	for trackerName, tracker := range config.Config.Trackers {
 		// load parser
 		log.Debugf("Initializing parser: %s", trackerName)
@@ -64,6 +77,8 @@ func main() {
 			log.WithError(err).Fatalf("Failed initializing parser for tracker: %s", trackerName)
 		}
 		log.Debugf("Initialized parser: %s", trackerName)
+
+		// TODO: validate tracker settings are configured (authkey / passkey / torrent_pass etc...)
 
 		// load irc client
 		log.Debugf("Initializing irc client: %s", trackerName)
@@ -74,6 +89,22 @@ func main() {
 		log.Debugf("Initialized irc client: %s", trackerName)
 
 		// start client
-		c.Start()
+		if err := c.Start(); err != nil {
+			log.WithError(err).Errorf("Failed starting irc client for tracker: %s", trackerName)
+		} else {
+			// add client to slice
+			ircClients = append(ircClients, c)
+		}
 	}
+
+	// wait for shutdown signal
+	waitForSignal()
+
+	// graceful shutdown
+	log.Info("Shutting down")
+	for _, ircClient := range ircClients {
+		ircClient.Stop()
+	}
+
+	log.Info("Finished")
 }

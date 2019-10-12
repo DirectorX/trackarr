@@ -16,17 +16,17 @@ var (
 
 type IRCClient struct {
 	/* private */
-	conn    *irc.Connection
-	cfg     *config.TrackerConfiguration
-	tracker *parser.Parser
-	log     *logrus.Entry
+	conn   *irc.Connection
+	cfg    *config.TrackerConfiguration
+	parser *parser.Parser
+	log    *logrus.Entry
 	/* public */
 }
 
 /* Public */
 
 func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) {
-	log.Tracef("Initializing IRC client for tracker: %s", p.Tracker.LongName)
+	log.Tracef("Initializing IRC client for parser: %s", p.Tracker.LongName)
 
 	// set variables
 	logName := p.Tracker.LongName
@@ -34,21 +34,20 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 		logName = *p.Tracker.ShortName
 	}
 
-	// initialize irc object and ircclient
-	conn := irc.IRC("thebigmuncho", "thebigmuncho")
+	// initialize irc object and irc client
+	conn := irc.IRC(c.IRC.Nickname, c.IRC.Nickname)
 	client := &IRCClient{
-		conn:    conn,
-		cfg:     c,
-		tracker: p,
-		log:     logger.GetLogger(logName),
+		conn:   conn,
+		cfg:    c,
+		parser: p,
+		log:    logger.GetLogger(logName),
 	}
 
 	// set callbacks
+	conn.AddCallback("001", client.handleConnected)
 	conn.AddCallback("PRIVMSG", client.handlePrivMsg)
 
 	return client, nil
 }
-
-
 
 /* Private */
