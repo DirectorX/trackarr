@@ -2,6 +2,7 @@ package config
 
 type TrackerConfiguration struct {
 	Enabled bool
+	Verbose bool
 	IRC     TrackerIrcConfiguration
 }
 

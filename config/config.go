@@ -58,6 +58,7 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("trackers", map[string]TrackerConfiguration{
 		"IPTorrents": {
 			Enabled: true,
+			Verbose: false,
 			IRC: TrackerIrcConfiguration{
 				Nickname: "thebigmuncho",
 				Channels: []string{

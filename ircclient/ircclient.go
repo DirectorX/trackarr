@@ -8,8 +8,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/thoj/go-ircevent"
+	"io/ioutil"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var (
@@ -48,13 +50,26 @@ func Init(p *parser.Parser, c *config.TrackerConfiguration) (*IRCClient, error) 
 		return nil, errors.Wrap(err, "failed compiling message clean regex")
 	}
 
-	// initialize irc object and irc client
+	// initialize irc object
 	conn := irc.IRC(c.IRC.Nickname, c.IRC.Nickname)
+
+	// set base irc object settings
+	ircLogger := logger.GetLogger(logName)
+	if c.Verbose {
+		conn.Debug = true
+		conn.Log.SetOutput(ircLogger.Writer())
+	} else {
+		conn.Log.SetOutput(ioutil.Discard)
+	}
+
+	conn.PingFreq = 3 * time.Minute
+
+	// initialize irc client
 	client := &IRCClient{
 		conn:     conn,
 		cfg:      c,
 		parser:   p,
-		log:      logger.GetLogger(logName),
+		log:      ircLogger,
 		cleanRxp: cleanRxp,
 	}
 
