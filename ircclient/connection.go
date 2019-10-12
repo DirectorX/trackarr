@@ -24,7 +24,7 @@ func (c *IRCClient) Start() error {
 			// split port from serverString
 			host, port, err := net.SplitHostPort(serverString)
 			if err != nil {
-				log.WithError(err).Errorf("Failed splitting port from: %s", serverString)
+				c.log.WithError(err).Errorf("Failed splitting port from: %s", serverString)
 				continue
 			}
 
@@ -50,9 +50,9 @@ func (c *IRCClient) Start() error {
 		}
 
 		// handle connection to configured server
-		log.Infof("Connecting to %s (ssl: %v)", connString, useSsl)
+		c.log.Infof("Connecting to %s (ssl: %v)", connString, useSsl)
 		if err := c.conn.Connect(connString); err != nil {
-			log.WithError(err).Errorf("failed connecting to server: %s", connString)
+			c.log.WithError(err).Errorf("failed connecting to server: %s", connString)
 			continue
 		}
 

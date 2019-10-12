@@ -88,7 +88,7 @@ func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, er
 func (c *IRCClient) setConfigPrecedence() {
 	// set server from config
 	if c.cfg.IRC.Host != nil && c.cfg.IRC.Port != nil {
-		log.Debugf("Using host and port from tracker config: %s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
+		c.log.Debugf("Using host and port from config: %s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
 		serverString := fmt.Sprintf("%s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
 		c.tracker.Servers = nil
 		c.tracker.Servers = []string{
@@ -98,14 +98,14 @@ func (c *IRCClient) setConfigPrecedence() {
 
 	// set channels from config
 	if len(c.cfg.IRC.Channels) >= 1 {
-		log.Debugf("Using channels from tracker config: %s", strings.Join(c.cfg.IRC.Channels, ", "))
+		c.log.Debugf("Using channels from config: %s", strings.Join(c.cfg.IRC.Channels, ", "))
 		c.tracker.Channels = nil
 		c.tracker.Channels = c.cfg.IRC.Channels
 	}
 
 	// set announcers from config
 	if len(c.cfg.IRC.Announcers) >= 1 {
-		log.Debugf("Using announcers from tracker config: %s", strings.Join(c.cfg.IRC.Announcers, ", "))
+		c.log.Debugf("Using announcers from config: %s", strings.Join(c.cfg.IRC.Announcers, ", "))
 		c.tracker.Announcers = nil
 		c.tracker.Announcers = c.cfg.IRC.Announcers
 	}
