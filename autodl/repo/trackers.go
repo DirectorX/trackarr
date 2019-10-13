@@ -117,7 +117,7 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	for _, match := range matches {
 		// parse tracker from match
 		tracker := &AutodlTracker{
-			Name:    match[1],
+			Name:    strings.Replace(match[1], ".", " ", -1),
 			Version: match[2],
 			URL: fmt.Sprintf("https://raw.githubusercontent.com%s",
 				strings.Replace(match[3], "/blob/", "/", -1)),
