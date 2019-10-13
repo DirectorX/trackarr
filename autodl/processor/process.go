@@ -25,7 +25,7 @@ func (p *Processor) ProcessLine(line string) error {
 		}
 
 		// log final vars map
-		log.Debugf("Vars post linematched processing: %#v", vars)
+		p.log.Debugf("Vars post linematched processed: %#v", vars)
 		return nil
 
 	} else if len(p.tracker.MultiLinePatterns) > 0 {
