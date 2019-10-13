@@ -51,7 +51,10 @@ func (p *Processor) processRules(vars *map[string]string) error {
 			break
 		case "setregex":
 			// set a var if a regex matches
-			break
+			if err := p.processSetRegexRule(n, vars); err != nil {
+				return errors.Wrapf(err, "failed processing setregex rule: %s", n.OutputXML(true))
+			}
+
 		case "if":
 			// if statement
 			break
