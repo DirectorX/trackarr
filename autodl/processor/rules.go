@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -30,13 +31,15 @@ func (p *Processor) processRules(vars *map[string]string) error {
 		case "var":
 			// concat var from other vars
 			if err := p.processVarRule(n, vars); err != nil {
-				p.log.WithError(err).Errorf("failed processing var rule: %s", n.OutputXML(true))
-				return err
+				return errors.Wrapf(err, "failed processing var rule: %s", n.OutputXML(true))
 			}
 
 		case "varreplace":
 			// replace text in a var
-			break
+			if err := p.processVarReplaceRule(n, vars); err != nil {
+				return errors.Wrapf(err, "failed processing varreplace rule: %s", n.OutputXML(true))
+			}
+
 		case "extract":
 			// create multiple vars from a single regex
 			break

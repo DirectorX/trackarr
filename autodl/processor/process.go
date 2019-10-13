@@ -20,14 +20,13 @@ func (p *Processor) ProcessLine(line string) error {
 		}
 
 		// run vars against rules
-		_ = p.processRules(&vars)
+		return p.processRules(&vars)
 
 	} else if len(p.tracker.MultiLinePatterns) > 0 {
 		// use multi-linepatterns
 
 	} else {
 		// unknown??
-		p.log.Errorf("Unsure how to pattern match: %s", line)
 		return errors.New("unable to determine how to pattern match")
 	}
 
