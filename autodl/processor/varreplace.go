@@ -24,11 +24,6 @@ func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars *map[string]
 		return errors.New("regex had no value")
 	}
 
-	// TODO: investigate why a stacktrace is being printed by the below
-	//if replaceVar == "" {
-	//	return errors.New("hmmm")
-	//}
-
 	// ensure srcVar exists in vars map
 	existingValue, ok := (*vars)[srcVar]
 	if !ok {
