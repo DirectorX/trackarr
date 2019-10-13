@@ -23,5 +23,5 @@ func (c *IRCClient) handleJoinFailure(event *irc.Event) {
 		channelName = event.Arguments[1]
 	}
 
-	c.log.Warnf("Failed joining: %s (reason: %s)", channelName, event.Message())
+	c.log.Warnf("Failed joining: %s, reason: %s", channelName, event.Message())
 }
