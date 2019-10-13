@@ -19,7 +19,7 @@ func (p *Processor) processRules(vars *map[string]string) error {
 		}
 
 		// skip junk nodes (mostly an empty line)
-		nodeTag := strings.TrimSpace(n.Data)
+		nodeTag := strings.ToLower(strings.TrimSpace(n.Data))
 		if nodeTag == "" {
 			n = n.NextSibling
 			continue
@@ -27,10 +27,14 @@ func (p *Processor) processRules(vars *map[string]string) error {
 
 		// process tag
 		p.log.Tracef("Processing linematched rule: %q", nodeTag)
-		switch strings.ToLower(nodeTag) {
+		switch nodeTag {
 		case "var":
 			// concat var from other vars
-			break
+			if err := p.processVarRule(n, vars); err != nil {
+				p.log.WithError(err).Error("failed processing var rule")
+				return err
+			}
+
 		case "varreplace":
 			// replace text in a var
 			break

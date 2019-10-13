@@ -72,7 +72,7 @@ func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, er
 		tracker:   t,
 		log:       ircLogger,
 		cleanRxp:  cleanRxp,
-		processor: processor.New(ircLogger, t),
+		processor: processor.New(ircLogger, t, c),
 	}
 
 	// set config precedence

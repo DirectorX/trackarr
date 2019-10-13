@@ -64,6 +64,9 @@ func setConfigDefaults(check bool) error {
 		"IPTorrents": {
 			Enabled: true,
 			Verbose: false,
+			Config: map[string]string{
+				"passkey": "",
+			},
 			IRC: TrackerIrcConfiguration{
 				Nickname: "thebigmuncho",
 				Channels: []string{

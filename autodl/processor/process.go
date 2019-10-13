@@ -27,7 +27,7 @@ func (p *Processor) ProcessLine(line string) error {
 
 	} else {
 		// unknown??
-		log.Errorf("Unsure how to pattern match: %s", line)
+		p.log.Errorf("Unsure how to pattern match: %s", line)
 		return errors.New("unable to determine how to pattern match")
 	}
 
