@@ -13,7 +13,15 @@ func (p *Processor) ProcessLine(line string) error {
 	// process line matching patterns
 	if len(p.tracker.LinePatterns) > 0 {
 		// use linepatterns
-		_ = p.matchPatterns(&p.tracker.LinePatterns, line)
+		vars := p.matchPatterns(&p.tracker.LinePatterns, line)
+		if len(vars) == 0 {
+			// vars were not matched/parsed
+			return nil
+		}
+
+		// run vars against rules
+		_ = p.processRules(&vars)
+
 	} else if len(p.tracker.MultiLinePatterns) > 0 {
 		// use multi-linepatterns
 
