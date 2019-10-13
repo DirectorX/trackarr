@@ -11,7 +11,6 @@ import (
 
 func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
-	optionalVar := node.SelectAttr("optional")
 	regexNode := node.SelectElement("/regex")
 
 	// validate we parsed all of the required variables (better ways of below, however, wanted to return relevant error)
@@ -23,7 +22,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 
 	// set logic defaults
 	isOptional := false
-	if optionalVar == "true" {
+	if node.SelectAttr("optional") == "true" {
 		isOptional = true
 	}
 
