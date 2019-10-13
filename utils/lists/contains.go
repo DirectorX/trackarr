@@ -7,7 +7,7 @@ import "strings"
 func StringListContains(list []string, key string, caseSensitive bool) bool {
 	for _, listKey := range list {
 		switch caseSensitive {
-		case true:
+		case false:
 			if strings.ToLower(listKey) == strings.ToLower(key) {
 				return true
 			}

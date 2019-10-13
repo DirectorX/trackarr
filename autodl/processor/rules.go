@@ -42,7 +42,10 @@ func (p *Processor) processRules(vars *map[string]string) error {
 
 		case "extract":
 			// create multiple vars from a single regex
-			break
+			if err := p.processExtractRule(n, vars); err != nil {
+				return errors.Wrapf(err, "failed processing extract rule: %s", n.OutputXML(true))
+			}
+
 		case "extracttags":
 			// set a var if regex matches a tag in a var
 			break
