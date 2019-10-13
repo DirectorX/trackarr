@@ -1,14 +1,13 @@
 package processor
 
 import (
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"strings"
 )
 
 /* Private */
 
 func (p *Processor) processRules(vars *map[string]string) error {
-	p.log.Tracef("Processing linematched rules against; %s", stringutils.JsonifyLax(vars))
+	p.log.Tracef("Processing linematched rules against: %#v", vars)
 
 	// iterate linematched (rules) node
 	n := p.tracker.LineMatchedRules.FirstChild
