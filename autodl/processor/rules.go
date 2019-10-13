@@ -30,7 +30,7 @@ func (p *Processor) processRules(vars *map[string]string) error {
 		case "var":
 			// concat var from other vars
 			if err := p.processVarRule(n, vars); err != nil {
-				p.log.WithError(err).Error("failed processing var rule")
+				p.log.WithError(err).Errorf("failed processing var rule: %s", n.OutputXML(true))
 				return err
 			}
 

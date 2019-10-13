@@ -45,7 +45,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 
 			// did we have a var name to lookup?
 			if varName == "" {
-				return fmt.Errorf("var had no name to lookup: %s", n.OutputXML(true))
+				return errors.New("var had no name to lookup")
 			}
 
 			// lookup var
