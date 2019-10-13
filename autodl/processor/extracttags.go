@@ -87,9 +87,8 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 				}
 
 				if !foundMatch {
-					p.log.Tracef("No matches found for regex: %s", varRegex)
+					p.log.Tracef("No matches found for %q regex: %s", varName, varRegex)
 				}
-
 			} else if varValue != "" {
 				// value based setvarif
 				if listutils.StringListContains(tagValues, varValue, false) {
