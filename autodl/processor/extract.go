@@ -52,7 +52,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 
 	// build list of vars this regex captures (via groups)
 	regexVars := make([]string, 0)
-	for _, v := range node.SelectElements("/vars") {
+	for _, v := range node.SelectElements("/vars/var") {
 		varName := v.SelectAttr("name")
 		if varName == "" {
 			return fmt.Errorf("failed parsing var name from: %s", v.OutputXML(true))
@@ -64,7 +64,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 	matches := rxp.FindStringSubmatch(existingValue)
 	matchPos := 1
 	matchCount := len(matches)
-	if matchPos == matchCount {
+	if matchPos >= matchCount {
 		if !isOptional {
 			return fmt.Errorf("regex returned no matches: %s", regexVar)
 		} else {
