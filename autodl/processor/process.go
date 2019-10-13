@@ -20,7 +20,13 @@ func (p *Processor) ProcessLine(line string) error {
 		}
 
 		// run vars against rules
-		return p.processRules(&vars)
+		if err := p.processRules(&vars); err != nil {
+			return err
+		}
+
+		// log final vars map
+		log.Debugf("Vars post linematched processing: %#v", vars)
+		return nil
 
 	} else if len(p.tracker.MultiLinePatterns) > 0 {
 		// use multi-linepatterns
