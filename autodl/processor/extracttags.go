@@ -110,8 +110,8 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 		n = n.NextSibling
 	}
 
+	// were results found?
 	if len(results) < 1 {
-		// no matches were found
 		return nil
 	}
 
