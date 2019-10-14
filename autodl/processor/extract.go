@@ -91,6 +91,6 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 		(*vars)[varName] = varValue
 	}
 
-	p.log.Debugf("Result for extract rule: %q = %#v", srcVar, results)
+	p.log.Debugf("Result for extract rule: %q = %+v", srcVar, results)
 	return nil
 }

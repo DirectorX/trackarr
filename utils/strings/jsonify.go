@@ -13,7 +13,7 @@ func JsonifyStrict(obj interface{}) (string, error) {
 func JsonifyLax(obj interface{}) string {
 	bs, err := json.Marshal(obj)
 	if err != nil {
-		return fmt.Sprintf("%#v", obj)
+		return fmt.Sprintf("%+v", obj)
 	}
 	return string(bs)
 }

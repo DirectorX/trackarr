@@ -119,6 +119,6 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 		(*vars)[k] = v
 	}
 
-	p.log.Debugf("Result for extracttags rule: %q = %#v", srcVar, results)
+	p.log.Debugf("Result for extracttags rule: %q = %+v", srcVar, results)
 	return nil
 }

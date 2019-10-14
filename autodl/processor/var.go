@@ -54,7 +54,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 				// do we have the variable in the user defined tracker config? (torrent_pass, passkey etc...)
 				varValue, ok = p.cfg.Config[varName]
 				if !ok {
-					return fmt.Errorf("missing variable: %q", varName)
+					return fmt.Errorf("missing variable: %q in %+v", varName, p.cfg.Config)
 				}
 			}
 

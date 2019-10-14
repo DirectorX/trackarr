@@ -9,7 +9,7 @@ import (
 /* Private */
 
 func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) error {
-	p.log.Tracef("Processing linematched rules against: %#v", vars)
+	p.log.Tracef("Processing linematched rules against: %+v", vars)
 
 	// iterate rules node
 	n := rules.FirstChild
