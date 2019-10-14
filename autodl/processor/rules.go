@@ -54,7 +54,10 @@ func (p *Processor) processRules(vars *map[string]string) error {
 
 		case "extractone":
 			// extract one var from a list of regexes
-			break
+			if err := p.processExtractOneRule(n, vars); err != nil {
+				return errors.Wrapf(err, "failed processing extractone rule: %s", n.OutputXML(true))
+			}
+
 		case "setregex":
 			// set a var if a regex matches
 			if err := p.processSetRegexRule(n, vars); err != nil {
