@@ -72,7 +72,7 @@ func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) 
 			}
 
 		default:
-			p.log.Warnf("Unsupported linematched rule: %q", nodeTag)
+			p.log.Tracef("Unsupported linematched rule: %q", nodeTag)
 		}
 
 		// process next
