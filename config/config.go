@@ -65,6 +65,7 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("trackers.iptorrents.config.passkey", "", check)
 	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
 	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce",}, check)
+	added += setConfigDefault("trackers.iptorrents.irc.commands", [][]string{{},}, check)
 
 	// were new settings added?
 	if check && added > 0 {

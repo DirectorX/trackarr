@@ -13,4 +13,5 @@ type TrackerIrcConfiguration struct {
 	Announcers []string
 	Host       *string
 	Port       *string
+	Commands   [][]string
 }
