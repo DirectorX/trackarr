@@ -1,6 +1,9 @@
 package processor
 
-import "github.com/pkg/errors"
+import (
+	stringutils "github.com/l3uddz/trackarr/utils/strings"
+	"github.com/pkg/errors"
+)
 
 /* Public */
 
@@ -25,7 +28,7 @@ func (p *Processor) ProcessLine(line string) error {
 		}
 
 		// log final vars map
-		p.log.Debugf("Vars post linematched processed: %+v", vars)
+		p.log.Debugf("Vars post linematched processed: %s", stringutils.JsonifyLax(vars))
 		return nil
 
 	} else if len(p.tracker.MultiLinePatterns) > 0 {
