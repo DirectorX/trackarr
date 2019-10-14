@@ -86,10 +86,10 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 	conn.AddCallback("366", client.handleJoined)
 	conn.AddCallback("448", client.handleJoinFailure)
 	conn.AddCallback("475", client.handleJoinFailure)
-	// - nick change required
+	// - nick change
 	conn.ClearCallback("433")
 	conn.AddCallback("433", client.handleNickInUse)
-	// - messages
+	// - message
 	conn.AddCallback("PRIVMSG", client.handleMessage)
 
 	return client, nil
