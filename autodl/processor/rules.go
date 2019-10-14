@@ -1,17 +1,18 @@
 package processor
 
 import (
+	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
 	"strings"
 )
 
 /* Private */
 
-func (p *Processor) processRules(vars *map[string]string) error {
+func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) error {
 	p.log.Tracef("Processing linematched rules against: %#v", vars)
 
-	// iterate linematched (rules) node
-	n := p.tracker.LineMatchedRules.FirstChild
+	// iterate rules node
+	n := rules.FirstChild
 	for {
 		// break when node is empty
 		if n == nil {
@@ -66,7 +67,10 @@ func (p *Processor) processRules(vars *map[string]string) error {
 
 		case "if":
 			// if statement
-			break
+			if err := p.processIfRule(n, vars); err != nil {
+				return errors.Wrapf(err, "failed processing if rule: %s", n.OutputXML(true))
+			}
+
 		default:
 			p.log.Warnf("Unsupported linematched rule: %q", nodeTag)
 		}

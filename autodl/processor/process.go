@@ -20,7 +20,7 @@ func (p *Processor) ProcessLine(line string) error {
 		}
 
 		// run vars against rules
-		if err := p.processRules(&vars); err != nil {
+		if err := p.processRules(p.tracker.LineMatchedRules.FirstChild, &vars); err != nil {
 			return err
 		}
 
