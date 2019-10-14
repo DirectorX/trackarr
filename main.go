@@ -97,7 +97,7 @@ func main() {
 
 		// load irc client
 		log.Debugf("Initializing irc client: %s", trackerName)
-		c, err := ircclient.Init(t, &tracker)
+		c, err := ircclient.Init(t, tracker)
 		if err != nil {
 			log.WithError(err).Fatalf("Failed initializing irc client for tracker: %s", trackerName)
 			continue

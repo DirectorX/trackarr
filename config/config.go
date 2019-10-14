@@ -60,21 +60,11 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("server.port", 7337, check)
 
 	// tracker settings
-	added += setConfigDefault("trackers", map[string]TrackerConfiguration{
-		"IPTorrents": {
-			Enabled: true,
-			Verbose: false,
-			Config: map[string]string{
-				"passkey": "",
-			},
-			IRC: TrackerIrcConfiguration{
-				Nickname: "thebigmuncho",
-				Channels: []string{
-					"#ipt.announce",
-				},
-			},
-		},
-	}, check)
+	added += setConfigDefault("trackers.iptorrents.enabled", true, check)
+	added += setConfigDefault("trackers.iptorrents.verbose", false, check)
+	added += setConfigDefault("trackers.iptorrents.config.passkey", "", check)
+	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
+	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce",}, check)
 
 	// were new settings added?
 	if check && added > 0 {

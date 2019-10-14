@@ -37,7 +37,7 @@ type IRCClient struct {
 
 /* Public */
 
-func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, error) {
+func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, error) {
 	// set variables
 	logName := t.LongName
 	if t.ShortName != nil {
@@ -69,11 +69,11 @@ func Init(t *parser.TrackerInfo, c *config.TrackerConfiguration) (*IRCClient, er
 	// initialize irc client
 	client := &IRCClient{
 		conn:      conn,
-		cfg:       c,
+		cfg:       &c,
 		tracker:   t,
 		log:       ircLogger,
 		cleanRxp:  cleanRxp,
-		processor: processor.New(ircLogger, t, c),
+		processor: processor.New(ircLogger, t, &c),
 	}
 
 	// set config precedence
