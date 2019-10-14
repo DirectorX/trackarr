@@ -67,7 +67,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 			result += varValue
 
 		default:
-			return fmt.Errorf("unsupported var operation: %q", nodeTag)
+			p.log.Tracef("unsupported var operation: %q", nodeTag)
 		}
 
 		// next element

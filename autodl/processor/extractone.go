@@ -32,7 +32,7 @@ func (p *Processor) processExtractOneRule(node *xmlquery.Node, vars *map[string]
 				return nil
 			}
 		default:
-			return fmt.Errorf("unsupported extractone operation: %q", nodeTag)
+			p.log.Tracef("unsupported extractone operation: %q", nodeTag)
 		}
 
 		// next element

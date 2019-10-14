@@ -98,11 +98,11 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 				}
 			} else {
 				// unsupported setvarif logic
-				return fmt.Errorf("unsupported setvarif operation: %s", n.OutputXML(true))
+				p.log.Tracef("unsupported setvarif operation: %s", n.OutputXML(true))
 			}
 
 		default:
-			return fmt.Errorf("unsupported extracttags operation: %q", nodeTag)
+			p.log.Tracef("unsupported extracttags operation: %q", nodeTag)
 		}
 
 		// next element
