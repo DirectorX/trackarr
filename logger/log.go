@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	prefixLen = 6
+	prefixLen = 8
 )
 
 /* Public */

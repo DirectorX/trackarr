@@ -102,7 +102,7 @@ func PullTrackers(trackersPath string) error {
 func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 	// retrieve trackers page
 	log.Infof("Finding available trackers from: %s", trackersRepository)
-	body, err := web.GetBody(web.GET, trackersRepository, 30)
+	body, err := web.GetBodyString(web.GET, trackersRepository, 30)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 // pullTracker - Download a tracker and save to specified path
 func pullTracker(url string, path string) error {
 	// download tracker
-	trackerData, err := web.GetBody(web.GET, url, 30)
+	trackerData, err := web.GetBodyString(web.GET, url, 30)
 	if err != nil {
 		log.WithError(err).Errorf("Failed pulling tracker: %s", url)
 		return errors.Wrap(err, "failed downloading tracker")

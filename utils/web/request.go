@@ -31,8 +31,7 @@ const (
 
 /* Public */
 
-// GetBody - Retrieve the body of a web page as a string
-func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
+func GetBodyBytes(method HTTPMethod, url string, timeout int) ([]byte, error) {
 	var resp *http.Response
 	var err error
 
@@ -47,7 +46,7 @@ func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
 		resp, err = client.Get(url)
 	default:
 		log.Error("Request method has not been implemented")
-		return "", errors.New("request method has not been implemented")
+		return nil, errors.New("request method has not been implemented")
 	}
 
 	log.Tracef("Request URL: %s", resp.Request.URL)
@@ -56,7 +55,7 @@ func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
 	// validate response
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving body for page: %q", url)
-		return "", errors.Wrap(err, "failed retrieving page body")
+		return nil, errors.Wrap(err, "failed retrieving page body")
 	}
 
 	// process response
@@ -64,9 +63,17 @@ func GetBody(method HTTPMethod, url string, timeout int) (string, error) {
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.WithError(err).Errorf("Failed reading response body for page: %q", url)
-		return "", errors.Wrap(err, "failed reading page response body")
+		return nil, errors.Wrap(err, "failed reading page response body")
 	}
 
-	body := string(bodyBytes)
-	return body, nil
+	return bodyBytes, nil
+}
+
+func GetBodyString(method HTTPMethod, url string, timeout int) (string, error) {
+	bodyBytes, err := GetBodyBytes(method, url, timeout)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bodyBytes), nil
 }
