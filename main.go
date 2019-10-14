@@ -93,7 +93,20 @@ func main() {
 		}
 		log.Debugf("Parsed tracker: %s", trackerName)
 
-		// TODO: validate tracker settings are configured (authkey / passkey / torrent_pass etc...)
+		// validate required config settings were set for this tracker
+		settingsFilled := true
+		for _, trackerSetting := range t.Settings {
+			if _, ok := tracker.Config[trackerSetting]; !ok {
+				log.Warnf("Skipping tracker %s, missing config setting: %q", trackerName, trackerSetting)
+				settingsFilled = false
+				break
+			}
+		}
+
+		if !settingsFilled {
+			// there were missing config settings that were required by this tracker
+			continue
+		}
 
 		// load irc client
 		log.Debugf("Initializing irc client: %s", trackerName)
