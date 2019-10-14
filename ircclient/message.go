@@ -14,7 +14,7 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	if !listutils.StringListContains(c.tracker.Channels, channelName, false) {
 		c.log.Tracef("Ignoring message from channel %s -> %s", channelName, event.Message())
 		return
-	} else if !listutils.StringListContains(c.tracker.Announcers, event.User, false) {
+	} else if !listutils.StringListContains(c.tracker.Announcers, event.Nick, false) {
 		c.log.Tracef("Ignoring message from announcer %s -> %s", event.User, event.Message())
 		return
 	}
