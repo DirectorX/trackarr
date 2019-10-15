@@ -33,12 +33,20 @@ func New(log *logrus.Entry, tracker *parser.TrackerInfo, config *config.TrackerC
 		queues[channel] = goconcurrentqueue.NewFIFO()
 	}
 
-	return &Processor{
+	// create processor
+	processor := &Processor{
 		log:     log,
 		tracker: tracker,
 		cfg:     config,
 		queues:  queues,
 	}
+
+	// init queue processors
+	for _, queue := range processor.queues {
+		go processor.processQueue(queue)
+	}
+
+	return processor
 }
 
 /* Private */
