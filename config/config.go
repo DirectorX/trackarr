@@ -62,6 +62,7 @@ func setConfigDefaults(check bool) error {
 	// tracker settings
 	added += setConfigDefault("trackers.iptorrents.enabled", true, check)
 	added += setConfigDefault("trackers.iptorrents.verbose", false, check)
+	added += setConfigDefault("trackers.iptorrents.bencode", false, check)
 	added += setConfigDefault("trackers.iptorrents.config.passkey", "", check)
 	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
 	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce",}, check)

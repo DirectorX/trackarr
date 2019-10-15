@@ -27,6 +27,8 @@ func (p *Processor) ProcessLine(line string) error {
 			return err
 		}
 
+		// TODO: if Bencode is set on the tracker config, pull the torrent and override parsed torrent name / size
+
 		// log final vars map
 		p.log.Debugf("Vars post linematched processed: %s", stringutils.JsonifyLax(vars))
 		return nil
