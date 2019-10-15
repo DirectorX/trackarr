@@ -5,9 +5,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-/* Public */
+/* Private */
 
-func (p *Processor) ProcessLine(line string) error {
+func (p *Processor) processLine(line string) error {
 	// should we ignore this line
 	if p.shouldIgnoreLine(line) {
 		return nil

@@ -23,11 +23,17 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	cleanMessage := c.cleanMessage(event.Message())
 	c.log.Tracef("%s -> %s", channelName, cleanMessage)
 
-	// process message
-	if err := c.processor.ProcessLine(cleanMessage); err != nil {
-		c.log.WithError(err).Errorf("Failed processing line from %s -> %s", channelName, cleanMessage)
+	// queue message
+	if err := c.processor.QueueLine(channelName, cleanMessage); err != nil {
+		c.log.WithError(err).Errorf("Failed queueing line for processing: %q", cleanMessage)
 		return
 	}
+
+	//// process message
+	//if err := c.processor.ProcessLine(cleanMessage); err != nil {
+	//	c.log.WithError(err).Errorf("Failed processing line from %s -> %s", channelName, cleanMessage)
+	//	return
+	//}
 }
 
 func (c IRCClient) cleanMessage(message string) string {
