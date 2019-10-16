@@ -19,12 +19,12 @@ func (p *Processor) matchPattern(pattern *parser.TrackerPattern, line string) (m
 	// pattern matched - extract vars
 	matchPos := 1
 	matchCount := len(matches)
-	p.log.Tracef("Pattern %q matched with %d groups", pattern.Rxp, matchCount)
+	p.Log.Tracef("Pattern %q matched with %d groups", pattern.Rxp, matchCount)
 
 	for _, varName := range pattern.Vars {
 		// this should not occur - but we must ensure we dont try and access an out of bounds index
 		if matchPos > matchCount {
-			p.log.Warnf("Failed parsing pattern var %q from match group %d", varName, matchPos)
+			p.Log.Warnf("Failed parsing pattern var %q from match group %d", varName, matchPos)
 			continue
 		}
 
@@ -33,6 +33,6 @@ func (p *Processor) matchPattern(pattern *parser.TrackerPattern, line string) (m
 		matchPos++
 	}
 
-	p.log.Tracef("Found match: %+v", results)
+	p.Log.Tracef("Found match: %+v", results)
 	return results, nil
 }

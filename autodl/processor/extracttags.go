@@ -87,22 +87,22 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 				}
 
 				if !foundMatch {
-					p.log.Tracef("No match found for %q regex: %s", varName, varRegex)
+					p.Log.Tracef("No match found for %q regex: %s", varName, varRegex)
 				}
 			} else if varValue != "" {
 				// value based setvarif
 				if listutils.StringListContains(tagValues, varValue, false) {
 					results[varName] = varNewValue
 				} else {
-					p.log.Tracef("No match found for value %q in %q", varValue, existingValue)
+					p.Log.Tracef("No match found for value %q in %q", varValue, existingValue)
 				}
 			} else {
 				// unsupported setvarif logic
-				p.log.Tracef("unsupported setvarif operation: %s", n.OutputXML(true))
+				p.Log.Tracef("unsupported setvarif operation: %s", n.OutputXML(true))
 			}
 
 		default:
-			p.log.Tracef("unsupported extracttags operation: %q", nodeTag)
+			p.Log.Tracef("unsupported extracttags operation: %q", nodeTag)
 		}
 
 		// next element
@@ -119,6 +119,6 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 		(*vars)[k] = v
 	}
 
-	p.log.Tracef("Result for extracttags rule: %q = %+v", srcVar, results)
+	p.Log.Tracef("Result for extracttags rule: %q = %+v", srcVar, results)
 	return nil
 }

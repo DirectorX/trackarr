@@ -44,6 +44,6 @@ func (p *Processor) processSetRegexRule(node *xmlquery.Node, vars *map[string]st
 	// set result in vars map
 	(*vars)[targetVar] = targetVal
 
-	p.log.Tracef("Result for setregex rule: %q = %s", targetVar, targetVal)
+	p.Log.Tracef("Result for setregex rule: %q = %s", targetVar, targetVal)
 	return nil
 }

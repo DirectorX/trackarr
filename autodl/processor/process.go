@@ -14,12 +14,12 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 	var patterns []parser.TrackerPattern
 
 	// set patterns
-	if len(p.tracker.LinePatterns) > 0 {
-		patterns = p.tracker.LinePatterns
-	} else if len(p.tracker.MultiLinePatterns) > 0 {
-		patterns = p.tracker.MultiLinePatterns
+	if len(p.Tracker.LinePatterns) > 0 {
+		patterns = p.Tracker.LinePatterns
+	} else if len(p.Tracker.MultiLinePatterns) > 0 {
+		patterns = p.Tracker.MultiLinePatterns
 	} else {
-		p.log.Fatalf("Failed determining pattern type for processor...")
+		p.Log.Fatalf("Failed determining pattern type for processor...")
 		return
 	}
 
@@ -32,15 +32,15 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			// iterate each pattern finding a match
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
-				p.log.WithError(err).Errorf("Failed dequeueing line to process...")
+				p.Log.WithError(err).Errorf("Failed dequeueing line to process...")
 				goto RetryPattern
 			}
 
 			// process line
-			p.log.Debugf("Processing line: %s", line)
+			p.Log.Debugf("Processing line: %s", line)
 			patternVars, err := p.matchPattern(&pattern, line)
 			if err != nil {
-				p.log.WithError(err).Errorf("Failed matching pattern, discarding release...")
+				p.Log.WithError(err).Errorf("Failed matching pattern, discarding release...")
 				goto NewRelease
 			}
 
@@ -49,13 +49,13 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		}
 
 		// finished parsing release - process rules
-		if err := p.processRules(p.tracker.LineMatchedRules, &vars); err != nil {
-			p.log.WithError(err).Errorf("failed processing release due to rules failure...")
+		if err := p.processRules(p.Tracker.LineMatchedRules, &vars); err != nil {
+			p.Log.WithError(err).Errorf("failed processing release due to rules failure...")
 			goto NewRelease
 		}
 
 		// push release
-		p.log.Debugf("Finished processing: %+v", vars)
+		p.Log.Debugf("Finished processing: %+v", vars)
 	}
 }
 

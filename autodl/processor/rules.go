@@ -9,7 +9,7 @@ import (
 /* Private */
 
 func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) error {
-	p.log.Tracef("Processing linematched rules against: %+v", vars)
+	p.Log.Tracef("Processing linematched rules against: %+v", vars)
 
 	// iterate rules node
 	n := rules.FirstChild
@@ -27,7 +27,7 @@ func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) 
 		}
 
 		// process tag
-		p.log.Tracef("Processing linematched rule: %q", nodeTag)
+		p.Log.Tracef("Processing linematched rule: %q", nodeTag)
 		switch nodeTag {
 		case "var":
 			// concat var from other vars
@@ -72,13 +72,13 @@ func (p *Processor) processRules(rules *xmlquery.Node, vars *map[string]string) 
 			}
 
 		default:
-			p.log.Tracef("Unsupported linematched rule: %q", nodeTag)
+			p.Log.Tracef("Unsupported linematched rule: %q", nodeTag)
 		}
 
 		// process next
 		n = n.NextSibling
 	}
 
-	p.log.Tracef("Finished processing linematched rules")
+	p.Log.Tracef("Finished processing linematched rules")
 	return nil
 }

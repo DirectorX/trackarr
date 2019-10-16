@@ -71,14 +71,14 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 		}
 	}
 
-	p.log.Tracef("Extract regex %q matched with %d groups", regexVar, matchCount)
+	p.Log.Tracef("Extract regex %q matched with %d groups", regexVar, matchCount)
 
 	// process captured vars
 	results := map[string]string{}
 	for _, varName := range regexVars {
 		// this should not occur - but we must ensure we dont try and access an out of bounds index
 		if matchPos > matchCount {
-			p.log.Warnf("Failed parsing extract regex var %q from match group %d", varName, matchPos)
+			p.Log.Warnf("Failed parsing extract regex var %q from match group %d", varName, matchPos)
 			continue
 		}
 
@@ -91,6 +91,6 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 		(*vars)[varName] = varValue
 	}
 
-	p.log.Tracef("Result for extract rule: %q = %+v", srcVar, results)
+	p.Log.Tracef("Result for extract rule: %q = %+v", srcVar, results)
 	return nil
 }

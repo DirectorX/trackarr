@@ -18,10 +18,12 @@ var (
 /* Structs */
 
 type Processor struct {
+	/* public */
+	Log     *logrus.Entry
+	Tracker *parser.TrackerInfo
+	Cfg     *config.TrackerConfiguration
+
 	/* private */
-	log     *logrus.Entry
-	tracker *parser.TrackerInfo
-	cfg     *config.TrackerConfiguration
 	queues  map[string]*goconcurrentqueue.FIFO
 }
 
@@ -36,9 +38,9 @@ func New(log *logrus.Entry, tracker *parser.TrackerInfo, config *config.TrackerC
 
 	// create processor
 	processor := &Processor{
-		log:     log,
-		tracker: tracker,
-		cfg:     config,
+		Log:     log,
+		Tracker: tracker,
+		Cfg:     config,
 		queues:  queues,
 	}
 

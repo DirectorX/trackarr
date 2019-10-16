@@ -4,10 +4,10 @@ package processor
 
 func (p *Processor) shouldIgnoreLine(line string) bool {
 	// iterate ignore lines
-	for _, ignore := range p.tracker.IgnoreLines {
+	for _, ignore := range p.Tracker.IgnoreLines {
 		if ignore.Rxp.MatchString(line) && ignore.Expected {
 			// ignore this message as it matched an ignore pattern
-			p.log.Tracef("Ignoring message as ignore pattern met %q: %s", ignore.Rxp, line)
+			p.Log.Tracef("Ignoring message as ignore pattern met %q: %s", ignore.Rxp, line)
 			return true
 		}
 	}

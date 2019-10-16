@@ -22,6 +22,6 @@ func (p *Processor) QueueLine(channel string, line string) error {
 		return errors.Wrapf(err, "failed queueing line for processing")
 	}
 
-	p.log.Tracef("Queued line for processing, queue size for %s: %d", channel, queue.GetLen())
+	p.Log.Tracef("Queued line for processing, queue size for %s: %d", channel, queue.GetLen())
 	return nil
 }

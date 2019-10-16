@@ -52,9 +52,9 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 			varValue, ok := (*vars)[varName]
 			if !ok {
 				// do we have the variable in the user defined tracker config? (torrent_pass, passkey etc...)
-				varValue, ok = p.cfg.Config[varName]
+				varValue, ok = p.Cfg.Config[varName]
 				if !ok {
-					return fmt.Errorf("missing variable: %q in %+v", varName, p.cfg.Config)
+					return fmt.Errorf("missing variable: %q in %+v", varName, p.Cfg.Config)
 				}
 			}
 
@@ -67,7 +67,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 			result += varValue
 
 		default:
-			p.log.Tracef("unsupported var operation: %q", nodeTag)
+			p.Log.Tracef("unsupported var operation: %q", nodeTag)
 		}
 
 		// next element
@@ -77,6 +77,6 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 	// set result in vars map
 	(*vars)[newVarName] = result
 
-	p.log.Tracef("Result for var rule: %q = %s", newVarName, result)
+	p.Log.Tracef("Result for var rule: %q = %s", newVarName, result)
 	return nil
 }
