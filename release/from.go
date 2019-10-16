@@ -1,41 +1,43 @@
 package release
 
 import (
-	"github.com/l3uddz/trackarr/autodl/processor"
+	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/utils/maps"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 /* Structs */
 
 type TrackerRelease struct {
-	TrackerName       string
-	TorrentName       *string
-	TorrentURL        *string
+	Tracker           *parser.TrackerInfo
+	Log               *logrus.Entry
+	TorrentName       string
+	TorrentURL        string
 	TorrentSizeString *string
 	TorrentCategory   *string
 }
 
 /* Public */
 
-func FromMap(p *processor.Processor, vars *map[string]string) (*TrackerRelease, error) {
-	release := &TrackerRelease{TrackerName: p.Tracker.LongName}
+func FromMap(t *parser.TrackerInfo, log *logrus.Entry, vars *map[string]string) (*TrackerRelease, error) {
+	release := &TrackerRelease{Tracker: t, Log: log}
 
 	// parse mandatory fields
 	if torrentName, err := maps.GetFirstStringMapValue(vars, []string{"torrentName", "$torrentName"},
 		false); err != nil {
-		p.Log.WithError(err).Error("Failed parsing required field from parse match")
+		release.Log.WithError(err).Error("Failed parsing required field from parse match")
 		return nil, errors.Wrap(err, "failed parsing required field")
 	} else {
-		release.TorrentName = &torrentName
+		release.TorrentName = torrentName
 	}
 
 	if torrentURL, err := maps.GetFirstStringMapValue(vars, []string{"torrentUrl", "$torrentUrl"},
 		false); err != nil {
-		p.Log.WithError(err).Error("Failed parsing required field from parse match")
+		release.Log.WithError(err).Error("Failed parsing required field from parse match")
 		return nil, errors.Wrap(err, "failed parsing required field")
 	} else {
-		release.TorrentURL = &torrentURL
+		release.TorrentURL = torrentURL
 	}
 
 	// parse non-mandatory fields

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/enriquebris/goconcurrentqueue"
 	"github.com/l3uddz/trackarr/autodl/parser"
+	"github.com/l3uddz/trackarr/release"
 	"github.com/l3uddz/trackarr/utils/maps"
 	"github.com/pkg/errors"
 )
@@ -32,7 +33,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			// iterate each pattern finding a match
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
-				p.Log.WithError(err).Errorf("Failed dequeueing line to process...")
+				p.Log.WithError(err).Errorf("Failed dequeuing line to process...")
 				goto RetryPattern
 			}
 
@@ -48,14 +49,21 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			maps.MergeStringMap(&vars, &patternVars)
 		}
 
-		// finished parsing release - process rules
+		// finished parsing release lines - process rules
 		if err := p.processRules(p.Tracker.LineMatchedRules, &vars); err != nil {
-			p.Log.WithError(err).Errorf("failed processing release due to rules failure...")
+			p.Log.WithError(err).Errorf("Failed processing release lines due to rules failure...")
 			goto NewRelease
 		}
 
-		// push release
-		p.Log.Debugf("Finished processing: %+v", vars)
+		p.Log.Debugf("Finished processing release lines, release vars: %+v", vars)
+
+		// convert parsed release vars to release struct and begin release processing
+		if trackerRelease, err := release.FromMap(p.Tracker, p.Log, &vars); err != nil {
+			p.Log.WithError(err).Errorf("Failed converting release vars to a release struct...")
+		} else {
+			// start processing this release
+			go trackerRelease.Process()
+		}
 	}
 }
 
@@ -64,7 +72,7 @@ func (p *Processor) nextGoodLine(queue *goconcurrentqueue.FIFO) (string, error) 
 		// pop line from queue
 		queuedLine, err := queue.DequeueOrWaitForNextElement()
 		if err != nil {
-			return "", errors.Wrap(err, "failed dequeueing next line to process")
+			return "", errors.Wrap(err, "failed dequeuing next line to process")
 		}
 
 		// type assert line
