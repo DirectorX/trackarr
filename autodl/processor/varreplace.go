@@ -42,6 +42,6 @@ func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars *map[string]
 	// set result in vars map
 	(*vars)[targetVar] = result
 
-	p.log.Debugf("Result for varreplace rule: %q = %s", targetVar, result)
+	p.log.Tracef("Result for varreplace rule: %q = %s", targetVar, result)
 	return nil
 }

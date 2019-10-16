@@ -33,6 +33,6 @@ func (p *Processor) matchPattern(pattern *parser.TrackerPattern, line string) (m
 		matchPos++
 	}
 
-	p.log.Debugf("Found match: %+v", results)
+	p.log.Tracef("Found match: %+v", results)
 	return results, nil
 }

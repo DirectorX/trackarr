@@ -38,6 +38,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			}
 
 			// process line
+			p.log.Debugf("Processing line: %s", line)
 			patternVars, err := p.matchPattern(&pattern, line)
 			if err != nil {
 				p.log.WithError(err).Errorf("Failed matching pattern, discarding release...")
@@ -75,7 +76,6 @@ func (p *Processor) nextGoodLine(queue *goconcurrentqueue.FIFO) (string, error) 
 
 		// should ignore this line?
 		if p.shouldIgnoreLine(line) {
-			p.log.Tracef("Ignoring dequeued line: %s", line)
 			continue
 		}
 

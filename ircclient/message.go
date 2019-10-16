@@ -28,12 +28,6 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 		c.log.WithError(err).Errorf("Failed queueing line for processing: %q", cleanMessage)
 		return
 	}
-
-	//// process message
-	//if err := c.processor.ProcessLine(cleanMessage); err != nil {
-	//	c.log.WithError(err).Errorf("Failed processing line from %s -> %s", channelName, cleanMessage)
-	//	return
-	//}
 }
 
 func (c IRCClient) cleanMessage(message string) string {

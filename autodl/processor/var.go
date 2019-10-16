@@ -77,6 +77,6 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 	// set result in vars map
 	(*vars)[newVarName] = result
 
-	p.log.Debugf("Result for var rule: %q = %s", newVarName, result)
+	p.log.Tracef("Result for var rule: %q = %s", newVarName, result)
 	return nil
 }
