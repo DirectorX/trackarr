@@ -3,11 +3,12 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"os"
 
 	"github.com/l3uddz/trackarr/logger"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
+
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -16,6 +17,16 @@ import (
 type Configuration struct {
 	Server   ServerConfiguration
 	Trackers map[string]TrackerConfiguration
+}
+
+// BuildVars build details
+type BuildVars struct {
+	// Version
+	Version string
+	// Timestamp
+	Timestamp string
+	// Git commit
+	GitCommit string
 }
 
 /* Vars */
@@ -27,9 +38,7 @@ var (
 	newOptionLen = 0
 
 	// ldflags (set by makefile or goreleaser)
-	Version string
-	Commit  string
-	Date    string
+	Build *BuildVars
 )
 
 /* Private */
@@ -65,8 +74,8 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("trackers.iptorrents.bencode", false, check)
 	added += setConfigDefault("trackers.iptorrents.config.passkey", "", check)
 	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
-	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce",}, check)
-	added += setConfigDefault("trackers.iptorrents.irc.commands", [][]string{{},}, check)
+	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce"}, check)
+	added += setConfigDefault("trackers.iptorrents.irc.commands", [][]string{{}}, check)
 
 	// were new settings added?
 	if check && added > 0 {
@@ -90,7 +99,10 @@ func (cfg Configuration) ToJsonString() (string, error) {
 	return string(bs), err
 }
 
-func Init(configFilePath string) error {
+func Init(build *BuildVars, configFilePath string) error {
+	// Set build vars
+	Build = build
+
 	// Info
 	log.Infof("Using %s = %q", stringutils.StringLeftJust("CONFIG", " ", 10), configFilePath)
 
@@ -135,4 +147,8 @@ func Init(configFilePath string) error {
 	}
 
 	return nil
+}
+
+func PrintVersion() {
+	log.Infof("Trackarr version %s (%s@%s)", Build.Version, Build.GitCommit, Build.Timestamp)
 }

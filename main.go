@@ -1,25 +1,39 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/l3uddz/trackarr/autodl"
 	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/ircclient"
 	"github.com/l3uddz/trackarr/logger"
+
 	"github.com/sirupsen/logrus"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 var (
+	// Build vars
+	buildVersion   string
+	buildTimestamp string
+	buildGitCommit string
+
 	// Logging
 	log *logrus.Entry
 )
 
 /* Parse */
 func init() {
+	// Set build vars
+	buildConfig := &config.BuildVars{
+		Version:   buildVersion,
+		GitCommit: buildGitCommit,
+		Timestamp: buildTimestamp,
+	}
+
 	// Setup cmd flags
 	cmdInit()
 
@@ -31,8 +45,14 @@ func init() {
 	log = logger.GetLogger("app")
 
 	// Parse Config
-	if err := config.Init(flagConfigPath); err != nil {
+	if err := config.Init(buildConfig, flagConfigPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
+	}
+
+	// Print and exit if version flag is set
+	config.PrintVersion()
+	if flagVersion {
+		log.Logger.Exit(0)
 	}
 
 	// Parse Database

@@ -2,17 +2,19 @@ package ircclient
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/autodl/parser"
-	"github.com/l3uddz/trackarr/autodl/processor"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"github.com/thoj/go-ircevent"
 	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/l3uddz/trackarr/autodl/parser"
+	"github.com/l3uddz/trackarr/autodl/processor"
+	"github.com/l3uddz/trackarr/config"
+	"github.com/l3uddz/trackarr/logger"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	irc "github.com/thoj/go-ircevent"
 )
 
 var (
@@ -64,7 +66,7 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 
 	conn.PingFreq = 3 * time.Minute
 	conn.Timeout = 15 * time.Second
-	conn.Version = "trackarr " + config.Version
+	conn.Version = "trackarr " + config.Build.Version
 
 	// initialize irc client
 	client := &IRCClient{

@@ -10,6 +10,11 @@ BUILD_PATH    := ${DIST_PATH}/${TARGET}
 DESTDIR       := /usr/local/bin
 GO_FILES      := $(shell find . -path ./vendor -prune -or -type f -name '*.go' -print)
 GO_PACKAGES   := $(shell go list -mod vendor ./...)
+GIT_COMMIT    := $(shell git rev-parse --short HEAD)
+GIT_BRANCH    := $(shell git symbolic-ref --short HEAD)
+VERSION_PATH  := VERSION
+VERSION       := $(shell cat ${VERSION_PATH})
+TIMESTAMP     := $(shell date +%s)
 
 .PHONY: all
 all: test lint build
@@ -50,7 +55,7 @@ ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
 	CGO_ENABLED=1 go build \
 		-mod vendor \
 		-trimpath \
-		-ldflags "-s -w" \
+		-ldflags "-s -w -X main.buildVersion=${VERSION} -X main.buildGitCommit=${GIT_COMMIT} -X main.buildTimestamp=${TIMESTAMP}" \
 		-o ${BUILD_PATH}/${CMD} \
 		.
 

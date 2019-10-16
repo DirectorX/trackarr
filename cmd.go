@@ -14,6 +14,7 @@ var (
 	flagLogPath     = filepath.Join(paths.GetCurrentBinaryPath(), "activity.log")
 	flagDbPath      = filepath.Join(paths.GetCurrentBinaryPath(), "vault.db")
 	flagTrackerPath = filepath.Join(paths.GetCurrentBinaryPath(), "trackers")
+	flagVersion     bool
 )
 
 func cmdInit() {
@@ -23,6 +24,7 @@ func cmdInit() {
 	pflag.StringVarP(&flagLogPath, "log", "l", flagLogPath, "Log path")
 	pflag.StringVarP(&flagLogPath, "db", "d", flagLogPath, "Database path")
 	pflag.StringVarP(&flagTrackerPath, "track", "t", flagTrackerPath, "Trackers path")
+	pflag.BoolVarP(&flagVersion, "version", "V", flagVersion, "Show version")
 
 	// Parse CLI Flags
 	pflag.Parse()

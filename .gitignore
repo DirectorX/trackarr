@@ -1,15 +1,16 @@
 # misc
-.idea
+/.idea/
+/.vscode/
 
 # configuration
 *.json
 *.db
 
 # vendor files
-vendor/
+/vendor/
 
 # dist folder
-dist/
+/dist/
 
 # Web package
 web/rice-box.go
