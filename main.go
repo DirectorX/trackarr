@@ -164,5 +164,9 @@ func main() {
 		ircClient.Stop()
 	}
 
+	if err := database.DB.Close(); err != nil {
+		log.WithError(err).Errorf("Failed gracefully closing database connection...")
+	}
+
 	log.Info("Finished")
 }
