@@ -11,43 +11,6 @@ import (
 
 /* Private */
 
-func (p *Processor) processLine(line string) error {
-	// should we ignore this line
-	if p.shouldIgnoreLine(line) {
-		return nil
-	}
-
-	// process line matching patterns
-	if len(p.tracker.LinePatterns) > 0 {
-		// use linepatterns
-		vars := p.matchPatterns(&p.tracker.LinePatterns, line)
-		if len(vars) == 0 {
-			// vars were not matched/parsed
-			return nil
-		}
-
-		// run vars against rules
-		if err := p.processRules(p.tracker.LineMatchedRules, &vars); err != nil {
-			return err
-		}
-
-		// TODO: if Bencode is set on the tracker config, pull the torrent and override parsed torrent name / size
-
-		// log final vars map
-		p.log.Debugf("Vars post linematched processed: %s", stringutils.JsonifyLax(vars))
-		return nil
-
-	} else if len(p.tracker.MultiLinePatterns) > 0 {
-		// use multi-linepatterns
-
-	} else {
-		// unknown??
-		return errors.New("unable to determine how to pattern match")
-	}
-
-	return nil
-}
-
 func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 	var patterns []parser.TrackerPattern
 
@@ -111,10 +74,11 @@ func (p *Processor) nextGoodLine(queue *goconcurrentqueue.FIFO) (string, error) 
 		}
 
 		// should ignore this line?
-		if !p.shouldIgnoreLine(line) {
-			return line, nil
-		} else {
+		if p.shouldIgnoreLine(line) {
 			p.log.Tracef("Ignoring dequeued line: %s", line)
+			continue
 		}
+
+		return line, nil
 	}
 }
