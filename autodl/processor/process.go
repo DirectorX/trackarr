@@ -5,7 +5,6 @@ import (
 	"github.com/enriquebris/goconcurrentqueue"
 	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/utils/maps"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"github.com/pkg/errors"
 )
 
@@ -56,7 +55,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		}
 
 		// push release
-		p.log.Debugf("Finished processing: %s", stringutils.JsonifyLax(vars))
+		p.log.Debugf("Finished processing: %+v", vars)
 	}
 }
 
