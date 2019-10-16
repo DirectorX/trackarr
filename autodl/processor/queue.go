@@ -3,15 +3,17 @@ package processor
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 /* Public */
 
 func (p *Processor) QueueLine(channel string, line string) error {
 	// get channel specific queue from queues
-	queue, ok := p.queues[channel]
+	lowerChannel := strings.ToLower(channel)
+	queue, ok := p.queues[strings.ToLower(lowerChannel)]
 	if !ok {
-		return fmt.Errorf("no queue was initialized for channel: %q", channel)
+		return fmt.Errorf("no queue was initialized for channel: %q", lowerChannel)
 	}
 
 	// add line to queued items

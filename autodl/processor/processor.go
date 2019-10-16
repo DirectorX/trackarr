@@ -5,6 +5,7 @@ import (
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/sirupsen/logrus"
+	"strings"
 
 	"github.com/enriquebris/goconcurrentqueue"
 )
@@ -30,7 +31,7 @@ func New(log *logrus.Entry, tracker *parser.TrackerInfo, config *config.TrackerC
 	// initialize queues
 	queues := make(map[string]*goconcurrentqueue.FIFO, 0)
 	for _, channel := range tracker.Channels {
-		queues[channel] = goconcurrentqueue.NewFIFO()
+		queues[strings.ToLower(channel)] = goconcurrentqueue.NewFIFO()
 	}
 
 	// create processor
