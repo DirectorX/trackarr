@@ -49,13 +49,13 @@ func GetBodyBytes(method HTTPMethod, url string, timeout int) ([]byte, error) {
 		return nil, errors.New("request method has not been implemented")
 	}
 
-	log.Tracef("Request URL: %s", resp.Request.URL)
-	log.Tracef("Request Response: %s", resp.Status)
-
 	// validate response
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving body for page: %q", url)
 		return nil, errors.Wrap(err, "failed retrieving page body")
+	} else {
+		log.Tracef("Request URL: %s", resp.Request.URL)
+		log.Tracef("Request Response: %s", resp.Status)
 	}
 
 	// process response

@@ -2,6 +2,7 @@ package release
 
 import (
 	"github.com/l3uddz/trackarr/autodl/parser"
+	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/utils/maps"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -12,16 +13,19 @@ import (
 type TrackerRelease struct {
 	Tracker           *parser.TrackerInfo
 	Log               *logrus.Entry
+	Cfg               *config.TrackerConfiguration
 	TorrentName       string
 	TorrentURL        string
 	TorrentSizeString *string
+	TorrentSizeBytes  *int64
 	TorrentCategory   *string
 }
 
 /* Public */
 
-func FromMap(t *parser.TrackerInfo, log *logrus.Entry, vars *map[string]string) (*TrackerRelease, error) {
-	release := &TrackerRelease{Tracker: t, Log: log}
+func FromMap(t *parser.TrackerInfo, c *config.TrackerConfiguration,
+	log *logrus.Entry, vars *map[string]string) (*TrackerRelease, error) {
+	release := &TrackerRelease{Tracker: t, Cfg: c, Log: log}
 
 	// parse mandatory fields
 	if torrentName, err := maps.GetFirstStringMapValue(vars, []string{"torrentName", "$torrentName"},
