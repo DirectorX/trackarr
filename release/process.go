@@ -18,7 +18,7 @@ func (r *TrackerRelease) Process() {
 
 		// set release information from decoded torrent data
 		r.TorrentName = torrentData.Info.Name
-		r.TorrentSizeBytes = &torrentData.Info.Size
+		r.TorrentSizeBytes = torrentData.Info.Size
 	}
 
 	r.Log.Debugf("Processing release: %s", r.TorrentName)

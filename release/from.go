@@ -17,7 +17,7 @@ type TrackerRelease struct {
 	TorrentName       string
 	TorrentURL        string
 	TorrentSizeString *string
-	TorrentSizeBytes  *int64
+	TorrentSizeBytes  int64
 	TorrentCategory   *string
 }
 
