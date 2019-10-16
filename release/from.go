@@ -41,16 +41,14 @@ func FromMap(p *processor.Processor, vars *map[string]string) (*TrackerRelease, 
 	// parse non-mandatory fields
 	if torrentSize, err := maps.GetFirstStringMapValue(vars, []string{"torrentSize", "$torrentSize", "size", "$size"},
 		false); err != nil {
-		p.Log.WithError(err).Errorf("Failed parsing required field %q from parse match", "torrentSize")
-		return nil, errors.Wrap(err, "failed parsing required field torrentUrl")
+		p.Log.WithError(err).Tracef("Failed parsing field %q from parse match", "torrentSize")
 	} else {
 		release.TorrentSizeString = &torrentSize
 	}
 
 	if torrentCategory, err := maps.GetFirstStringMapValue(vars, []string{"$category", "category", "torrentCategory",
 		"$torrentCategory"}, false); err != nil {
-		p.Log.WithError(err).Errorf("Failed parsing required field %q from parse match", "category")
-		return nil, errors.Wrap(err, "failed parsing required field torrentUrl")
+		p.Log.WithError(err).Tracef("Failed parsing field %q from parse match", "category")
 	} else {
 		release.TorrentCategory = &torrentCategory
 	}
