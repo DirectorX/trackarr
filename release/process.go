@@ -3,11 +3,37 @@ package release
 import (
 	"github.com/docker/go-units"
 	"github.com/imroc/req"
+	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/utils/torrent"
+	"github.com/l3uddz/trackarr/utils/web"
+	"github.com/pkg/errors"
+	"net/url"
 )
 
 /* Const */
 const TorrentFileTimeout = 15
+
+/* Private */
+
+func (r TrackerRelease) getProxiedTorrentURL(cookie *string) (string, error) {
+	// parse torrent api url
+	u, err := url.Parse(web.JoinURL(config.Config.Server.PublicURL, "/api/torrent"))
+	if err != nil {
+		return "", errors.Wrap(err, "failed parsing public torrent api endpoint")
+	}
+
+	// add query params
+	q := u.Query()
+	q.Set("apikey", config.Config.Server.ApiKey)
+	q.Set("url", r.TorrentURL)
+	if cookie != nil && *cookie != "" {
+		q.Set("cookie", *cookie)
+	}
+	u.RawQuery = q.Encode()
+
+	r.Log.Tracef("Proxied Torrent URL: %s", u.String())
+	return u.String(), nil
+}
 
 /* Public */
 
@@ -50,9 +76,25 @@ func (r *TrackerRelease) Process() {
 
 	r.Log.Debugf("Processing: %s", r.TorrentName)
 
-	// TODO: was bencode used? if so we should alter the url so the cached torrent is grabbed (on approve)
-	if bencodeUsed {
-		// update torrenturl to use the /api/torrent endpoint
+	// was bencode used, or does this tracker have a cookie set?
+	cookie, hasCookie := r.Cfg.Config["cookie"]
+	if bencodeUsed || hasCookie {
+		// we will proxy this torrent via the /api/torrent endpoint
+		proxiedURL, err := r.getProxiedTorrentURL(&cookie)
+		if err != nil {
+			// we must abort this release as pvr's cant grab from these trackers without a cookie
+			if hasCookie {
+				r.Log.WithError(err).Errorf("Failed building proxied torrent url for: %q, aborting...",
+					r.TorrentURL)
+				return
+			}
+
+			// as this tracker does not require a cookie, we can continue with the original torrent url
+			r.Log.WithError(err).Warnf("Failed building proxied torrent url for: %q", r.TorrentURL)
+		} else {
+			// set the torrent url to the proxied one
+			r.TorrentURL = proxiedURL
+		}
 	}
 
 	// iterate pvr's
