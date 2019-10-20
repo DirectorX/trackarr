@@ -8,6 +8,7 @@ import (
 	"github.com/l3uddz/trackarr/logger"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
 
+	"github.com/lithammer/shortuuid"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
@@ -16,6 +17,7 @@ import (
 
 type Configuration struct {
 	Server   ServerConfiguration
+	Pvr      []PvrConfiguration
 	Trackers map[string]TrackerConfiguration
 }
 
@@ -67,15 +69,39 @@ func setConfigDefaults(check bool) error {
 	// server settings
 	added += setConfigDefault("server.host", "0.0.0.0", check)
 	added += setConfigDefault("server.port", 7337, check)
+	added += setConfigDefault("server.apikey", shortuuid.New(), check)
+
+	// pvr settings
+	added += setConfigDefault("pvr", []PvrConfiguration{
+		{
+			Name:    "sonarr_main",
+			Enabled: false,
+			URL:     "https://sonarr.domain.com",
+			ApiKey:  "YOUR_API_KEY",
+			Ignores: []string{
+				`Category contains "Disk"`,
+				`Category contains "DVD-R"`,
+				`TorrentName contains "Disc"`,
+			},
+			Accepts: []string{
+				`TrackerName == "IPT" && Category startsWith "TV/"`,
+			},
+		},
+	}, check)
 
 	// tracker settings
 	added += setConfigDefault("trackers.iptorrents.enabled", true, check)
-	added += setConfigDefault("trackers.iptorrents.verbose", false, check)
 	added += setConfigDefault("trackers.iptorrents.bencode", false, check)
 	added += setConfigDefault("trackers.iptorrents.config.passkey", "", check)
 	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
 	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce"}, check)
-	added += setConfigDefault("trackers.iptorrents.irc.commands", [][]string{{}}, check)
+	added += setConfigDefault("trackers.iptorrents.irc.commands", [][]string{{
+		"PRIVMSG",
+		"NickServ",
+		"IDENTIFY",
+		"YOUR_PASS",
+	}}, check)
+	added += setConfigDefault("trackers.iptorrents.irc.verbose", false, check)
 
 	// were new settings added?
 	if check && added > 0 {
@@ -107,6 +133,7 @@ func Init(build *BuildVars, configFilePath string) error {
 	log.Infof("Using %s = %q", stringutils.StringLeftJust("CONFIG", " ", 10), configFilePath)
 
 	/* Initialize Configuration */
+	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configFilePath)
 
 	// read matching env vars

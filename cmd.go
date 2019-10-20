@@ -10,7 +10,7 @@ import (
 // CLI flags with defaults
 var (
 	flagLogLevel    int
-	flagConfigPath  = filepath.Join(paths.GetCurrentBinaryPath(), "config.json")
+	flagConfigPath  = filepath.Join(paths.GetCurrentBinaryPath(), "config.yaml")
 	flagLogPath     = filepath.Join(paths.GetCurrentBinaryPath(), "activity.log")
 	flagDbPath      = filepath.Join(paths.GetCurrentBinaryPath(), "vault.db")
 	flagTrackerPath = filepath.Join(paths.GetCurrentBinaryPath(), "trackers")

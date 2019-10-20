@@ -12,6 +12,7 @@ import (
 func parseTrackerSettings(doc *xmlquery.Node, tracker *TrackerInfo) error {
 	skipSettings := []string{
 		"description",
+		"cookie_description",
 	}
 
 	for _, n := range xmlquery.Find(doc, "//settings/*[name()]") {

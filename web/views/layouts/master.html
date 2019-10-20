@@ -1,0 +1,38 @@
+<!doctype html>
+
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Page Stuff -->
+    <title>{{.title}} - trackarr</title>
+
+    <!-- Core Stuff -->
+    <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png"/>
+
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <script src="/static/js/jquery/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="/static/css/app/navbar.css">
+
+    {{template "head" .}}
+</head>
+
+<body>
+<!-- Navbar -->
+{{include "layouts/navbar"}}
+<br>
+
+<!-- Page Content -->
+<div class="container-fluid content">
+    {{template "content" .}}
+</div>
+
+<!-- App Scripts -->
+{{template "bottom" .}}
+</body>
+</html>

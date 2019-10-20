@@ -1,17 +1,15 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/l3uddz/trackarr/autodl"
 	"github.com/l3uddz/trackarr/autodl/parser"
+	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/ircclient"
 	"github.com/l3uddz/trackarr/logger"
-
+	"github.com/l3uddz/trackarr/release"
+	"github.com/l3uddz/trackarr/web"
 	"github.com/sirupsen/logrus"
 )
 
@@ -37,14 +35,14 @@ func init() {
 	// Setup cmd flags
 	cmdInit()
 
-	// Parse Logging
+	// Init Logging
 	if err := logger.Init(flagLogLevel, flagLogPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize logging")
 	}
 
 	log = logger.GetLogger("app")
 
-	// Parse Config
+	// Init Config
 	if err := config.Init(buildConfig, flagConfigPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
 	}
@@ -55,29 +53,38 @@ func init() {
 		log.Logger.Exit(0)
 	}
 
-	// Parse Database
+	// Init Database
 	if err := database.Init(flagDbPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
-	// Parse Autodl
+	// Init Autodl
 	if err := autodl.Init(flagTrackerPath); err != nil {
 		log.WithError(err).Fatal("Failed to initialize autodl")
 	}
-}
 
-/* Misc */
+	// Init Release
+	trackerCfg, err := config.GetAnyConfiguredTracker(&config.Config.Trackers)
+	if err != nil {
+		log.Fatal("You must configure at-least one tracker...")
+	}
 
-func waitForSignal() {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt)
-	signal.Notify(sigs, syscall.SIGTERM)
-	<-sigs
+	if err := release.Init(&config.Config.Pvr, trackerCfg); err != nil {
+		log.WithError(err).Fatal("Failed initializing release")
+	}
+
+	// Init Cache
+	if err := cache.Init(); err != nil {
+		log.WithError(err).Fatal("Failed initializing cache")
+	}
 }
 
 /* Main */
 func main() {
 	log.Info("Initialized core")
+
+	// defer de-inits
+	defer cache.Close()
 
 	// validate we have at-least one active tracker
 	oneActive := false
@@ -155,17 +162,16 @@ func main() {
 		log.Infof("Connected to %d trackers!", connectedClients)
 	}
 
-	// wait for shutdown signal
-	waitForSignal()
+	// start web
+	web.Listen(config.Config, flagLogLevel)
 
-	// graceful shutdown
-	log.Info("Shutting down")
+	// graceful shutdown non-web components
 	for _, ircClient := range ircClients {
 		ircClient.Stop()
 	}
 
 	if err := database.DB.Close(); err != nil {
-		log.WithError(err).Errorf("Failed gracefully closing database connection...")
+		log.WithError(err).Errorf("Failed closing database connection...")
 	}
 
 	log.Info("Finished")

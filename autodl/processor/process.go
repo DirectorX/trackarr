@@ -24,17 +24,18 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		return
 	}
 
-	// iterate patterns
+	// process lines
 	for {
-	NewRelease:
 		vars := map[string]string{}
+		parseFailed := false
+
+		// iterate each pattern finding a match
 		for _, pattern := range patterns {
-		RetryPattern:
-			// iterate each pattern finding a match
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
-				p.Log.WithError(err).Errorf("Failed dequeuing line to process...")
-				goto RetryPattern
+				p.Log.WithError(err).Errorf("Failed dequeuing line to process, discarding release...")
+				parseFailed = true
+				break
 			}
 
 			// process line
@@ -42,17 +43,23 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			patternVars, err := p.matchPattern(&pattern, line)
 			if err != nil {
 				p.Log.WithError(err).Errorf("Failed matching pattern, discarding release...")
-				goto NewRelease
+				parseFailed = true
+				break
 			}
 
 			// update vars
 			maps.MergeStringMap(&vars, &patternVars)
 		}
 
+		if parseFailed {
+			// pattern parsing above failed to parse a complete release
+			continue
+		}
+
 		// finished parsing release lines - process rules
 		if err := p.processRules(p.Tracker.LineMatchedRules, &vars); err != nil {
 			p.Log.WithError(err).Errorf("Failed processing release lines due to rules failure...")
-			goto NewRelease
+			continue
 		}
 
 		p.Log.Debugf("Finished processing release lines, release vars: %+v", vars)

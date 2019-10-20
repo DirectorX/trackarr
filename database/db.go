@@ -31,6 +31,7 @@ func Init(dbPath string) error {
 	// migrate
 	DB.AutoMigrate(
 		&models.Tracker{},
+		&models.PushedRelease{},
 	)
 
 	// log

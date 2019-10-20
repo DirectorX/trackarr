@@ -1,8 +1,8 @@
 package web
 
 import (
+	"github.com/imroc/req"
 	"github.com/pkg/errors"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -31,19 +31,23 @@ const (
 
 /* Public */
 
-func GetBodyBytes(method HTTPMethod, url string, timeout int) ([]byte, error) {
-	var resp *http.Response
+func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) (*req.Resp, error) {
+	var resp *req.Resp
 	var err error
 
-	// create client
-	client := &http.Client{
-		Timeout: time.Duration(timeout) * time.Second,
-	}
+	// prepare request
+	client := &http.Client{Timeout: time.Duration(timeout) * time.Second}
+
+	inputs := make([]interface{}, 0)
+	inputs = append(inputs, client)
+	inputs = append(inputs, v...)
 
 	// send request
 	switch method {
 	case GET:
-		resp, err = client.Get(url)
+		resp, err = req.Get(requestUrl, inputs...)
+	case POST:
+		resp, err = req.Post(requestUrl, inputs...)
 	default:
 		log.Error("Request method has not been implemented")
 		return nil, errors.New("request method has not been implemented")
@@ -51,26 +55,35 @@ func GetBodyBytes(method HTTPMethod, url string, timeout int) ([]byte, error) {
 
 	// validate response
 	if err != nil {
-		log.WithError(err).Errorf("Failed retrieving body for page: %q", url)
-		return nil, errors.Wrap(err, "failed retrieving page body")
+		log.WithError(err).Errorf("Failed requesting url: %q", requestUrl)
+		return nil, err
 	} else {
-		log.Tracef("Request URL: %s", resp.Request.URL)
-		log.Tracef("Request Response: %s", resp.Status)
+		log.Tracef("Request URL: %s", resp.Request().URL)
+		log.Tracef("Request Response: %s", resp.Response().Status)
+	}
+
+	return resp, nil
+}
+
+func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) ([]byte, error) {
+	// send request
+	resp, err := GetResponse(method, requestUrl, timeout, v...)
+	if err != nil {
+		return nil, err
 	}
 
 	// process response
-	defer resp.Body.Close()
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := resp.ToBytes()
 	if err != nil {
-		log.WithError(err).Errorf("Failed reading response body for page: %q", url)
-		return nil, errors.Wrap(err, "failed reading page response body")
+		log.WithError(err).Errorf("Failed reading response body for url: %q", requestUrl)
+		return nil, errors.Wrap(err, "failed reading url response body")
 	}
 
 	return bodyBytes, nil
 }
 
-func GetBodyString(method HTTPMethod, url string, timeout int) (string, error) {
-	bodyBytes, err := GetBodyBytes(method, url, timeout)
+func GetBodyString(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) (string, error) {
+	bodyBytes, err := GetBodyBytes(method, requestUrl, timeout, v...)
 	if err != nil {
 		return "", err
 	}

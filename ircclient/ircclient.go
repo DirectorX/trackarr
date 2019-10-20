@@ -57,7 +57,7 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 
 	// set base irc object settings
 	ircLogger := logger.GetLogger(logName)
-	if c.Verbose {
+	if c.IRC.Verbose {
 		conn.Debug = true
 		conn.Log.SetOutput(ircLogger.WriterLevel(logrus.TraceLevel))
 	} else {
@@ -84,10 +84,13 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 	// set callbacks
 	// - connected
 	conn.AddCallback("001", client.handleConnected)
+	// - mode
+	conn.AddCallback("MODE", client.handleMode)
 	// - join
 	conn.AddCallback("366", client.handleJoined)
 	conn.AddCallback("448", client.handleJoinFailure)
 	conn.AddCallback("475", client.handleJoinFailure)
+	conn.AddCallback("477", client.handleJoinFailure)
 	// - parted
 	conn.AddCallback("PART", client.handleParted)
 	// - nick change

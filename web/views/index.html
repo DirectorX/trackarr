@@ -1,0 +1,56 @@
+{{define "head"}}
+{{end}}
+
+{{define "content"}}
+    <div class="container-fluid pushed-releases">
+        <!-- pushed releases -->
+        <div class="row">
+            <!-- all pushed -->
+            <div class="col-sm">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">Age</th>
+                        <th scope="col">Release</th>
+                        <th scope="col">Tracker</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range .latest }}
+                        <tr>
+                            <td>{{ .DurationSinceCreated }}</td>
+                            <td>{{ .Name }}</td>
+                            <td>{{ .TrackerName }}</td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+            <!-- approved pushed -->
+            <div class="col-sm">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">Age</th>
+                        <th scope="col">Release</th>
+                        <th scope="col">Tracker</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range .approved }}
+                        <tr>
+                            <td>{{ .DurationSinceCreated }}</td>
+                            <td>{{ .Name }}</td>
+                            <td>{{ .TrackerName }}</td>
+                        </tr>
+                    {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+{{define "bottom"}}
+{{end}}

@@ -1,6 +1,7 @@
 package config
 
 type ServerConfiguration struct {
-	Host string
-	Port uint
+	Host   string
+	Port   uint
+	ApiKey string
 }
