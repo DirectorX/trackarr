@@ -11,7 +11,7 @@ import (
 func (r *Release) shouldIgnore(pvr *config.PvrInstance) (bool, error) {
 	// iterate ignore expressions
 	for _, expression := range pvr.IgnoresExpr {
-		result, err := expr.Run(expression, r)
+		result, err := expr.Run(expression, r.Info)
 		if err != nil {
 			return true, errors.Wrapf(err, "failed checking ignore expression")
 		}
