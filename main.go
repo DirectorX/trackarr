@@ -75,7 +75,7 @@ func init() {
 
 	// Init Tracker
 	if err := tracker.Init(); err != nil {
-		log.WithError(err).Fatal("Failed to initialize PVRs")
+		log.WithError(err).Fatal("Failed to initialize trackers")
 	}
 
 	// Init Cache
