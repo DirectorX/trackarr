@@ -1,0 +1,17 @@
+# /etc/systemd/system/trackarr.service
+
+[Unit]
+Description=trackarr
+After=network-online.target
+
+[Service]
+User=seed
+Group=seed
+Type=simple
+WorkingDirectory=/opt/trackarr
+ExecStart=/opt/trackarr/trackarr
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
