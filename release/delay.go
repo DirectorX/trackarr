@@ -4,20 +4,13 @@ import (
 	"github.com/l3uddz/trackarr/config"
 
 	"github.com/antonmedv/expr"
-	"github.com/antonmedv/expr/vm"
 	"github.com/pkg/errors"
 )
 
 /* Privates */
-func (r *Release) shouldDelay(pvr *config.PvrConfig, expressions *map[string][]*vm.Program) (*int64, error) {
-	delayExpressions, ok := (*expressions)["delays"]
-	if !ok {
-		// there were no delays
-		return nil, nil
-	}
-
+func (r *Release) shouldDelay(pvr *config.PvrInstance) (*int64, error) {
 	// iterate delay expressions
-	for _, expression := range delayExpressions {
+	for _, expression := range pvr.DelaysExpr {
 		result, err := expr.Run(expression, r)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed checking delay expression")
@@ -29,7 +22,7 @@ func (r *Release) shouldDelay(pvr *config.PvrConfig, expressions *map[string][]*
 		}
 
 		if expResult > 0 {
-			r.Log.Tracef("Delaying release for pvr %q due to delay expression match", pvr.Name)
+			r.Log.Tracef("Delaying release for pvr %q due to delay expression match", pvr.Config.Name)
 			return &expResult, nil
 		}
 	}

@@ -99,33 +99,37 @@ func (r *Release) Process() {
 	}
 
 	// iterate pvr's
-	// for pvr, expressions := range config.Config.Pvr {
-	// 	// check ignore expressions
-	// 	ignore, err := r.shouldIgnore(pvr, &expressions)
-	// 	if err != nil {
-	// 		r.Log.WithError(err).Warnf("Failed checking release against ignore expressions for pvr: %q", pvr.Name)
-	// 		continue
-	// 	}
+	for _, pvr := range config.Pvr {
+		// check ignore expressions
+		ignore, err := r.shouldIgnore(pvr)
+		if err != nil {
+			r.Log.WithError(err).Warnf("Failed checking release against ignore expressions for pvr: %q", pvr.Config.Name)
+			continue
+		}
+		if ignore {
+			r.Log.Debugf("Ignoring release for pvr: %q", pvr.Config.Name)
+			continue
+		}
 
-	// 	if ignore {
-	// 		r.Log.Debugf("Ignoring release for pvr: %q", pvr.Name)
-	// 		continue
-	// 	}
+		// check accept expressions
+		accept, err := r.shouldAccept(pvr)
+		if err != nil {
+			r.Log.WithError(err).Warnf("Failed checking release against accept expressions for pvr: %q", pvr.Config.Name)
+			continue
+		}
+		if !accept {
+			r.Log.Debugf("Release not accepted for pvr: %q", pvr.Config.Name)
+			continue
+		}
 
-	// 	// check accept expressions
-	// 	accept, err := r.shouldAccept(pvr, &expressions)
-	// 	if err != nil {
-	// 		r.Log.WithError(err).Warnf("Failed checking release against accept expressions for pvr: %q", pvr.Name)
-	// 		continue
-	// 	}
+		// check delay expressions
+		delay, err := r.shouldDelay(pvr)
+		if err != nil {
+			r.Log.WithError(err).Warnf("Failed checking release against delay expressions for pvr: %q", pvr.Config.Name)
+			continue
+		}
 
-	// 	if !accept {
-	// 		r.Log.Debugf("Release not accepted for pvr: %q", pvr.Name)
-	// 		continue
-	// 	}
-
-	// 	// push release to pvr
-	// 	pvrObj := pvr
-	// 	go r.Push(pvrObj)
-	// }
+		// push release to pvr
+		go r.Push(pvr.Config, delay)
+	}
 }

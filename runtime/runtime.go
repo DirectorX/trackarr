@@ -10,7 +10,7 @@ import (
 var (
 	// State
 	Tracker = make(map[string]*config.TrackerInstance)
-	Pvr     = make(map[string]*config.PvrInstance)
+	Pvr     = &config.Pvr
 	Irc     = make(map[string]*ircclient.IRCClient)
 	Web     *http.Server
 )

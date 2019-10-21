@@ -91,10 +91,6 @@ func main() {
 	// Defer de-inits
 	defer cache.Close()
 
-	log.Info(config.Config)
-	log.Info(runtime.Pvr)
-	log.Info(runtime.Tracker)
-
 	// Validate we have at-least one active tracker
 	if len(runtime.Tracker) < 1 {
 		log.Fatalf("At-least one tracker must be enabled...")

@@ -3,6 +3,7 @@ package release
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
@@ -32,7 +33,11 @@ type (
 
 /* Public */
 
-func (r *Release) Push(pvr *config.PvrConfig) {
+func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
+	if delay != nil && *delay > 0 {
+		r.Log.Debugf("Delaying: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
+		time.Sleep(time.Duration(*delay) * time.Second)
+	}
 	r.Log.Debugf("Pushing: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
 
 	// prepare request

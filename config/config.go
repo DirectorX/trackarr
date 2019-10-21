@@ -39,7 +39,10 @@ var (
 	RuntimeViper = viper.New()
 	// ldflags (set by makefile or goreleaser)
 	Build *BuildVars
+	// State
+	Pvr = make(map[string]*PvrInstance)
 
+	// Internal
 	log          = logger.GetLogger("cfg")
 	newOptionLen = 0
 )

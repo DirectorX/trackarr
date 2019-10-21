@@ -3,7 +3,6 @@ package pvr
 import (
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/runtime"
 
 	"github.com/antonmedv/expr"
 	"github.com/pkg/errors"
@@ -24,12 +23,12 @@ func Init() error {
 			continue
 		}
 
-		runtime.Pvr[p.Name] = &config.PvrInstance{
+		config.Pvr[p.Name] = &config.PvrInstance{
 			Config: &p,
 		}
 
 		// Compile expressions
-		if err := compileExpr(runtime.Pvr[p.Name]); err != nil {
+		if err := compileExpr(config.Pvr[p.Name]); err != nil {
 			return err
 		}
 
