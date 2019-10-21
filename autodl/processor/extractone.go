@@ -2,8 +2,9 @@ package processor
 
 import (
 	"fmt"
-	"github.com/antchfx/xmlquery"
 	"strings"
+
+	"github.com/antchfx/xmlquery"
 )
 
 /* Private */

@@ -2,6 +2,7 @@ package logger
 
 import (
 	"github.com/l3uddz/trackarr/utils/strings"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"

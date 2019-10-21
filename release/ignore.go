@@ -1,22 +1,16 @@
 package release
 
 import (
-	"github.com/antonmedv/expr"
-	"github.com/antonmedv/expr/vm"
 	"github.com/l3uddz/trackarr/config"
+
+	"github.com/antonmedv/expr"
 	"github.com/pkg/errors"
 )
 
 /* Privates */
-func (r *TrackerRelease) shouldIgnore(pvr *config.PvrConfiguration, expressions *map[string][]*vm.Program) (bool, error) {
-	ignoreExpressions, ok := (*expressions)["ignores"]
-	if !ok {
-		// there were no ignores
-		return false, nil
-	}
-
+func (r *Release) shouldIgnore(pvr *config.PvrInstance) (bool, error) {
 	// iterate ignore expressions
-	for _, expression := range ignoreExpressions {
+	for _, expression := range pvr.IgnoresExpr {
 		result, err := expr.Run(expression, r)
 		if err != nil {
 			return true, errors.Wrapf(err, "failed checking ignore expression")
@@ -28,7 +22,7 @@ func (r *TrackerRelease) shouldIgnore(pvr *config.PvrConfiguration, expressions 
 		}
 
 		if expResult {
-			r.Log.Tracef("Ignoring release for pvr %q due to ignore expression match", pvr.Name)
+			r.Log.Tracef("Ignoring release for pvr %q due to ignore expression match", pvr.Config.Name)
 			return true, nil
 		}
 	}

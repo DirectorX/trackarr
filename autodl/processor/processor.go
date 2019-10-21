@@ -1,13 +1,13 @@
 package processor
 
 import (
-	"github.com/l3uddz/trackarr/autodl/parser"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/sirupsen/logrus"
 	"strings"
 
+	"github.com/l3uddz/trackarr/config"
+	"github.com/l3uddz/trackarr/logger"
+
 	"github.com/enriquebris/goconcurrentqueue"
+	"github.com/sirupsen/logrus"
 )
 
 /* Vars */
@@ -20,27 +20,25 @@ var (
 type Processor struct {
 	/* public */
 	Log     *logrus.Entry
-	Tracker *parser.TrackerInfo
-	Cfg     *config.TrackerConfiguration
+	Tracker *config.TrackerInstance
 
 	/* private */
-	queues  map[string]*goconcurrentqueue.FIFO
+	queues map[string]*goconcurrentqueue.FIFO
 }
 
 /* Public */
 
-func New(log *logrus.Entry, tracker *parser.TrackerInfo, config *config.TrackerConfiguration) *Processor {
+func New(log *logrus.Entry, t *config.TrackerInstance) *Processor {
 	// initialize queues
-	queues := make(map[string]*goconcurrentqueue.FIFO, 0)
-	for _, channel := range tracker.Channels {
+	queues := make(map[string]*goconcurrentqueue.FIFO)
+	for _, channel := range t.Info.Channels {
 		queues[strings.ToLower(channel)] = goconcurrentqueue.NewFIFO()
 	}
 
 	// create processor
 	processor := &Processor{
 		Log:     log,
-		Tracker: tracker,
-		Cfg:     config,
+		Tracker: t,
 		queues:  queues,
 	}
 

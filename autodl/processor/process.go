@@ -2,23 +2,25 @@ package processor
 
 import (
 	"fmt"
-	"github.com/enriquebris/goconcurrentqueue"
-	"github.com/l3uddz/trackarr/autodl/parser"
+
+	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/release"
 	"github.com/l3uddz/trackarr/utils/maps"
+
+	"github.com/enriquebris/goconcurrentqueue"
 	"github.com/pkg/errors"
 )
 
 /* Private */
 
 func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
-	var patterns []parser.TrackerPattern
+	var patterns []config.TrackerPattern
 
 	// set patterns
-	if len(p.Tracker.LinePatterns) > 0 {
-		patterns = p.Tracker.LinePatterns
-	} else if len(p.Tracker.MultiLinePatterns) > 0 {
-		patterns = p.Tracker.MultiLinePatterns
+	if len(p.Tracker.Info.LinePatterns) > 0 {
+		patterns = p.Tracker.Info.LinePatterns
+	} else if len(p.Tracker.Info.MultiLinePatterns) > 0 {
+		patterns = p.Tracker.Info.MultiLinePatterns
 	} else {
 		p.Log.Fatalf("Failed determining pattern type for processor...")
 		return
@@ -57,7 +59,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		}
 
 		// finished parsing release lines - process rules
-		if err := p.processRules(p.Tracker.LineMatchedRules, &vars); err != nil {
+		if err := p.processRules(p.Tracker.Info.LineMatchedRules, &vars); err != nil {
 			p.Log.WithError(err).Errorf("Failed processing release lines due to rules failure...")
 			continue
 		}
@@ -65,7 +67,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		p.Log.Debugf("Finished processing release lines, release vars: %+v", vars)
 
 		// convert parsed release vars to release struct and begin release processing
-		if trackerRelease, err := release.FromMap(p.Tracker, p.Cfg, p.Log, &vars); err != nil {
+		if trackerRelease, err := release.FromMap(p.Tracker, p.Log, &vars); err != nil {
 			p.Log.WithError(err).Errorf("Failed converting release vars to a release struct...")
 		} else {
 			// start processing this release

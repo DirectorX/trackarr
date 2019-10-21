@@ -1,9 +1,10 @@
 package processor
 
 import (
+	"strings"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 /* Private */

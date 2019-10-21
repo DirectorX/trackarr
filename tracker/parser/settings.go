@@ -2,14 +2,17 @@ package parser
 
 import (
 	"errors"
-	"github.com/antchfx/xmlquery"
-	listutils "github.com/l3uddz/trackarr/utils/lists"
 	"strings"
+
+	listutils "github.com/l3uddz/trackarr/utils/lists"
+	"github.com/l3uddz/trackarr/config"
+
+	"github.com/antchfx/xmlquery"
 )
 
 /* Private */
 
-func parseTrackerSettings(doc *xmlquery.Node, tracker *TrackerInfo) error {
+func parseSettings(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	skipSettings := []string{
 		"description",
 		"cookie_description",
@@ -28,11 +31,11 @@ func parseTrackerSettings(doc *xmlquery.Node, tracker *TrackerInfo) error {
 		log.Tracef("Found tracker setting: %q", settingName)
 
 		// add setting to list
-		tracker.Settings = append(tracker.Settings, settingName)
+		t.Settings = append(t.Settings, settingName)
 	}
 
 	// were settings parsed?
-	if len(tracker.Settings) == 0 {
+	if len(t.Settings) == 0 {
 		return errors.New("failed parsing tracker settings")
 	}
 

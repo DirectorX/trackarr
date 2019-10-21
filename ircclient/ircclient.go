@@ -7,57 +7,57 @@ import (
 	"strings"
 	"time"
 
-	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/autodl/processor"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	irc "github.com/thoj/go-ircevent"
 )
 
 var (
 	log = logger.GetLogger("irc")
+
+	messageClean *regexp.Regexp
 )
 
 /* Const */
-const RegexMessageClean = `\x0f|\x1f|\x02|\x03(?:[\d]{1,2}(?:,[\d]{1,2})?)?`
+const regexMessageClean = `\x0f|\x1f|\x02|\x03(?:[\d]{1,2}(?:,[\d]{1,2})?)?`
 
 /* Struct */
 
 type IRCClient struct {
-	/* private */
-	conn      *irc.Connection
-	cfg       *config.TrackerConfiguration
-	tracker   *parser.TrackerInfo
-	log       *logrus.Entry
-	cleanRxp  *regexp.Regexp
-	processor *processor.Processor
-	/* public */
+	Conn      *irc.Connection
+	Tracker   *config.TrackerInstance
+	Processor *processor.Processor
+	// Private
+	log *logrus.Entry
+}
+
+/* init */
+
+func init() {
+	var err error
+	if messageClean, err = regexp.Compile(regexMessageClean); err != nil {
+		log.WithError(err).Fatal("Failed compiling message clean regex??")
+	}
 }
 
 /* Public */
 
-func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, error) {
+func New(t *config.TrackerInstance) (*IRCClient, error) {
 	// set variables
-	logName := t.LongName
-	if t.ShortName != nil {
-		logName = *t.ShortName
-	}
-
-	cleanRxp, err := regexp.Compile(RegexMessageClean)
-	if err != nil {
-		log.WithError(err).Errorf("Failed compiling message clean regex??")
-		return nil, errors.Wrap(err, "failed compiling message clean regex")
+	logName := t.Info.LongName
+	if t.Info.ShortName != nil {
+		logName = *t.Info.ShortName
 	}
 
 	// initialize irc object
-	conn := irc.IRC(c.IRC.Nickname, c.IRC.Nickname)
+	conn := irc.IRC(t.Config.IRC.Nickname, t.Config.IRC.Nickname)
 
 	// set base irc object settings
 	ircLogger := logger.GetLogger(logName)
-	if c.IRC.Verbose {
+	if t.Config.IRC.Verbose {
 		conn.Debug = true
 		conn.Log.SetOutput(ircLogger.WriterLevel(logrus.TraceLevel))
 	} else {
@@ -70,13 +70,14 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 
 	// initialize irc client
 	client := &IRCClient{
-		conn:      conn,
-		cfg:       &c,
-		tracker:   t,
-		log:       ircLogger,
-		cleanRxp:  cleanRxp,
-		processor: processor.New(ircLogger, t, &c),
+		Conn:      conn,
+		Tracker:   t,
+		Processor: processor.New(ircLogger, t),
+		// Private
+		log: ircLogger,
 	}
+	// set IRC connection in the Tracker struct
+	client.Tracker.IRC = conn
 
 	// set config precedence
 	client.setConfigPrecedence()
@@ -106,26 +107,26 @@ func Init(t *parser.TrackerInfo, c config.TrackerConfiguration) (*IRCClient, err
 
 func (c *IRCClient) setConfigPrecedence() {
 	// set server from config
-	if c.cfg.IRC.Host != nil && c.cfg.IRC.Port != nil {
-		c.log.Debugf("Using host and port from config: %s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
-		serverString := fmt.Sprintf("%s:%s", *c.cfg.IRC.Host, *c.cfg.IRC.Port)
-		c.tracker.Servers = nil
-		c.tracker.Servers = []string{
+	if c.Tracker.Config.IRC.Host != nil && c.Tracker.Config.IRC.Port != nil {
+		c.log.Debugf("Using host and port from config: %s:%s", *c.Tracker.Config.IRC.Host, *c.Tracker.Config.IRC.Port)
+		serverString := fmt.Sprintf("%s:%s", *c.Tracker.Config.IRC.Host, *c.Tracker.Config.IRC.Port)
+		c.Tracker.Info.Servers = nil
+		c.Tracker.Info.Servers = []string{
 			serverString,
 		}
 	}
 
 	// set channels from config
-	if len(c.cfg.IRC.Channels) >= 1 {
-		c.log.Debugf("Using channels from config: %s", strings.Join(c.cfg.IRC.Channels, ", "))
-		c.tracker.Channels = nil
-		c.tracker.Channels = c.cfg.IRC.Channels
+	if len(c.Tracker.Config.IRC.Channels) >= 1 {
+		c.log.Debugf("Using channels from config: %s", strings.Join(c.Tracker.Config.IRC.Channels, ", "))
+		c.Tracker.Info.Channels = nil
+		c.Tracker.Info.Channels = c.Tracker.Config.IRC.Channels
 	}
 
 	// set announcers from config
-	if len(c.cfg.IRC.Announcers) >= 1 {
-		c.log.Debugf("Using announcers from config: %s", strings.Join(c.cfg.IRC.Announcers, ", "))
-		c.tracker.Announcers = nil
-		c.tracker.Announcers = c.cfg.IRC.Announcers
+	if len(c.Tracker.Config.IRC.Announcers) >= 1 {
+		c.log.Debugf("Using announcers from config: %s", strings.Join(c.Tracker.Config.IRC.Announcers, ", "))
+		c.Tracker.Info.Announcers = nil
+		c.Tracker.Info.Announcers = c.Tracker.Config.IRC.Announcers
 	}
 }

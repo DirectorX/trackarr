@@ -1,9 +1,11 @@
 package ircclient
 
 import (
-	listutils "github.com/l3uddz/trackarr/utils/lists"
-	irc "github.com/thoj/go-ircevent"
 	"strings"
+
+	listutils "github.com/l3uddz/trackarr/utils/lists"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
@@ -17,10 +19,10 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	}
 
 	// ignore messages if not from a known channel / announcer
-	if !listutils.StringListContains(c.tracker.Channels, channelName, false) {
+	if !listutils.StringListContains(c.Tracker.Info.Channels, channelName, false) {
 		c.log.Tracef("Ignoring message from %s -> %s", channelName, event.Message())
 		return
-	} else if !listutils.StringListContains(c.tracker.Announcers, event.Nick, false) {
+	} else if !listutils.StringListContains(c.Tracker.Info.Announcers, event.Nick, false) {
 		c.log.Tracef("Ignoring message from announcer %s -> %s", event.User, event.Message())
 		return
 	}
@@ -30,12 +32,12 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	c.log.Tracef("%s -> %s", channelName, cleanMessage)
 
 	// queue message
-	if err := c.processor.QueueLine(channelName, cleanMessage); err != nil {
+	if err := c.Processor.QueueLine(channelName, cleanMessage); err != nil {
 		c.log.WithError(err).Errorf("Failed queueing line for processing: %q", cleanMessage)
 		return
 	}
 }
 
 func (c IRCClient) cleanMessage(message string) string {
-	return c.cleanRxp.ReplaceAllString(message, "")
+	return messageClean.ReplaceAllString(message, "")
 }

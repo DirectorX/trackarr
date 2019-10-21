@@ -1,13 +1,15 @@
 package parser
 
 import (
+	"github.com/l3uddz/trackarr/config"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
 )
 
 /* Private */
 
-func parseTrackerDetails(doc *xmlquery.Node, tracker *TrackerInfo, trackerName string) error {
+func parseDetails(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	// find trackerinfo element
 	trackerInfo := xmlquery.FindOne(doc, "/trackerinfo")
 	if trackerInfo == nil {
@@ -18,19 +20,21 @@ func parseTrackerDetails(doc *xmlquery.Node, tracker *TrackerInfo, trackerName s
 	shortName := trackerInfo.SelectAttr("shortName")
 	longName := trackerInfo.SelectAttr("longName")
 
-	if shortName == "" {
+	switch shortName {
+	case "":
 		log.Warnf("Failed to parse tracker %q from: %s", "shortName", trackerInfo.OutputXML(true))
-	} else {
-		tracker.ShortName = &shortName
-		log.Tracef("Found tracker short name: %s", *tracker.ShortName)
+	default:
+		t.ShortName = &shortName
+		log.Tracef("Found tracker short name: %s", *t.ShortName)
 	}
 
-	if longName == "" {
+	switch longName {
+	case "":
 		log.Warnf("Failed to parse tracker %q from: %s", "longName", trackerInfo.OutputXML(true))
-		tracker.LongName = trackerName
-	} else {
-		tracker.LongName = longName
-		log.Tracef("Found tracker long name: %s", tracker.LongName)
+		t.LongName = t.Name
+	default:
+		t.LongName = longName
+		log.Tracef("Found tracker long name: %s", t.LongName)
 	}
 
 	return nil

@@ -1,14 +1,15 @@
 package ircclient
 
 import (
-	irc "github.com/thoj/go-ircevent"
 	"strings"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
 
 func (c *IRCClient) handleParted(event *irc.Event) {
-	if event.Nick != c.conn.GetNick() {
+	if event.Nick != c.Conn.GetNick() {
 		// we are not interested in parted messages for other parties
 		return
 	}

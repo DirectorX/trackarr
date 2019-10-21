@@ -2,10 +2,11 @@ package processor
 
 import (
 	"fmt"
-	"github.com/antchfx/xmlquery"
-	"github.com/pkg/errors"
 	"net/url"
 	"strings"
+
+	"github.com/antchfx/xmlquery"
+	"github.com/pkg/errors"
 )
 
 /* Private */
@@ -52,9 +53,9 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 			varValue, ok := (*vars)[varName]
 			if !ok {
 				// do we have the variable in the user defined tracker config? (torrent_pass, passkey etc...)
-				varValue, ok = p.Cfg.Config[varName]
+				varValue, ok = p.Tracker.Config.Settings[varName]
 				if !ok {
-					return fmt.Errorf("missing variable: %q in %+v", varName, p.Cfg.Config)
+					return fmt.Errorf("missing variable: %q in %+v", varName, p.Tracker.Config.Settings)
 				}
 			}
 

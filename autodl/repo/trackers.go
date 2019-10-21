@@ -2,8 +2,6 @@ package repo
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -11,8 +9,11 @@ import (
 
 	"github.com/l3uddz/trackarr/database"
 	models "github.com/l3uddz/trackarr/database/models"
+	"github.com/l3uddz/trackarr/logger"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"github.com/l3uddz/trackarr/utils/web"
+
+	"github.com/pkg/errors"
 )
 
 /* Structs */
