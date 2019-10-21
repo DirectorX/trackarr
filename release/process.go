@@ -130,6 +130,8 @@ func (r *Release) Process() {
 		}
 
 		// push release to pvr
-		go r.Push(pvr.Config, delay)
+		go func(p *config.PvrConfig, d *int64) {
+			r.Push(p, d)
+		}(pvr.Config, delay)
 	}
 }

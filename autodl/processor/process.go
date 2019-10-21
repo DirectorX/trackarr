@@ -71,7 +71,9 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			p.Log.WithError(err).Errorf("Failed converting release vars to a release struct...")
 		} else {
 			// start processing this release
-			go trackerRelease.Process()
+			go func(tr *release.Release) {
+				tr.Process()
+			}(trackerRelease)
 		}
 	}
 }

@@ -44,7 +44,9 @@ func New(log *logrus.Entry, t *config.TrackerInstance) *Processor {
 
 	// init queue processors
 	for _, queue := range processor.queues {
-		go processor.processQueue(queue)
+		go func(q *goconcurrentqueue.FIFO) {
+			processor.processQueue(q)
+		}(queue)
 	}
 
 	return processor
