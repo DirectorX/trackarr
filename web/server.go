@@ -61,17 +61,17 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	// static file server
 	staticBox := rice.MustFindBox("static")
 	staticFileServer := http.StripPrefix("/static/", http.FileServer(staticBox.HTTPBox()))
-	e.GET("/static/*", echo.WrapHandler(staticFileServer))
-
-	// setup template renderer
 	e.Renderer = gorice.New(rice.MustFindBox("views"))
 
-	/* init backend routes */
-	// api route group
-	api := e.Group("/api")
+	// setup groups
+	gui := e.Group("", middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+		if username == "joe" && password == "secret" {
+			return true, nil
+		}
+		return false, nil
+	}))
 
-	// - setup apikey validator
-	api.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
+	api := e.Group("/api", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup: "query:apikey",
 		Validator: func(key string, c echo.Context) (bool, error) {
 			return key == configuration.Server.ApiKey, nil
@@ -82,12 +82,15 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	api.GET("/torrent", apis.Torrent)
 
 	/* init frontend routes */
+	// static
+	gui.GET("/static/*", echo.WrapHandler(staticFileServer))
+
 	// index
-	e.GET("/", handler.Index)
+	gui.GET("/", handler.Index)
 
 	// logs
-	e.GET("/logs", handler.Logs)
-	e.GET("/logs/ws", WebsocketLogHandler)
+	gui.GET("/logs", handler.Logs)
+	gui.GET("/logs/ws", WebsocketLogHandler)
 
 	// close broadcaster
 	defer logEmitter.UnsubscribeAll()
