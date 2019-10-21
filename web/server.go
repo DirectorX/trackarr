@@ -58,10 +58,12 @@ func Listen(configuration *config.Configuration, logLevel int) {
 		}),
 	}
 
-	// static file server
+	// setup template renderer
+	e.Renderer = gorice.New(rice.MustFindBox("views"))
+
+	// setup static file server
 	staticBox := rice.MustFindBox("static")
 	staticFileServer := http.StripPrefix("/static/", http.FileServer(staticBox.HTTPBox()))
-	e.Renderer = gorice.New(rice.MustFindBox("views"))
 
 	// setup groups
 	gui := e.Group("", middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
