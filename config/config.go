@@ -144,6 +144,8 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("server.port", 7337, check)
 	added += setConfigDefault("server.apikey", shortuuid.New(), check)
 	added += setConfigDefault("server.publicurl", "http://trackarr.domain.com", check)
+	added += setConfigDefault("server.user", "admin", check)
+	added += setConfigDefault("server.pass", "password", check)
 
 	// pvr settings
 	added += setConfigDefault("pvr", []PvrConfig{

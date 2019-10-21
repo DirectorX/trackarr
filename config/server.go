@@ -5,4 +5,6 @@ type ServerConfig struct {
 	Port      uint
 	ApiKey    string
 	PublicURL string
+	User      string
+	Pass      string
 }

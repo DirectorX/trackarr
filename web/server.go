@@ -64,12 +64,16 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	staticFileServer := http.StripPrefix("/static/", http.FileServer(staticBox.HTTPBox()))
 
 	// setup groups
-	gui := e.Group("", middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-		if username == "joe" && password == "secret" {
-			return true, nil
-		}
-		return false, nil
-	}))
+	gui := e.Group("")
+	if configuration.Server.User != "" && configuration.Server.Pass != "" {
+		// user and pass were defined, use basic auth middleware
+		gui.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+			if username == configuration.Server.User && password == configuration.Server.Pass {
+				return true, nil
+			}
+			return false, nil
+		}))
+	}
 
 	api := e.Group("/api", middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup: "query:apikey",
