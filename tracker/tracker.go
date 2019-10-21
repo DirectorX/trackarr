@@ -26,9 +26,10 @@ func Init() error {
 			continue
 		}
 
+		t2 := t
 		trackerInstance := &config.TrackerInstance{
 			Name:   trackerName,
-			Config: &t,
+			Config: &t2,
 			Info:   parser.New(trackerName),
 		}
 

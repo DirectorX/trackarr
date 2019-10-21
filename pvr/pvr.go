@@ -23,8 +23,9 @@ func Init() error {
 			continue
 		}
 
+		p2 := p
 		config.Pvr[p.Name] = &config.PvrInstance{
-			Config: &p,
+			Config: &p2,
 		}
 
 		// Compile expressions

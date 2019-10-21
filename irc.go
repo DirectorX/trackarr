@@ -10,7 +10,8 @@ func initIRC() {
 	for tName, t := range runtime.Tracker {
 		// load irc client
 		log.Debugf("Initializing IRC client: %s", tName)
-		c, err := ircclient.New(t)
+		t2 := t
+		c, err := ircclient.New(t2)
 		if err != nil {
 			log.WithError(err).Errorf("Failed initializing irc client for tracker: %s", tName)
 
