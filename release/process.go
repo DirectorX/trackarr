@@ -75,7 +75,7 @@ func (r *Release) Process() {
 		bencodeUsed = true
 	}
 
-	r.Log.Debugf("Processing: %s", r.Info.TorrentName)
+	r.Log.Debugf("Processing release: %s", r.Info.TorrentName)
 
 	// was bencode used, or does this tracker have a cookie set?
 	cookie, hasCookie := r.Tracker.Config.Settings["cookie"]
