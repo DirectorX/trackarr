@@ -86,7 +86,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	// log result
 	r.Log.Infof("Pushed: %s (pvr: %s - approved: %v)", r.Info.TorrentName, pvr.Name, pvrResp.Approved)
 	if len(pvrResp.Rejections) > 0 {
-		r.Log.Debugf("Push rejected: %s (pvr: %s - reasons: %q)", r.Info.TorrentName, pvr.Name,
+		r.Log.Tracef("Push rejected: %s (pvr: %s - reasons: %q)", r.Info.TorrentName, pvr.Name,
 			strings.Join(pvrResp.Rejections, ", "))
 	}
 
