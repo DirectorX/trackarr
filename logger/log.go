@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	prefixLen = 8
+	prefixLen = 14
 )
 
 /* Public */
@@ -60,7 +60,7 @@ func Init(logLevel int, logFilePath string) error {
 	logrus.SetLevel(useLevel)
 
 	// info
-	log := logrus.WithField("prefix", strings.StringLeftJust("log", " ", prefixLen))
+	log := GetLogger("log")
 	log.Infof("Using %s = %s", strings.StringLeftJust("LOG_LEVEL", " ", 10), logrus.GetLevel().String())
 	log.Infof("Using %s = %q", strings.StringLeftJust("LOG", " ", 10), logFilePath)
 
