@@ -2,11 +2,13 @@ package processor
 
 import (
 	"fmt"
-	"github.com/antchfx/xmlquery"
-	listutils "github.com/l3uddz/trackarr/utils/lists"
-	"github.com/pkg/errors"
 	"regexp"
 	"strings"
+
+	listutils "github.com/l3uddz/trackarr/utils/lists"
+
+	"github.com/antchfx/xmlquery"
+	"github.com/pkg/errors"
 )
 
 /* Private */

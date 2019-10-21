@@ -2,9 +2,10 @@ package processor
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
-	"regexp"
 )
 
 /* Private */

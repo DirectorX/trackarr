@@ -1,14 +1,15 @@
 package release
 
 import (
+	"github.com/l3uddz/trackarr/config"
+
 	"github.com/antonmedv/expr"
 	"github.com/antonmedv/expr/vm"
-	"github.com/l3uddz/trackarr/config"
 	"github.com/pkg/errors"
 )
 
 /* Privates */
-func (r *TrackerRelease) shouldIgnore(pvr *config.PvrConfiguration, expressions *map[string][]*vm.Program) (bool, error) {
+func (r *Release) shouldIgnore(pvr *config.PvrConfig, expressions *map[string][]*vm.Program) (bool, error) {
 	ignoreExpressions, ok := (*expressions)["ignores"]
 	if !ok {
 		// there were no ignores

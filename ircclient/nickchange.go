@@ -2,9 +2,10 @@ package ircclient
 
 import (
 	"fmt"
-	irc "github.com/thoj/go-ircevent"
 	"math/rand"
 	"time"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
@@ -12,9 +13,9 @@ import (
 func (c *IRCClient) handleNickInUse(event *irc.Event) {
 	// generate new nick
 	rand.Seed(time.Now().UnixNano())
-	newNick := fmt.Sprintf("%s%d", c.cfg.IRC.Nickname, rand.Intn(50))
-	c.log.Warnf("Nick in use: %s, changing to: %s", c.conn.GetNick(), newNick)
+	newNick := fmt.Sprintf("%s%d", c.Tracker.Config.IRC.Nickname, rand.Intn(50))
+	c.log.Warnf("Nick in use: %s, changing to: %s", c.Conn.GetNick(), newNick)
 
 	// change nick
-	c.conn.Nick(newNick)
+	c.Conn.Nick(newNick)
 }

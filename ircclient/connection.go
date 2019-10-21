@@ -2,9 +2,10 @@ package ircclient
 
 import (
 	"crypto/tls"
-	"github.com/pkg/errors"
 	"net"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 /* Public */
@@ -12,7 +13,7 @@ import (
 func (c *IRCClient) Start() error {
 
 	// iterate servers
-	for _, serverString := range c.tracker.Servers {
+	for _, serverString := range c.Tracker.Info.Servers {
 		connString := ""
 		useSsl := false
 
@@ -41,23 +42,23 @@ func (c *IRCClient) Start() error {
 		// set connection settings
 		if useSsl {
 			// enable ssl
-			c.conn.UseTLS = true
-			c.conn.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+			c.Conn.UseTLS = true
+			c.Conn.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 		} else {
 			// disable ssl
-			c.conn.UseTLS = false
-			c.conn.TLSConfig = nil
+			c.Conn.UseTLS = false
+			c.Conn.TLSConfig = nil
 		}
 
 		// handle connection to configured server
 		c.log.Infof("Connecting to %s (ssl: %v)", connString, useSsl)
-		if err := c.conn.Connect(connString); err != nil {
+		if err := c.Conn.Connect(connString); err != nil {
 			c.log.WithError(err).Errorf("failed connecting to server: %s", connString)
 			continue
 		}
 
 		// start event loop
-		go c.conn.Loop()
+		go c.Conn.Loop()
 
 		return nil
 	}
@@ -66,9 +67,9 @@ func (c *IRCClient) Start() error {
 }
 
 func (c *IRCClient) Stop() {
-	if c.conn.Connected() {
+	if c.Conn.Connected() {
 		c.log.Warn("Disconnecting...")
-		c.conn.Quit()
+		c.Conn.Quit()
 	} else {
 		c.log.Warn("Not connected...")
 	}

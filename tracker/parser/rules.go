@@ -1,13 +1,15 @@
 package parser
 
 import (
+	"github.com/l3uddz/trackarr/config"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
 )
 
 /* Private */
 
-func parseTrackerRules(doc *xmlquery.Node, tracker *TrackerInfo) error {
+func parseRules(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	// this function is only responsible for grabbing the linematched xml node
 	// the actual parsing / processing will happen via the processor package
 	rules := xmlquery.FindOne(doc, "//parseinfo/linematched")
@@ -17,6 +19,6 @@ func parseTrackerRules(doc *xmlquery.Node, tracker *TrackerInfo) error {
 	}
 
 	// store for later use
-	tracker.LineMatchedRules = rules
+	t.LineMatchedRules = rules
 	return nil
 }

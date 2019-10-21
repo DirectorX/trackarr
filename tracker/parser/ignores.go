@@ -1,19 +1,16 @@
 package parser
 
 import (
-	"github.com/antchfx/xmlquery"
 	"regexp"
-)
 
-/* Struct */
-type TrackerIgnore struct {
-	Rxp      *regexp.Regexp
-	Expected bool
-}
+	"github.com/l3uddz/trackarr/config"
+
+	"github.com/antchfx/xmlquery"
+)
 
 /* Private */
 
-func parseTrackerIgnores(doc *xmlquery.Node, tracker *TrackerInfo) error {
+func parseIgnores(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	for _, n := range xmlquery.Find(doc, "//parseinfo/ignore/regex") {
 		// parse ignore regex
 		ignoreRegex := n.SelectAttr("value")
@@ -37,7 +34,7 @@ func parseTrackerIgnores(doc *xmlquery.Node, tracker *TrackerInfo) error {
 		}
 
 		// add regex to list
-		tracker.IgnoreLines = append(tracker.IgnoreLines, TrackerIgnore{
+		t.IgnoreLines = append(t.IgnoreLines, config.TrackerIgnore{
 			Rxp:      rxp,
 			Expected: expected,
 		})

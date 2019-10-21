@@ -2,13 +2,14 @@ package processor
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/autodl/parser"
 	"strings"
+
+	"github.com/l3uddz/trackarr/config"
 )
 
 /* Private */
 
-func (p *Processor) matchPattern(pattern *parser.TrackerPattern, line string) (map[string]string, error) {
+func (p *Processor) matchPattern(pattern *config.TrackerPattern, line string) (map[string]string, error) {
 	results := map[string]string{}
 	matches := pattern.Rxp.FindStringSubmatch(line)
 	if len(matches) != (len(pattern.Vars) + 1) {

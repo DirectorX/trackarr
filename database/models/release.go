@@ -1,9 +1,11 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"time"
+
+	stringutils "github.com/l3uddz/trackarr/utils/strings"
+
+	"github.com/jinzhu/gorm"
 )
 
 type PushedRelease struct {

@@ -1,9 +1,10 @@
 package ircclient
 
 import (
-	irc "github.com/thoj/go-ircevent"
 	"strings"
 	"time"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
@@ -12,12 +13,11 @@ func (c *IRCClient) handleConnected(event *irc.Event) {
 	identified := false
 
 	// send commands
-	for _, command := range c.cfg.IRC.Commands {
-		cmdToSend := strings.Join(command, " ")
-		cmdToSend = strings.TrimLeft(cmdToSend, "/")
+	for _, command := range c.Tracker.Config.IRC.Commands {
+		cmdToSend := strings.TrimLeft(command, "/")
 
 		c.log.Debugf("Connected, sending command: %s", cmdToSend)
-		c.conn.SendRaw(cmdToSend)
+		c.Conn.SendRaw(cmdToSend)
 
 		if strings.Contains(strings.ToLower(cmdToSend), "identify") {
 			identified = true
@@ -30,9 +30,9 @@ func (c *IRCClient) handleConnected(event *irc.Event) {
 	// join channels
 	if !identified {
 		// as we have not tried to identify, join announce channels rather than wait for +r mode
-		c.log.Debugf("Connected, joining: %s", strings.Join(c.tracker.Channels, ", "))
-		for _, channel := range c.tracker.Channels {
-			c.conn.Join(channel)
+		c.log.Debugf("Connected, joining: %s", strings.Join(c.Tracker.Info.Channels, ", "))
+		for _, channel := range c.Tracker.Info.Channels {
+			c.Conn.Join(channel)
 		}
 	}
 }

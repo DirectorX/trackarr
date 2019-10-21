@@ -1,15 +1,16 @@
 package ircclient
 
 import (
-	irc "github.com/thoj/go-ircevent"
 	"strings"
 	"time"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
 
 func (c *IRCClient) handleMode(event *irc.Event) {
-	if !strings.Contains(event.Raw, c.conn.GetNick()) || !strings.Contains(event.Raw, "+r") {
+	if !strings.Contains(event.Raw, c.Conn.GetNick()) || !strings.Contains(event.Raw, "+r") {
 		// the raw message did not contain our nick and a +r
 		return
 	}
@@ -18,8 +19,8 @@ func (c *IRCClient) handleMode(event *irc.Event) {
 	time.Sleep(2 * time.Second)
 
 	// join announce channels
-	c.log.Debugf("Identified, joining: %s", strings.Join(c.tracker.Channels, ", "))
-	for _, channel := range c.tracker.Channels {
-		c.conn.Join(channel)
+	c.log.Debugf("Identified, joining: %s", strings.Join(c.Tracker.Info.Channels, ", "))
+	for _, channel := range c.Tracker.Info.Channels {
+		c.Conn.Join(channel)
 	}
 }

@@ -2,23 +2,21 @@ package web
 
 import (
 	"fmt"
-	"github.com/GeertJohan/go.rice"
-	"github.com/foolin/echo-template/supports/gorice"
+	"net/http"
+
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
+	"github.com/l3uddz/trackarr/runtime"
 	"github.com/l3uddz/trackarr/web/apis"
 	"github.com/l3uddz/trackarr/web/handler"
+
+	rice "github.com/GeertJohan/go.rice"
+	"github.com/foolin/echo-template/supports/gorice"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/pascaldekloe/latest"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/net/context"
 	"gopkg.in/go-playground/validator.v8"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 /* Structs */
@@ -101,7 +99,7 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	logrus.AddHook(&WebsocketLogHook{})
 
 	/* start echo server */
-	srv := &http.Server{
+	runtime.Web = &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", configuration.Server.Host, configuration.Server.Port),
 		Handler: e,
 	}
@@ -109,25 +107,8 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	go func() {
 		log.Infof("Listening on %s:%d", configuration.Server.Host, configuration.Server.Port)
 
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := runtime.Web.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.WithError(err).Fatalf("Failed listening on %s:%d", configuration.Server.Host, configuration.Server.Port)
 		}
 	}()
-
-	/* wait for shutdown signal */
-	quit := make(chan os.Signal)
-
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Warn("Shutting down...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.WithError(err).Fatalf("Failed shutting down")
-	}
-	select {
-	case <-ctx.Done():
-		break
-	}
 }

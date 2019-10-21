@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/l3uddz/trackarr/logger"
+
+	"github.com/jinzhu/gorm"
 )
 
 var (

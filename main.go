@@ -2,14 +2,19 @@ package main
 
 import (
 	"github.com/l3uddz/trackarr/autodl"
-	"github.com/l3uddz/trackarr/autodl/parser"
 	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
-	"github.com/l3uddz/trackarr/ircclient"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/release"
 	"github.com/l3uddz/trackarr/web"
+
+	// "github.com/l3uddz/trackarr/ircclient"
+	"github.com/l3uddz/trackarr/logger"
+	"github.com/l3uddz/trackarr/pvr"
+	"github.com/l3uddz/trackarr/runtime"
+	"github.com/l3uddz/trackarr/tracker"
+
+	// "github.com/l3uddz/trackarr/web"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -43,7 +48,7 @@ func init() {
 	log = logger.GetLogger("app")
 
 	// Init Config
-	if err := config.Init(buildConfig, flagConfigPath); err != nil {
+	if err := config.Init(buildConfig); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
 	}
 
@@ -54,23 +59,23 @@ func init() {
 	}
 
 	// Init Database
-	if err := database.Init(flagDbPath); err != nil {
+	if err := database.Init(); err != nil {
 		log.WithError(err).Fatal("Failed to initialize database")
 	}
 
 	// Init Autodl
-	if err := autodl.Init(flagTrackerPath); err != nil {
+	if err := autodl.Init(); err != nil {
 		log.WithError(err).Fatal("Failed to initialize autodl")
 	}
 
-	// Init Release
-	trackerCfg, err := config.GetAnyConfiguredTracker(&config.Config.Trackers)
-	if err != nil {
-		log.Fatal("You must configure at-least one tracker...")
+	// Init PVR
+	if err := pvr.Init(); err != nil {
+		log.WithError(err).Fatal("Failed to initialize PVRs")
 	}
 
-	if err := release.Init(&config.Config.Pvr, trackerCfg); err != nil {
-		log.WithError(err).Fatal("Failed initializing release")
+	// Init Tracker
+	if err := tracker.Init(); err != nil {
+		log.WithError(err).Fatal("Failed to initialize PVRs")
 	}
 
 	// Init Cache
@@ -83,96 +88,27 @@ func init() {
 func main() {
 	log.Info("Initialized core")
 
-	// defer de-inits
+	// Defer de-inits
 	defer cache.Close()
 
-	// validate we have at-least one active tracker
-	oneActive := false
-	for _, tracker := range config.Config.Trackers {
-		if tracker.Enabled {
-			oneActive = true
-			break
-		}
-	}
+	log.Info(config.Config)
+	log.Info(runtime.Pvr)
+	log.Info(runtime.Tracker)
 
-	if !oneActive {
+	// Validate we have at-least one active tracker
+	if len(runtime.Tracker) < 1 {
 		log.Fatalf("At-least one tracker must be enabled...")
 	}
 
-	// load trackers
-	ircClients := make([]*ircclient.IRCClient, 0)
-	connectedClients := 0
-
-	log.Infof("Initializing trackers...")
-	for trackerName, tracker := range config.Config.Trackers {
-		// skip disabled trackers
-		if !tracker.Enabled {
-			log.Debugf("Skipping disabled tracker: %s", trackerName)
-			continue
-		}
-
-		// parse tracker
-		log.Debugf("Parsing tracker: %s", trackerName)
-		t, err := parser.Parse(trackerName, flagTrackerPath)
-		if err != nil {
-			log.WithError(err).Fatalf("Failed parsing tracker: %s", trackerName)
-			continue
-		}
-		log.Debugf("Parsed tracker: %s", trackerName)
-
-		// validate required config settings were set for this tracker
-		settingsFilled := true
-		for _, trackerSetting := range t.Settings {
-			if _, ok := tracker.Config[trackerSetting]; !ok {
-				log.Warnf("Skipping tracker %s, missing config setting: %q", trackerName, trackerSetting)
-				settingsFilled = false
-				break
-			}
-		}
-
-		if !settingsFilled {
-			// there were missing config settings that were required by this tracker
-			continue
-		}
-
-		// load irc client
-		log.Debugf("Initializing irc client: %s", trackerName)
-		c, err := ircclient.Init(t, tracker)
-		if err != nil {
-			log.WithError(err).Fatalf("Failed initializing irc client for tracker: %s", trackerName)
-			continue
-		}
-		log.Debugf("Initialized irc client: %s", trackerName)
-
-		// start client
-		if err := c.Start(); err != nil {
-			log.WithError(err).Errorf("Failed starting irc client for tracker: %s", trackerName)
-			continue
-		} else {
-			// add client to slice
-			ircClients = append(ircClients, c)
-			connectedClients++
-		}
-	}
-
-	// were there connected clients?
-	if connectedClients < 1 {
-		log.Fatal("Failed to establish a connection to any of the enabled trackers...")
-	} else {
-		log.Infof("Connected to %d trackers!", connectedClients)
-	}
-
-	// start web
+	// Start web
 	web.Listen(config.Config, flagLogLevel)
 
-	// graceful shutdown non-web components
-	for _, ircClient := range ircClients {
-		ircClient.Stop()
-	}
+	// Start IRC clients
+	initIRC()
 
-	if err := database.DB.Close(); err != nil {
-		log.WithError(err).Errorf("Failed closing database connection...")
-	}
+	// Startup checks
+	startupChecks()
 
-	log.Info("Finished")
+	// Wait for shutdown
+	waitShutdown()
 }

@@ -1,11 +1,13 @@
 package database
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/logger"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/pkg/errors"
 )
 
@@ -20,11 +22,11 @@ var (
 /* Public */
 
 // Init - Initialize connection to the database
-func Init(dbPath string) error {
+func Init() error {
 	var err error
-	DB, err = gorm.Open("sqlite3", dbPath)
+	DB, err = gorm.Open("sqlite3", config.Runtime.DB)
 	if err != nil {
-		log.WithError(err).Fatalf("Failed initializing database connection to %q", dbPath)
+		log.WithError(err).Fatalf("Failed initializing database connection to %q", config.Runtime.DB)
 		return errors.Wrap(err, "failed initializing database connection")
 	}
 
@@ -35,6 +37,6 @@ func Init(dbPath string) error {
 	)
 
 	// log
-	log.Infof("Using %s = %q", stringutils.StringLeftJust("DATABASE", " ", 10), dbPath)
+	log.Infof("Using %s = %q", stringutils.StringLeftJust("DATABASE", " ", 10), config.Runtime.DB)
 	return nil
 }

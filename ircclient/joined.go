@@ -1,9 +1,11 @@
 package ircclient
 
 import (
-	listutils "github.com/l3uddz/trackarr/utils/lists"
-	irc "github.com/thoj/go-ircevent"
 	"strings"
+
+	listutils "github.com/l3uddz/trackarr/utils/lists"
+
+	irc "github.com/thoj/go-ircevent"
 )
 
 /* Private */
@@ -18,10 +20,10 @@ func (c *IRCClient) handleJoined(event *irc.Event) {
 	c.log.Infof("Joined: %s", channelName)
 
 	// is this an announce channel?
-	if channelName != "Unknown" && !listutils.StringListContains(c.tracker.Channels, channelName, false) {
+	if channelName != "Unknown" && !listutils.StringListContains(c.Tracker.Info.Channels, channelName, false) {
 		// this is not an announce channel, lets leave.
 		c.log.Debugf("Leaving non-announce channel: %s", channelName)
-		c.conn.Part(channelName)
+		c.Conn.Part(channelName)
 	}
 }
 

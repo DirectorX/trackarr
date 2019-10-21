@@ -1,29 +1,69 @@
 package config
 
-import "github.com/pkg/errors"
+import (
+	"regexp"
 
-type TrackerConfiguration struct {
-	Enabled bool
-	Bencode bool
-	Config  map[string]string
-	IRC     TrackerIrcConfiguration
+	"github.com/antchfx/xmlquery"
+	irc "github.com/thoj/go-ircevent"
+)
+
+type TrackerInstance struct {
+	Name   string
+	Config *TrackerConfig
+	Info   *TrackerInfo
+	IRC    *irc.Connection
 }
 
-type TrackerIrcConfiguration struct {
+type TrackerConfig struct {
+	Enabled  bool
+	Bencode  bool
+	Settings map[string]string
+	IRC      *TrackerIrcConfig
+}
+
+type TrackerIrcConfig struct {
 	Nickname   string
 	Channels   []string
 	Announcers []string
-	Commands   [][]string
+	Commands   []string
 	Host       *string
 	Port       *string
-	Verbose bool
+	Verbose    bool
 }
 
-/* Public */
-func GetAnyConfiguredTracker(trackers *map[string]TrackerConfiguration) (*TrackerConfiguration, error) {
-	for _, trackerConfig := range *trackers {
-		return &trackerConfig, nil
-	}
+type TrackerInfo struct {
+	Name       string
+	ShortName  *string
+	LongName   string
+	Settings   []string
+	Servers    []string
+	Channels   []string
+	Announcers []string
 
-	return nil, errors.New("no tracker configuration found")
+	IgnoreLines       []TrackerIgnore
+	LinePatterns      []TrackerPattern
+	MultiLinePatterns []TrackerPattern
+
+	LineMatchedRules *xmlquery.Node
 }
+
+type TrackerIgnore struct {
+	Rxp      *regexp.Regexp
+	Expected bool
+}
+
+type TrackerPattern struct {
+	PatternType MessagePatternType
+	Rxp         *regexp.Regexp
+	Vars        []string
+	Optional    bool
+}
+
+type MessagePatternType int
+
+/* Enum */
+
+const (
+	LinePattern MessagePatternType = iota + 1
+	MultiLinePattern
+)

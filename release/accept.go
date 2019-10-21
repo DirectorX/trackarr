@@ -1,14 +1,15 @@
 package release
 
 import (
+	"github.com/l3uddz/trackarr/config"
+
 	"github.com/antonmedv/expr"
 	"github.com/antonmedv/expr/vm"
-	"github.com/l3uddz/trackarr/config"
 	"github.com/pkg/errors"
 )
 
 /* Privates */
-func (r *TrackerRelease) shouldAccept(pvr *config.PvrConfiguration, expressions *map[string][]*vm.Program) (bool, error) {
+func (r *Release) shouldAccept(pvr *config.PvrConfig, expressions *map[string][]*vm.Program) (bool, error) {
 	acceptExpressions, ok := (*expressions)["accepts"]
 	if !ok {
 		// there were no accepts

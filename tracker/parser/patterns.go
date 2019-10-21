@@ -1,53 +1,36 @@
 package parser
 
 import (
+	"regexp"
+
+	"github.com/l3uddz/trackarr/config"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
-	"regexp"
 )
-
-/* Enum */
-
-type MessagePatternType int
-
-const (
-	LinePattern MessagePatternType = iota + 1
-	MultiLinePattern
-)
-
-/* Struct */
-
-type TrackerPattern struct {
-	PatternType MessagePatternType
-	Rxp         *regexp.Regexp
-	Vars        []string
-	Optional    bool
-}
 
 /* Private */
 
-func parseTrackerPatterns(doc *xmlquery.Node, tracker *TrackerInfo) error {
+func parsePatterns(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	// parse line patterns
-	if err := parsePatterns(xmlquery.Find(doc, "//parseinfo/linepatterns/extract"), LinePattern, tracker);
-		err != nil {
+	if err := parsePattern(t, xmlquery.Find(doc, "//parseinfo/linepatterns/extract"), config.LinePattern); err != nil {
 		log.WithError(err).Errorf("Failed parsing tracker linepatterns")
 		return errors.Wrap(err, "failed to parse tracker line patterns")
 	}
 
 	// parse multiline patterns
 	if err :=
-		parsePatterns(xmlquery.Find(doc, "//parseinfo/multilinepatterns/extract"), MultiLinePattern, tracker);
-		err != nil {
+		parsePattern(t, xmlquery.Find(doc, "//parseinfo/multilinepatterns/extract"), config.MultiLinePattern); err != nil {
 		return errors.Wrap(err, "failed to parse tracker multiline patterns")
 	}
 
 	return nil
 }
 
-func parsePatterns(nodes []*xmlquery.Node, patternType MessagePatternType, tracker *TrackerInfo) error {
+func parsePattern(t *config.TrackerInfo, nodes []*xmlquery.Node, patternType config.MessagePatternType) error {
 	patternTypeString := "linepattern"
 
-	if patternType == MultiLinePattern {
+	if patternType == config.MultiLinePattern {
 		patternTypeString = "multilinepattern"
 	}
 
@@ -90,16 +73,16 @@ func parsePatterns(nodes []*xmlquery.Node, patternType MessagePatternType, track
 		// add to list
 		if len(lineVars) > 0 {
 			switch patternType {
-			case LinePattern:
-				tracker.LinePatterns = append(tracker.LinePatterns, TrackerPattern{
-					PatternType: LinePattern,
+			case config.LinePattern:
+				t.LinePatterns = append(t.LinePatterns, config.TrackerPattern{
+					PatternType: config.LinePattern,
 					Rxp:         rxp,
 					Vars:        lineVars,
 					Optional:    optional,
 				})
 			default:
-				tracker.MultiLinePatterns = append(tracker.MultiLinePatterns, TrackerPattern{
-					PatternType: MultiLinePattern,
+				t.MultiLinePatterns = append(t.MultiLinePatterns, config.TrackerPattern{
+					PatternType: config.MultiLinePattern,
 					Rxp:         rxp,
 					Vars:        lineVars,
 					Optional:    optional,

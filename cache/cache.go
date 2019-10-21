@@ -1,9 +1,11 @@
 package cache
 
 import (
-	"github.com/ReneKroon/ttlcache"
-	"github.com/l3uddz/trackarr/logger"
 	"time"
+
+	"github.com/l3uddz/trackarr/logger"
+
+	"github.com/ReneKroon/ttlcache"
 )
 
 var (

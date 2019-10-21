@@ -2,13 +2,16 @@ package parser
 
 import (
 	"errors"
-	"github.com/antchfx/xmlquery"
 	"strings"
+
+	"github.com/l3uddz/trackarr/config"
+
+	"github.com/antchfx/xmlquery"
 )
 
 /* Private */
 
-func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
+func parseServers(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	for _, n := range xmlquery.Find(doc, "//servers/server") {
 		// parse server hosts
 		serverNames := n.SelectAttr("serverNames")
@@ -53,14 +56,14 @@ func parseTrackerServers(doc *xmlquery.Node, tracker *TrackerInfo) error {
 		log.Tracef("Found tracker server announcers: %s", strings.Join(serverAnnouncers, ", "))
 
 		// add parsed details to lists
-		tracker.Servers = append(tracker.Servers, serverHosts...)
-		tracker.Channels = append(tracker.Channels, serverChannels...)
-		tracker.Announcers = append(tracker.Announcers, serverAnnouncers...)
+		t.Servers = append(t.Servers, serverHosts...)
+		t.Channels = append(t.Channels, serverChannels...)
+		t.Announcers = append(t.Announcers, serverAnnouncers...)
 
 	}
 
 	// were servers parsed?
-	if len(tracker.Servers) == 0 {
+	if len(t.Servers) == 0 {
 		return errors.New("failed parsing tracker servers")
 	}
 
