@@ -37,7 +37,7 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	c.log.Tracef("%s -> %s", channelName, cleanMessage)
 
 	// queue message
-	if err := c.Processor.QueueLine(channelName, cleanMessage); err != nil {
+	if err := c.Processor.QueueLine(strings.ToLower(channelName), cleanMessage); err != nil {
 		c.log.WithError(err).Errorf("Failed queueing line for processing: %q", cleanMessage)
 		return
 	}
