@@ -37,6 +37,9 @@ func shutdown() {
 	}
 	log.Info("Stopped web server")
 
+	// Stop database tasks
+	database.StopPruner()
+
 	// Close DB
 	if err := database.DB.Close(); err != nil {
 		log.WithError(err).Errorf("Failed closing database connection...")

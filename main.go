@@ -105,6 +105,9 @@ func main() {
 	// Startup checks
 	startupChecks()
 
+	// Startup database tasks
+	database.StartPruner()
+
 	// Wait for shutdown
 	waitShutdown()
 }
