@@ -1,8 +1,6 @@
 package processor
 
 import (
-	"strings"
-
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
 
@@ -32,7 +30,7 @@ func New(log *logrus.Entry, t *config.TrackerInstance) *Processor {
 	// initialize queues
 	queues := make(map[string]*goconcurrentqueue.FIFO)
 	for _, channel := range t.Info.Channels {
-		queues[strings.ToLower(channel)] = goconcurrentqueue.NewFIFO()
+		queues[channel] = goconcurrentqueue.NewFIFO()
 	}
 
 	// create processor

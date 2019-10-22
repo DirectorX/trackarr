@@ -11,9 +11,13 @@ import (
 /* Private */
 
 func (c *IRCClient) handleMessage(event *irc.Event) {
+	// Lock to handle one message per tracker at a time
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	// determine channel name
-	channelName := "Unknown"
-	if len(event.Arguments) >= 1 && strings.HasPrefix(event.Arguments[0], "#") {
+	channelName := "unknown"
+	if len(event.Arguments) > 0 && strings.HasPrefix(event.Arguments[0], "#") {
 		// we have the channel name
 		channelName = event.Arguments[0]
 	}
@@ -22,7 +26,8 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	if !listutils.StringListContains(c.Tracker.Info.Channels, channelName, false) {
 		c.log.Debugf("Ignoring message from %s -> %s", channelName, event.Message())
 		return
-	} else if !listutils.StringListContains(c.Tracker.Info.Announcers, event.Nick, false) {
+	}
+	if !listutils.StringListContains(c.Tracker.Info.Announcers, event.Nick, false) {
 		c.log.Debugf("Ignoring message from announcer %s -> %s", event.User, event.Message())
 		return
 	}

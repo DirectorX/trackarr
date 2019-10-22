@@ -50,7 +50,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 			}
 
 			// update vars
-			maps.MergeStringMap(&vars, &patternVars)
+			maps.MergeStringMap(vars, patternVars)
 		}
 
 		if parseFailed {
@@ -59,7 +59,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		}
 
 		// finished parsing release lines - process rules
-		if err := p.processRules(p.Tracker.Info.LineMatchedRules, &vars); err != nil {
+		if err := p.processRules(p.Tracker.Info.LineMatchedRules, vars); err != nil {
 			p.Log.WithError(err).Errorf("Failed processing release lines due to rules failure...")
 			continue
 		}
@@ -67,7 +67,7 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 		p.Log.Debugf("Finished processing release lines, release vars: %+v", vars)
 
 		// convert parsed release vars to release struct and begin release processing
-		if trackerRelease, err := release.FromMap(p.Tracker, p.Log, &vars); err != nil {
+		if trackerRelease, err := release.FromMap(p.Tracker, p.Log, vars); err != nil {
 			p.Log.WithError(err).Errorf("Failed converting release vars to a release struct...")
 		} else {
 			// start processing this release

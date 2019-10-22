@@ -13,7 +13,7 @@ import (
 
 /* Public */
 
-func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars *map[string]string) (*Release, error) {
+func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars map[string]string) (*Release, error) {
 	release := &Release{
 		Tracker: t,
 		Log:     log,

@@ -13,7 +13,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
 	srcSplit := node.SelectAttr("split")
 
@@ -25,7 +25,7 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 	}
 
 	// retrieve srcVar
-	existingValue, ok := (*vars)[srcVar]
+	existingValue, ok := vars[srcVar]
 	if !ok {
 		return fmt.Errorf("srcvar did not exist: %q", srcVar)
 	}
@@ -118,7 +118,7 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars *map[string
 
 	// set result in vars map
 	for k, v := range results {
-		(*vars)[k] = v
+		vars[k] = v
 	}
 
 	p.Log.Tracef("Result for extracttags rule: %q = %+v", srcVar, results)

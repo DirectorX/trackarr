@@ -10,7 +10,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processSetRegexRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processSetRegexRule(node *xmlquery.Node, vars map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
 	regexVar := node.SelectAttr("regex")
 	targetVar := node.SelectAttr("varName")
@@ -26,7 +26,7 @@ func (p *Processor) processSetRegexRule(node *xmlquery.Node, vars *map[string]st
 	}
 
 	// ensure srcVar exists in vars map
-	existingValue, ok := (*vars)[srcVar]
+	existingValue, ok := vars[srcVar]
 	if !ok {
 		return fmt.Errorf("srcvar var did not exist: %q", srcVar)
 	}
@@ -43,7 +43,7 @@ func (p *Processor) processSetRegexRule(node *xmlquery.Node, vars *map[string]st
 	}
 
 	// set result in vars map
-	(*vars)[targetVar] = targetVal
+	vars[targetVar] = targetVal
 
 	p.Log.Tracef("Result for setregex rule: %q = %s", targetVar, targetVal)
 	return nil

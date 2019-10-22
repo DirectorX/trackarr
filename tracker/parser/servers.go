@@ -34,7 +34,8 @@ func parseServers(t *config.TrackerInfo, doc *xmlquery.Node) error {
 			continue
 		}
 
-		serverChannels := strings.Split(channelNames, ",")
+		// Normalize channel names to lowercase
+		serverChannels := strings.Split(strings.ToLower(channelNames), ",")
 		if len(serverChannels) < 1 {
 			log.Errorf("Failed parsing %q from tracker server: %s", "channelNames", n.OutputXML(true))
 			continue

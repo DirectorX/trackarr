@@ -55,7 +55,7 @@ func PullTrackers(trackersPath string) error {
 	// process found trackers
 	trackerPulls := 0
 	trackerErrors := 0
-	for _, trackerData := range *trackers {
+	for _, trackerData := range trackers {
 		log.Tracef("Processing tracker: %s", trackerData.Name)
 
 		// retrieve tracker from database
@@ -100,7 +100,7 @@ func PullTrackers(trackersPath string) error {
 /* Private */
 
 // getAvailableTrackers - Retrieve all available trackers from autodl-community repository
-func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
+func getAvailableTrackers() (map[string]*AutodlTracker, error) {
 	// retrieve trackers page
 	log.Infof("Finding available trackers from: %s", trackersRepository)
 	body, err := web.GetBodyString(web.GET, trackersRepository, 30)
@@ -133,7 +133,7 @@ func getAvailableTrackers() (*map[string]*AutodlTracker, error) {
 		trackers[tracker.Name] = tracker
 	}
 	log.Infof("Found %d trackers", len(trackers))
-	return &trackers, nil
+	return trackers, nil
 }
 
 // pullTracker - Download a tracker and save to specified path

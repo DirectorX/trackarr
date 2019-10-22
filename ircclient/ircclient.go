@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/l3uddz/trackarr/autodl/processor"
@@ -31,7 +32,8 @@ type IRCClient struct {
 	Tracker   *config.TrackerInstance
 	Processor *processor.Processor
 	// Private
-	log *logrus.Entry
+	log   *logrus.Entry
+	mutex *sync.Mutex
 }
 
 /* init */
@@ -74,7 +76,8 @@ func New(t *config.TrackerInstance) (*IRCClient, error) {
 		Tracker:   t,
 		Processor: processor.New(ircLogger, t),
 		// Private
-		log: ircLogger,
+		log:   ircLogger,
+		mutex: &sync.Mutex{},
 	}
 	// set IRC connection in the Tracker struct
 	client.Tracker.IRC = conn

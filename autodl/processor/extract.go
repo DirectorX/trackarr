@@ -10,7 +10,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processExtractRule(node *xmlquery.Node, vars map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
 	regexNode := node.SelectElement("/regex")
 
@@ -28,7 +28,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 	}
 
 	// ensure srcVar exists in vars map
-	existingValue, ok := (*vars)[srcVar]
+	existingValue, ok := vars[srcVar]
 	if !ok {
 		if !isOptional {
 			// this was not an optional extract var...
@@ -89,7 +89,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars *map[string]str
 
 	// set result in vars map
 	for varName, varValue := range results {
-		(*vars)[varName] = varValue
+		vars[varName] = varValue
 	}
 
 	p.Log.Tracef("Result for extract rule: %q = %+v", srcVar, results)

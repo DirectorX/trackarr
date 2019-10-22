@@ -10,7 +10,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
 	targetVar := node.SelectAttr("name")
 	regexVar := node.SelectAttr("regex")
@@ -26,7 +26,7 @@ func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars *map[string]
 	}
 
 	// ensure srcVar exists in vars map
-	existingValue, ok := (*vars)[srcVar]
+	existingValue, ok := vars[srcVar]
 	if !ok {
 		return fmt.Errorf("srcvar var did not exist: %q", srcVar)
 	}
@@ -41,7 +41,7 @@ func (p *Processor) processVarReplaceRule(node *xmlquery.Node, vars *map[string]
 	result := rxp.ReplaceAllString(existingValue, replaceVar)
 
 	// set result in vars map
-	(*vars)[targetVar] = result
+	vars[targetVar] = result
 
 	p.Log.Tracef("Result for varreplace rule: %q = %s", targetVar, result)
 	return nil

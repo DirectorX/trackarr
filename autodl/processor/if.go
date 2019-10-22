@@ -2,14 +2,15 @@ package processor
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/antchfx/xmlquery"
 	"github.com/pkg/errors"
-	"regexp"
 )
 
 /* Private */
 
-func (p *Processor) processIfRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processIfRule(node *xmlquery.Node, vars map[string]string) error {
 	srcVar := node.SelectAttr("srcvar")
 	varRegex := node.SelectAttr("regex")
 
@@ -21,7 +22,7 @@ func (p *Processor) processIfRule(node *xmlquery.Node, vars *map[string]string) 
 	}
 
 	// retrieve srcVar
-	existingValue, ok := (*vars)[srcVar]
+	existingValue, ok := vars[srcVar]
 	if !ok {
 		return fmt.Errorf("srcvar did not exist: %q", srcVar)
 	}

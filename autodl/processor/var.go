@@ -11,7 +11,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processVarRule(node *xmlquery.Node, vars map[string]string) error {
 	result := ""
 	newVarName := node.SelectAttr("name")
 
@@ -50,7 +50,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 			}
 
 			// lookup var
-			varValue, ok := (*vars)[varName]
+			varValue, ok := vars[varName]
 			if !ok {
 				// do we have the variable in the user defined tracker config? (torrent_pass, passkey etc...)
 				varValue, ok = p.Tracker.Config.Settings[varName]
@@ -76,7 +76,7 @@ func (p *Processor) processVarRule(node *xmlquery.Node, vars *map[string]string)
 	}
 
 	// set result in vars map
-	(*vars)[newVarName] = result
+	vars[newVarName] = result
 
 	p.Log.Tracef("Result for var rule: %q = %s", newVarName, result)
 	return nil

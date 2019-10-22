@@ -9,7 +9,7 @@ import (
 
 /* Private */
 
-func (p *Processor) processExtractOneRule(node *xmlquery.Node, vars *map[string]string) error {
+func (p *Processor) processExtractOneRule(node *xmlquery.Node, vars map[string]string) error {
 	// iterate elements in extractone node
 	n := node.FirstChild
 	for {
