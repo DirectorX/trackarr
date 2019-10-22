@@ -11,6 +11,10 @@ import (
 /* Private */
 
 func (c *IRCClient) handleMessage(event *irc.Event) {
+	// Lock to handle one message per tracker at a time
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	// determine channel name
 	channelName := "unknown"
 	if len(event.Arguments) > 0 && strings.HasPrefix(event.Arguments[0], "#") {
