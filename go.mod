@@ -8,7 +8,6 @@ require (
 	github.com/antchfx/xmlquery v1.1.0
 	github.com/antchfx/xpath v1.1.0 // indirect
 	github.com/antonmedv/expr v1.3.0
-	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 // indirect
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
 	github.com/enriquebris/goconcurrentqueue v0.0.0-20190719205347-3e5689c24f05
@@ -23,7 +22,6 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lithammer/shortuuid v3.0.0+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
-	github.com/matryer/runner v0.0.0-20190427160343-b472a46105b1
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
@@ -33,6 +31,7 @@ require (
 	github.com/pascaldekloe/latest v0.0.0-20181129202834-b40f9c61438d
 	github.com/pelletier/go-toml v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

@@ -5,6 +5,7 @@ import (
 	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
+	"github.com/l3uddz/trackarr/tasks"
 	"github.com/l3uddz/trackarr/web"
 
 	// "github.com/l3uddz/trackarr/ircclient"
@@ -82,6 +83,11 @@ func init() {
 	if err := cache.Init(); err != nil {
 		log.WithError(err).Fatal("Failed initializing cache")
 	}
+
+	// Init Task Scheduler
+	if err := tasks.Init(); err != nil {
+		log.WithError(err).Fatal("Failed initializing task scheduler")
+	}
 }
 
 /* Main */
@@ -105,8 +111,8 @@ func main() {
 	// Startup checks
 	startupChecks()
 
-	// Startup database tasks
-	database.StartPruner()
+	// Startup scheduled tasks
+	tasks.Start()
 
 	// Wait for shutdown
 	waitShutdown()

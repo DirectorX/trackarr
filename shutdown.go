@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/l3uddz/trackarr/tasks"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,8 +38,8 @@ func shutdown() {
 	}
 	log.Info("Stopped web server")
 
-	// Stop database tasks
-	database.StopPruner()
+	// Stop scheduled tasks
+	tasks.Stop()
 
 	// Close DB
 	if err := database.DB.Close(); err != nil {
