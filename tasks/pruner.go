@@ -12,7 +12,7 @@ const CronTaskDatabasePruner = "0 0,6,12,18 * * *"
 /* Private */
 
 func taskDatabasePruner() {
-	log.Infof("Database: Pruning old releases from database...")
+	log.Infof("Database: Pruning releases from database...")
 	oldestDate := time.Now().UTC().Truncate(time.Duration(72) * time.Hour)
 	rowsCleared := database.DB.Unscoped().Delete(models.PushedRelease{},
 		"created_at < ?", oldestDate).RowsAffected

@@ -29,14 +29,14 @@ func Init() error {
 
 func Start() {
 	scheduler.Start()
-	log.Info("Started task scheduler")
+	log.Info("Started scheduler")
 }
 
 func Stop() {
 	ctx := scheduler.Stop()
 	select {
 	case <-ctx.Done():
-		log.Info("Stopped task scheduler")
+		log.Info("Stopped scheduler")
 	case <-time.After(5 * time.Second):
 	}
 }
