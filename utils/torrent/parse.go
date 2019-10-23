@@ -34,18 +34,18 @@ func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Dat
 
 	// decode files data
 	files := make([]string, 0)
-	// single file context
 	if tf.Info.Size > 0 {
+		// there is only a single file
 		files = append(files, tf.Info.Name)
 	} else {
-		// decode files metadata
+		// there are multiple files
 		metadataFiles := make([]*FileMetadata, 0)
 		err = bencode.DecodeBytes(tf.Info.Files, &metadataFiles)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed decoding files torrent bytes from: %s", torrentUrl)
 		}
 
-		// add file to files slice and increase torrent size
+		// add files to files slice and increase torrent size
 		for _, f := range metadataFiles {
 			files = append(files, f.Path...)
 			tf.Info.Size += f.Length
