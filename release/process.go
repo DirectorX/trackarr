@@ -70,7 +70,7 @@ func (r *Release) Process() {
 		}
 
 		// store parsed torrent in release
-		r.Info.Torrent = torrentData
+		r.Info.Files = torrentData.Files
 
 		// set release information from decoded torrent data
 		if r.Tracker.Config.Bencode.Name {

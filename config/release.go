@@ -1,7 +1,5 @@
 package config
 
-import "github.com/l3uddz/trackarr/utils/torrent"
-
 type ReleaseInfo struct {
 	TrackerName string
 	ReleaseTime string
@@ -15,5 +13,5 @@ type ReleaseInfo struct {
 	Container   string
 	Origin      string
 	Tags        string
-	Torrent     *torrent.Data
+	Files       []string
 }
