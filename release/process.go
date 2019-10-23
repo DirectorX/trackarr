@@ -56,7 +56,7 @@ func (r *Release) Process() {
 	}
 
 	// bencode torrent name and size? (we must enforce this functionality when a bytes size was not determined)
-	if r.Tracker.Config.Bencode || r.Info.SizeBytes == 0 {
+	if (r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) || r.Info.SizeBytes == 0 {
 		// retrieve cookie if set for this tracker
 		headers := req.Header{}
 		if cookie, ok := r.Tracker.Config.Settings["cookie"]; ok {
@@ -69,9 +69,20 @@ func (r *Release) Process() {
 			return
 		}
 
+		// store parsed torrent in release
+		r.Info.Torrent = torrentData
+
 		// set release information from decoded torrent data
-		r.Info.TorrentName = torrentData.Info.Name
-		r.Info.SizeBytes = torrentData.Info.Size
+		if r.Tracker.Config.Bencode.Name {
+			// bencode name was set to true
+			r.Info.TorrentName = torrentData.Name
+		}
+
+		if r.Tracker.Config.Bencode.Size || r.Info.SizeBytes == 0 {
+			// bencode size was set to true (or we had no size from parsed release)
+			r.Info.SizeBytes = torrentData.Size
+		}
+
 		bencodeUsed = true
 	}
 

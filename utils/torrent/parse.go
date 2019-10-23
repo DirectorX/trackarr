@@ -15,7 +15,8 @@ var (
 
 /* Public */
 
-func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*TorrentFile, error) {
+// Credits: https://github.com/j-muller/go-torrent-parser
+func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Data, error) {
 	// retrieve torrent file
 	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, headers)
 	if err != nil {
@@ -24,11 +25,31 @@ func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Tor
 	}
 
 	// decode torrent data
-	tf := &TorrentFile{}
+	tf := &Metadata{}
 	err = bencode.DecodeBytes(torrentBytes, tf)
 	if err != nil {
 		log.WithError(err).Errorf("Failed decoding torrent bytes from: %s", torrentUrl)
 		return nil, errors.Wrapf(err, "failed decoding torrent bytes from: %s", torrentUrl)
+	}
+
+	// decode files data
+	files := make([]string, 0)
+	// single file context
+	if tf.Info.Size > 0 {
+		files = append(files, tf.Info.Name)
+	} else {
+		// decode files metadata
+		metadataFiles := make([]*FileMetadata, 0)
+		err = bencode.DecodeBytes(tf.Info.Files, &metadataFiles)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed decoding files torrent bytes from: %s", torrentUrl)
+		}
+
+		// add file to files slice and increase torrent size
+		for _, f := range metadataFiles {
+			files = append(files, f.Path...)
+			tf.Info.Size += f.Length
+		}
 	}
 
 	// add torrent to cache
@@ -37,5 +58,9 @@ func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Tor
 		Data: torrentBytes,
 	})
 
-	return tf, nil
+	return &Data{
+		Name:  tf.Info.Name,
+		Size:  tf.Info.Size,
+		Files: files,
+	}, nil
 }
