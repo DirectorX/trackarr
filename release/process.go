@@ -69,7 +69,7 @@ func (r *Release) Process() {
 			return
 		}
 
-		// store parsed torrent in release
+		// store parsed torrent files in release
 		r.Info.Files = torrentData.Files
 
 		// set release information from decoded torrent data
