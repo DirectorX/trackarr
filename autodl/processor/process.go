@@ -4,6 +4,7 @@ import (
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/release"
 	"github.com/l3uddz/trackarr/utils/maps"
+	"github.com/pkg/errors"
 )
 
 /* Private */
@@ -30,9 +31,9 @@ func (p *Processor) processQueue(queue chan string) {
 		for _, pattern := range patterns {
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
-				p.Log.WithError(err).Errorf("Failed dequeuing line to process, discarding release...")
-				parseFailed = true
-				break
+				// if an error occurred, the only possible cause is due to the channel being closed
+				p.Log.WithError(err).Errorf("Failed dequeuing line to process, processor shutting down...")
+				return
 			}
 
 			// process line
@@ -76,7 +77,11 @@ func (p *Processor) processQueue(queue chan string) {
 func (p *Processor) nextGoodLine(queue chan string) (string, error) {
 	for {
 		// pop line from queue
-		queuedLine := <-queue
+		queuedLine, ok := <-queue
+		if !ok {
+			// the channel has been closed
+			return "", errors.New("line queue has been closed")
+		}
 
 		// should ignore this line?
 		if p.shouldIgnoreLine(queuedLine) {

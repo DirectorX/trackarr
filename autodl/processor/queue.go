@@ -14,8 +14,8 @@ func (p *Processor) QueueLine(channel string, line string) error {
 	}
 
 	// add line to queued items
+	p.Log.Tracef("Adding line to queue: %s", line)
 	queue <- line
-
 	p.Log.Tracef("Queued line for processing: %s", line)
 	return nil
 }
