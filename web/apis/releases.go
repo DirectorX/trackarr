@@ -35,7 +35,7 @@ func Releases(c echo.Context) error {
 		releaseApproved = true
 	}
 
-	log.Infof("Releases requested, count: %d / approved: %v", releaseCount, releaseApproved)
+	log.Debugf("%d releases requested, approved: %v", releaseCount, releaseApproved)
 
 	// retrieve releases
 	var releases []*models.PushedRelease
