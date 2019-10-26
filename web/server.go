@@ -84,6 +84,7 @@ func Listen(configuration *config.Configuration, logLevel int) {
 
 	// - add api routes
 	api.GET("/torrent", apis.Torrent)
+	api.GET("/releases", apis.Releases)
 
 	/* init frontend routes */
 	// static

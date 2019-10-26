@@ -10,10 +10,10 @@ import (
 
 type PushedRelease struct {
 	gorm.Model
-	Name        string `sql:"type:text;not null"`
-	TrackerName string `sql:"type:varchar(256);not null"`
-	PvrName     string `sql:"type:text;not null"`
-	Approved    bool   `sql:"type:bool;not null,DEFAULT:false"`
+	Name        string `sql:"type:text;not null" json:"name"`
+	TrackerName string `sql:"type:varchar(256);not null" json:"tracker"`
+	PvrName     string `sql:"type:text;not null" json:"pvr"`
+	Approved    bool   `sql:"type:bool;not null,DEFAULT:false" json:"approved"`
 }
 
 /* Struct Methods */
