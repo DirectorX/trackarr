@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
+	"github.com/l3uddz/trackarr/logger"
 	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
@@ -13,6 +15,9 @@ import (
 /* Public */
 
 func Releases(c echo.Context) error {
+	// log
+	log := logger.GetLogger("api").WithFields(logrus.Fields{"client": c.RealIP()})
+
 	// parse parameters
 	countParam := c.QueryParam("count")
 	approvedParam := c.QueryParam("approved")
@@ -29,6 +34,8 @@ func Releases(c echo.Context) error {
 	if approvedParam == "1" || approvedParam == "true" {
 		releaseApproved = true
 	}
+
+	log.Infof("Releases requested, count: %d / approved: %v", releaseCount, releaseApproved)
 
 	// retrieve releases
 	var releases []*models.PushedRelease
