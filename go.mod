@@ -10,7 +10,6 @@ require (
 	github.com/antonmedv/expr v1.3.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
-	github.com/enriquebris/goconcurrentqueue v0.0.0-20190719205347-3e5689c24f05
 	github.com/foolin/echo-template v0.0.0-20190415034849-543a88245eec
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/uuid v1.1.1 // indirect

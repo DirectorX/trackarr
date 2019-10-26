@@ -2,8 +2,6 @@ package processor
 
 import (
 	"fmt"
-
-	"github.com/pkg/errors"
 )
 
 /* Public */
@@ -16,10 +14,8 @@ func (p *Processor) QueueLine(channel string, line string) error {
 	}
 
 	// add line to queued items
-	if err := queue.Enqueue(line); err != nil {
-		return errors.Wrapf(err, "failed queueing line for processing")
-	}
+	queue <- line
 
-	p.Log.Tracef("Queued line for processing, queue size for %s: %d", channel, queue.GetLen())
+	p.Log.Tracef("Queued line for processing: %s", line)
 	return nil
 }

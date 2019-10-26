@@ -67,6 +67,7 @@ func (c *IRCClient) Start() error {
 }
 
 func (c *IRCClient) Stop() {
+	// TODO: close line queue channel
 	if c.Conn.Connected() {
 		c.log.Warn("Disconnecting...")
 		c.Conn.Quit()

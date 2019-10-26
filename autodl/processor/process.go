@@ -1,19 +1,14 @@
 package processor
 
 import (
-	"fmt"
-
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/release"
 	"github.com/l3uddz/trackarr/utils/maps"
-
-	"github.com/enriquebris/goconcurrentqueue"
-	"github.com/pkg/errors"
 )
 
 /* Private */
 
-func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
+func (p *Processor) processQueue(queue chan string) {
 	var patterns []config.TrackerPattern
 
 	// set patterns
@@ -78,25 +73,16 @@ func (p *Processor) processQueue(queue *goconcurrentqueue.FIFO) {
 	}
 }
 
-func (p *Processor) nextGoodLine(queue *goconcurrentqueue.FIFO) (string, error) {
+func (p *Processor) nextGoodLine(queue chan string) (string, error) {
 	for {
 		// pop line from queue
-		queuedLine, err := queue.DequeueOrWaitForNextElement()
-		if err != nil {
-			return "", errors.Wrap(err, "failed dequeuing next line to process")
-		}
-
-		// type assert line
-		line, ok := queuedLine.(string)
-		if !ok {
-			return "", fmt.Errorf("failed type asserting dequeued line: %#v", queuedLine)
-		}
+		queuedLine := <-queue
 
 		// should ignore this line?
-		if p.shouldIgnoreLine(line) {
+		if p.shouldIgnoreLine(queuedLine) {
 			continue
 		}
 
-		return line, nil
+		return queuedLine, nil
 	}
 }
