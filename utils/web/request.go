@@ -42,6 +42,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	inputs = append(inputs, client)
 	inputs = append(inputs, v...)
 
+	req.SetJSONEscapeHTML(false)
+
 	// send request
 	switch method {
 	case GET:

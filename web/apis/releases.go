@@ -49,5 +49,8 @@ func Releases(c echo.Context) error {
 	// return response
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 	c.Response().WriteHeader(http.StatusOK)
-	return json.NewEncoder(c.Response()).Encode(releases)
+
+	enc := json.NewEncoder(c.Response())
+	enc.SetEscapeHTML(false)
+	return enc.Encode(releases)
 }
