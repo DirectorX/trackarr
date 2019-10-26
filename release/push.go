@@ -55,7 +55,13 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 		pvrRequest.Size = strconv.FormatInt(r.Info.SizeBytes, 10)
 	}
 
-	requestUrl := web.JoinURL(pvr.URL, "api/release/push")
+	requestUrl := ""
+	if strings.Index(pvr.URL, "/api/") == -1 {
+		requestUrl = web.JoinURL(pvr.URL, "api/release/push")
+	} else {
+		requestUrl = pvr.URL
+	}
+
 	headers := req.Header{
 		"X-Api-Key": pvr.ApiKey,
 	}
