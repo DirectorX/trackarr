@@ -30,6 +30,9 @@ func Init() error {
 		return errors.Wrap(err, "failed initializing database connection")
 	}
 
+	// pragmas
+	DB.Exec("PRAGMA auto_vacuum = 1;")
+
 	// migrate
 	DB.AutoMigrate(
 		&models.Tracker{},
