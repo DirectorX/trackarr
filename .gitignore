@@ -3,7 +3,7 @@
 /.vscode/
 
 # configuration
-*.json
+config.json
 *.db
 
 # vendor files
