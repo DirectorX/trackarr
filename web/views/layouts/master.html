@@ -9,6 +9,9 @@
     <!-- Page Stuff -->
     <title>{{.title}} - trackarr</title>
 
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
     <!-- Core Stuff -->
     <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png"/>
 
@@ -28,9 +31,7 @@
 <br>
 
 <!-- Page Content -->
-<div class="container-fluid content">
-    {{template "content" .}}
-</div>
+{{template "content" .}}
 
 <!-- App Scripts -->
 {{template "bottom" .}}
