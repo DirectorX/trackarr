@@ -1,19 +1,39 @@
 <template>
   <v-app>
-    <v-app-bar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        text
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
+    <v-navigation-drawer
+      fixed
+      permanent
+      width="220px"
+    >
+    
+      <v-list
+        nav
+        dense
       >
-        <span class="mr-2">Latest Release</span>
-      </v-btn>
-    </v-app-bar>
+        <v-list-item-title class="title">
+            Trackarr
+          </v-list-item-title>
+        <v-divider></v-divider>
+        <v-list-item link>
+          <v-list-item-icon>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+        <v-list-item link>
+          <v-list-item-icon>
+            <v-icon>mdi-folder</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Logs</v-list-item-title>
+        </v-list-item>
+        <v-list-item link>
+          <v-list-item-icon>
+            <v-icon>mdi-cogs</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Settings</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     
     <v-content>
     <router-view/>
