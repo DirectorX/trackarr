@@ -14,9 +14,10 @@ import (
 	"github.com/foolin/echo-template/supports/gorice"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/pascaldekloe/latest"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v8"
+
+	"github.com/desertbit/glue"
 )
 
 /* Structs */
@@ -29,8 +30,8 @@ type (
 
 /* Vars */
 var (
-	log        = logger.GetLogger("web")
-	logEmitter latest.Broadcast
+	log          = logger.GetLogger("web")
+	socketServer *glue.Server
 )
 
 /* Public */
@@ -91,15 +92,14 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	// static
 	gui.GET("/static/*", echo.WrapHandler(staticFileServer))
 
+	// glue socket server
+	gui.Any("/glue/*", GlueWrapper().HandlerFunc)
+
 	// index
 	gui.GET("/", handler.Index)
 
 	// logs
 	gui.GET("/logs", handler.Logs)
-	gui.GET("/logs/ws", WebsocketLogHandler)
-
-	// close broadcaster
-	defer logEmitter.UnsubscribeAll()
 
 	// setup log hook and emitter
 	logrus.AddHook(&WebsocketLogHook{})

@@ -8,12 +8,14 @@ require (
 	github.com/antchfx/xmlquery v1.1.0
 	github.com/antchfx/xpath v1.1.0 // indirect
 	github.com/antonmedv/expr v1.3.0
+	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/daaku/go.zipexe v1.0.1 // indirect
+	github.com/desertbit/glue v0.0.0-20190619185959-06de07e1e404
 	github.com/docker/go-units v0.4.0
 	github.com/foolin/echo-template v0.0.0-20190415034849-543a88245eec
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/uuid v1.1.1 // indirect
-	github.com/gorilla/websocket v1.4.1
+	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/imroc/req v0.2.4
 	github.com/jinzhu/gorm v1.9.11
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -27,7 +29,6 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/onsi/ginkgo v1.10.2 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
-	github.com/pascaldekloe/latest v0.0.0-20181129202834-b40f9c61438d
 	github.com/pelletier/go-toml v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/robfig/cron/v3 v3.0.0

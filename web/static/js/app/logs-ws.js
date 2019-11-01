@@ -1,36 +1,35 @@
-let loc = window.location;
-let uri = 'ws:';
+let socket = glue();
 
-if (loc.protocol === 'https:') {
-    uri = 'wss:';
-}
+socket.on("connected", function () {
+    console.log('Socket connected!');
+});
 
-uri += '//' + loc.host;
-uri += '/logs/ws';
+socket.on("disconnected", function () {
+    console.log('Socket disconnected...');
+});
 
-ws = new WebSocket(uri);
+socket.on("error", function (e, msg) {
+    console.log('Socket error: ' + msg);
+});
 
-ws.onopen = function () {
-    console.log('Websocket: Connecting to logging');
-};
+socket.onMessage(function (data) {
+    let event = JSON.parse(data);
 
-ws.onclose = function () {
-    console.log('Websocket: Disconnected from logging');
-};
+    if (event.type !== 'log') {
+        // ignore messages not of the type: log
+        return;
+    }
 
-ws.onmessage = function (evt) {
-    let logEvent = JSON.parse(evt.data);
     let logTable = document.getElementById('logs');
-
     logTable.innerHTML += '<tr>' +
-        '<td>' + logEvent.Time + '</td>' +
-        '<td>' + logEvent.Level + '</td>' +
-        '<td>' + logEvent.Component + '</td>' +
-        '<td>' + logEvent.Message + '</td>' +
+        '<td>' + event.data.time + '</td>' +
+        '<td>' + event.data.level + '</td>' +
+        '<td>' + event.data.component + '</td>' +
+        '<td>' + event.data.message + '</td>' +
         '</tr>';
 
     scrollPageToBottom();
-};
+});
 
 function scrollPageToBottom() {
     if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
