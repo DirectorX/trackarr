@@ -40,12 +40,23 @@ func NewPushedRelease(db *gorm.DB, name string, trackerName string, pvrName stri
 
 func GetLatestPushedReleases(db *gorm.DB, count int) []*PushedRelease {
 	var releases []*PushedRelease
-	db.Limit(count).Order("id desc").Find(&releases)
+
+	if count == 0 {
+		db.Order("id desc").Find(&releases)
+
+	} else {
+		db.Limit(count).Order("id desc").Find(&releases)
+	}
 	return releases
 }
 
 func GetLatestApprovedReleases(db *gorm.DB, count int) []*PushedRelease {
 	var releases []*PushedRelease
-	db.Where("approved = 1").Limit(count).Order("id desc").Find(&releases)
+
+	if count == 0 {
+		db.Where("approved = 1").Order("id desc").Find(&releases)
+	} else {
+		db.Where("approved = 1").Limit(count).Order("id desc").Find(&releases)
+	}
 	return releases
 }

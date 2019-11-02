@@ -2,7 +2,6 @@ package apis
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/logger"
@@ -24,10 +23,7 @@ func Releases(c echo.Context) error {
 
 	releaseCount, err := strconv.Atoi(countParam)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, &Response{
-			Error:   true,
-			Message: fmt.Sprintf("Failed parsing required count parameter: %v", err),
-		})
+		releaseCount = 0
 	}
 
 	releaseApproved := false
@@ -35,7 +31,7 @@ func Releases(c echo.Context) error {
 		releaseApproved = true
 	}
 
-	log.Debugf("%d releases requested, approved: %v", releaseCount, releaseApproved)
+	log.Debugf("Releases requested, approved: %v", releaseApproved)
 
 	// retrieve releases
 	var releases []*models.PushedRelease
