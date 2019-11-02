@@ -16,8 +16,6 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v8"
-
-	"github.com/desertbit/glue"
 )
 
 /* Structs */
@@ -31,7 +29,7 @@ type (
 /* Vars */
 var (
 	log          = logger.GetLogger("web")
-	socketServer *glue.Server
+	socketWrapper *GlueWrapper
 )
 
 /* Public */
@@ -83,6 +81,9 @@ func Listen(configuration *config.Configuration, logLevel int) {
 		},
 	}))
 
+	// setup glue wrapper
+	socketWrapper = NewWrapper()
+
 	// - add api routes
 	api.GET("/torrent", apis.Torrent)
 	api.GET("/releases", apis.Releases)
@@ -93,7 +94,7 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	gui.GET("/static/*", echo.WrapHandler(staticFileServer))
 
 	// glue socket server
-	gui.Any("/glue/*", GlueWrapper().HandlerFunc)
+	gui.Any("/glue/*", socketWrapper.HandlerFunc)
 
 	// index
 	gui.GET("/", handler.Index)
