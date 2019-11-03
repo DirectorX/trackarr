@@ -67,7 +67,11 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	}
 
 	// send request
-	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest), headers)
+	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest),
+		&web.Retry{
+			MaxAttempts:          3,
+			RetryableStatusCodes: []int{500,},
+		}, headers)
 	if err != nil {
 		r.Log.WithError(err).Errorf("Failed pushing: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
 		return
