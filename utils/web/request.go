@@ -61,16 +61,13 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	inputs := make([]interface{}, 0)
 	inputs = append(inputs, client)
+	inputs = append(inputs, v...)
 
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
 		case Retry:
-			// dont forward retry input downstream
 			retry = vT
-		default:
-			// add non retry input
-			inputs = append(inputs, vT)
 		}
 	}
 
