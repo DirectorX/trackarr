@@ -1,6 +1,7 @@
 package release
 
 import (
+	"github.com/jpillora/backoff"
 	"strconv"
 	"strings"
 	"time"
@@ -67,7 +68,15 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	}
 
 	// send request
-	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest), headers)
+	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest), headers, &web.Retry{
+		MaxAttempts: 5,
+		Backoff: &backoff.Backoff{
+			Jitter: true,
+		},
+		RetryableStatusCodes: []int{
+			500,
+		},
+	})
 	if err != nil {
 		r.Log.WithError(err).Errorf("Failed pushing: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
 		return
