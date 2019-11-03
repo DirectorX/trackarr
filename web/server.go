@@ -28,7 +28,7 @@ type (
 
 /* Vars */
 var (
-	log          = logger.GetLogger("web")
+	log           = logger.GetLogger("web")
 	socketWrapper *GlueWrapper
 )
 
@@ -46,6 +46,7 @@ func Listen(configuration *config.Configuration, logLevel int) {
 		e.Use(middleware.Logger())
 	}
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	// setup validator
 	e.Validator = &CustomValidator{
