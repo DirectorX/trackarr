@@ -20,3 +20,13 @@ func StringListContains(list []string, key string, caseSensitive bool) bool {
 
 	return false
 }
+
+func IntListContains(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+
+	return false
+}
