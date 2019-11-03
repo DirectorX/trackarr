@@ -2,7 +2,6 @@ package torrent
 
 import (
 	"github.com/imroc/req"
-	"github.com/jpillora/backoff"
 	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/l3uddz/trackarr/utils/web"
@@ -19,15 +18,7 @@ var (
 // Credits: https://github.com/j-muller/go-torrent-parser
 func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Data, error) {
 	// retrieve torrent file
-	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, headers, &web.Retry{
-		MaxAttempts: 5,
-		Backoff: &backoff.Backoff{
-			Jitter: true,
-		},
-		RetryableStatusCodes: []int{
-			500,
-		},
-	})
+	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, headers)
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving torrent bytes from: %s", torrentUrl)
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentUrl)
