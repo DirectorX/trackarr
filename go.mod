@@ -18,7 +18,6 @@ require (
 	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/imroc/req v0.2.4
 	github.com/jinzhu/gorm v1.9.11
-	github.com/jpillora/backoff v1.0.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
