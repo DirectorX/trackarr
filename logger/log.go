@@ -2,6 +2,7 @@ package logger
 
 import (
 	"github.com/l3uddz/trackarr/utils/strings"
+	"runtime"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -54,6 +55,12 @@ func Init(logLevel int, logFilePath string) error {
 	logFormatter.FullTimestamp = true
 	logFormatter.QuoteEmptyFields = true
 	logFormatter.ForceFormatting = true
+
+	if runtime.GOOS == "windows" {
+		// disable colors on windows
+		logFormatter.DisableColors = true
+	}
+
 	logrus.SetFormatter(logFormatter)
 
 	// set logging level
