@@ -117,6 +117,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		}
 
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
+			// close response body
+			_ = resp.Response().Body.Close()
+
+			// retry
 			d := retry.Duration()
 			log.Warnf("Retrying failed request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
 
