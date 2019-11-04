@@ -96,7 +96,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		if err != nil {
 			log.WithError(err).Errorf("Failed requesting url: %q", requestUrl)
 			if os.IsTimeout(err) {
-				if retry.MaxAttempts == 0 || retry.Attempt() > retry.MaxAttempts {
+				if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 					return nil, err
 				}
 
