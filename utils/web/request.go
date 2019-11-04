@@ -34,7 +34,7 @@ var (
 // HTTPMethod - The HTTP request method to use
 type HTTPMethod int
 type Retry struct {
-	*backoff.Backoff
+	backoff.Backoff
 	MaxAttempts          float64
 	RetryableStatusCodes []int
 }
@@ -66,8 +66,11 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
+		case *Retry:
+			retry = *vT
 		case Retry:
 			retry = vT
+			log.Debugf("Using retry: %#v", retry)
 		default:
 			inputs = append(inputs, vT)
 		}
@@ -92,14 +95,13 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		// validate response
 		if err != nil {
 			log.WithError(err).Errorf("Failed requesting url: %q", requestUrl)
-
 			if os.IsTimeout(err) {
 				if retry.MaxAttempts == 0 || retry.Attempt() > retry.MaxAttempts {
 					return nil, err
 				}
 
 				d := retry.Duration()
-				log.Debugf("Retrying failed HTTP request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
+				log.Debugf("Retrying failed HTTP request in %s: %q", d, requestUrl)
 
 				time.Sleep(d)
 				continue
