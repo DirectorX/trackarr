@@ -1,22 +1,32 @@
 package torrent
 
-import "github.com/zeebo/bencode"
+import (
+	"time"
+)
 
-type Metadata struct {
-	Announce string       `bencode:"announce"`
-	Comment  string       `bencode:"comment"`
-	Info     InfoMetadata `bencode:"info"`
+//Contains all the info about the torrent file
+type TorrentFile struct {
+	Length int64
+	Path   string
 }
 
-type InfoMetadata struct {
-	Name  string             `bencode:"name"`
-	Size  int64              `bencode:"length"`
-	Files bencode.RawMessage `bencode:"files"`
+//Contains all the meta-info data from the original torrent file
+type TorrentInfo struct {
+	Name        string
+	Length      int64
+	PieceLength int64
+	// Pieces      string
+	Files []*TorrentFile
 }
 
-type FileMetadata struct {
-	Path   []string `bencode:"path"`
-	Length int64    `bencode:"length"`
+//Contains all the meta-file data from the original torrent file
+type TorrentMeta struct {
+	AnnounceList []string
+	CreationDate time.Time
+	Encoding     string
+	Comment      string
+	CreatedBy    string
+	Info         *TorrentInfo
 }
 
 type Data struct {

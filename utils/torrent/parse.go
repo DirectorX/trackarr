@@ -1,12 +1,16 @@
 package torrent
 
 import (
-	"github.com/imroc/req"
+	"path/filepath"
+	"time"
+
 	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/l3uddz/trackarr/utils/web"
+
+	bencode "github.com/IncSW/go-bencode"
+	"github.com/imroc/req"
 	"github.com/pkg/errors"
-	"github.com/zeebo/bencode"
 )
 
 var (
@@ -15,52 +19,147 @@ var (
 
 /* Public */
 
-// Credits: https://github.com/j-muller/go-torrent-parser
 func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Data, error) {
 	// retrieve torrent file
-	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, headers)
+	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, &web.Retry{MaxAttempts: 3}, headers)
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving torrent bytes from: %s", torrentUrl)
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentUrl)
 	}
 
-	// decode torrent data
-	tf := &Metadata{}
-	err = bencode.DecodeBytes(torrentBytes, tf)
+	tf, err := TorrentDecode(torrentBytes)
 	if err != nil {
-		log.WithError(err).Errorf("Failed decoding torrent bytes from: %s", torrentUrl)
-		return nil, errors.Wrapf(err, "failed decoding torrent bytes from: %s", torrentUrl)
+		return nil, errors.Wrapf(err, "failed decoding torrent file: %s", torrentUrl)
 	}
 
-	// decode files data
-	files := make([]string, 0)
-	if tf.Info.Size > 0 {
+	// Files path and length, multipart vs single file torrent
+	var files []string
+	if tf.Info.Length > 0 {
 		// there is only a single file
 		files = append(files, tf.Info.Name)
 	} else {
 		// there are multiple files
-		metadataFiles := make([]*FileMetadata, 0)
-		err = bencode.DecodeBytes(tf.Info.Files, &metadataFiles)
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed decoding files torrent bytes from: %s", torrentUrl)
-		}
-
 		// add files to files slice and increase torrent size
-		for _, f := range metadataFiles {
-			files = append(files, f.Path...)
-			tf.Info.Size += f.Length
+		for _, f := range tf.Info.Files {
+			files = append(files, f.Path)
+			tf.Info.Length += f.Length
 		}
 	}
 
 	// add torrent to cache
-	cache.AddItem(torrentUrl, &cache.CacheItem{
+	go cache.AddItem(torrentUrl, &cache.CacheItem{
 		Name: tf.Info.Name,
 		Data: torrentBytes,
 	})
 
 	return &Data{
 		Name:  tf.Info.Name,
-		Size:  tf.Info.Size,
+		Size:  tf.Info.Length,
 		Files: files,
 	}, nil
+}
+
+//Decode byte-array of torrent file into TorrentMeta struct
+func TorrentDecode(b []byte) (*TorrentMeta, error) {
+	obj, err := bencode.Unmarshal(b)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if root object can be converted
+	r, ok := obj.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("invalid torrent file metadata")
+	}
+
+	// Main torrent struct
+	torrent := &TorrentMeta{}
+
+	// Root
+	// Announce
+	if belem, ok := r["announce"].([]byte); ok {
+		torrent.AnnounceList = append(torrent.AnnounceList, string(belem))
+	}
+	if belem, ok := r["announce-list"].([][]byte); ok {
+		for _, elem := range belem {
+			value := string(elem)
+			if value != torrent.AnnounceList[0] { //Prevent duplicated with Announce_1
+				torrent.AnnounceList = append(torrent.AnnounceList, value)
+			}
+		}
+	}
+
+	// Creation date
+	if belem, ok := r["creation date"].(int64); ok {
+		torrent.CreationDate = time.Unix(belem/1000, 0)
+	}
+
+	// Encoding
+	if belem, ok := r["encoding"].([]byte); ok {
+		torrent.Encoding = string(belem)
+	}
+
+	// Comment
+	if belem, ok := r["comment"].([]byte); ok {
+		torrent.Comment = string(belem)
+	}
+
+	// Created by
+	if belem, ok := r["created by"].([]byte); ok {
+		torrent.CreatedBy = string(belem)
+	}
+
+	// Info
+	if info, ok := r["info"].(map[string]interface{}); ok {
+		tInfo := &TorrentInfo{}
+
+		// Name of root file or folder
+		if belem, ok := info["name"].([]byte); ok {
+			tInfo.Name = string(belem)
+		}
+
+		// Size
+		if belem, ok := info["length"].(int64); ok {
+			tInfo.Length = belem
+		}
+
+		// Size per piece
+		if belem, ok := info["piece length"].(int64); ok {
+			tInfo.PieceLength = belem
+		}
+
+		// Piece's SHA-1 hash
+		// if belem, ok := info["pieces"].([]byte); ok {
+		// 	tInfo.Pieces = hex.EncodeToString(belem)
+		// }
+
+		// Files
+		if belem, ok := info["files"].([]interface{}); ok {
+			tFiles := make([]*TorrentFile, 0, len(belem))
+
+			for i := 0; i < len(belem); i++ {
+				if file, ok := belem[i].(map[string]interface{}); ok {
+					tfile := &TorrentFile{}
+					if length, ok := file["length"].(int64); ok {
+						tfile.Length = length
+					}
+					if path, ok := file["path"].([]interface{}); ok {
+						sPath := make([]string, len(path))
+						for x := 0; x < len(path); x++ {
+							sPath[x] = string(path[x].([]byte))
+						}
+						tfile.Path = filepath.Join(sPath...)
+
+						tFiles = append(tFiles, tfile)
+					}
+				}
+			}
+
+			tInfo.Files = tFiles
+		}
+
+		torrent.Info = tInfo
+	}
+
+	return torrent, nil
 }
