@@ -101,7 +101,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 				}
 
 				d := retry.Duration()
-				log.Debugf("Retrying failed HTTP request in %s: %q", d, requestUrl)
+				log.Warnf("Retrying failed HTTP request in %s: %q", d, requestUrl)
 
 				time.Sleep(d)
 				continue
