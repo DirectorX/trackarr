@@ -138,7 +138,7 @@ func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interf
 	}
 	defer func() {
 		if err := resp.Response().Body.Close(); err != nil {
-			log.WithError(err).Errorf("Failed to close HTTP response body for url: %q", requestUrl)
+			log.WithError(err).Errorf("Failed to close response body for url: %q", requestUrl)
 		}
 	}()
 

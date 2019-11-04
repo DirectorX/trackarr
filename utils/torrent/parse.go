@@ -23,7 +23,6 @@ func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Dat
 	// retrieve torrent file
 	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, &web.Retry{MaxAttempts: 3}, headers)
 	if err != nil {
-		log.WithError(err).Errorf("Failed retrieving torrent bytes from: %s", torrentUrl)
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentUrl)
 	}
 

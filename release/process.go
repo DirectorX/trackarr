@@ -66,6 +66,7 @@ func (r *Release) Process() {
 		torrentData, err := torrent.GetTorrentDetails(r.Info.TorrentURL, TorrentFileTimeout, headers)
 		if err != nil {
 			// abort release as we are unable to retrieve the information we need
+			r.Log.WithError(err).Error("Failed decoding details from torrent file")
 			return
 		}
 
