@@ -77,9 +77,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// Response var
 	var resp *req.Resp
+	var err error
+
 	// Exponential backoff
 	for {
-		var err error
 		switch method {
 		case GET:
 			resp, err = req.Get(requestUrl, inputs...)
@@ -87,7 +88,6 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			resp, err = req.Post(requestUrl, inputs...)
 		default:
 			log.Error("Request method has not been implemented")
-
 			return nil, errors.New("request method has not been implemented")
 		}
 
@@ -127,7 +127,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		break
 	}
 
-	return resp, nil
+	return resp, err
 }
 
 func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) ([]byte, error) {
