@@ -78,9 +78,13 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	// Response var
 	var resp *req.Resp
 	var err error
+	retrying := false
 
 	// Exponential backoff
 	for {
+		if retrying {
+			log.Infof("Retrying request for: %q", requestUrl)
+		}
 		switch method {
 		case GET:
 			resp, err = req.Get(requestUrl, inputs...)
@@ -89,6 +93,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		default:
 			log.Error("Request method has not been implemented")
 			return nil, errors.New("request method has not been implemented")
+		}
+
+		if retrying {
+			log.Info("Retrieved resp for retry: %q", requestUrl)
 		}
 
 		// validate response
@@ -101,12 +109,18 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 				d := retry.Duration()
 				log.Warnf("Retrying failed request in %s: %q", d, requestUrl)
-
+				retrying = true
 				time.Sleep(d)
+				log.Info("Slept retry duration")
 				continue
 			}
 
 			return nil, err
+		}
+
+		if retrying {
+			log.Infof("Request URL: %s", resp.Request().URL)
+			log.Infof("Request Response: %s", resp.Response().Status)
 		}
 
 		log.Tracef("Request URL: %s", resp.Request().URL)
@@ -129,6 +143,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		}
 
 		break
+	}
+
+	if retrying {
+		log.Info("Returning resp from retried http")
 	}
 
 	return resp, err
