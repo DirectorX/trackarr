@@ -70,7 +70,6 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			retry = *vT
 		case Retry:
 			retry = vT
-			log.Debugf("Using retry: %#v", retry)
 		default:
 			inputs = append(inputs, vT)
 		}
@@ -94,7 +93,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 		// validate response
 		if err != nil {
-			log.WithError(err).Errorf("Failed requesting url: %q", requestUrl)
+			log.WithError(err).Errorf("Failed requesting: %q", requestUrl)
 			if os.IsTimeout(err) {
 				if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 					return nil, err
