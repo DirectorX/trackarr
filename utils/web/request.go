@@ -66,8 +66,6 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
-		case *Retry:
-			retry = *vT
 		case Retry:
 			retry = vT
 		default:
