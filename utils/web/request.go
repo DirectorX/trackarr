@@ -101,7 +101,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 				}
 
 				d := retry.Duration()
-				log.Warnf("Retrying failed HTTP request in %s: %q", d, requestUrl)
+				log.Warnf("Retrying failed request in %s: %q", d, requestUrl)
 
 				time.Sleep(d)
 				continue
@@ -113,13 +113,13 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		log.Tracef("Request URL: %s", resp.Request().URL)
 		log.Tracef("Request Response: %s", resp.Response().Status)
 
-		if retry.MaxAttempts == 0 || retry.Attempt() > retry.MaxAttempts {
+		if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 			break
 		}
 
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
 			d := retry.Duration()
-			log.Debugf("Retrying failed HTTP request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
+			log.Warnf("Retrying failed request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
 
 			time.Sleep(d)
 			continue
