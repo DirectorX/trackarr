@@ -1,127 +1,49 @@
 <template>
   <v-container fluid>
     <v-row>
-        <v-col>
-        <h2 class="headline font-weight-light">All Releases</h2>
-        <v-divider class="mb-2"></v-divider>
-        <v-data-table :headers="headers" :items="allReleases" :items-per-page="5" class="elevation-1"></v-data-table>
+      <v-col class="pb-0" cols="9">
+        <h1 class="pt-5 headline font-weight-light">Pushed Releases</h1>
       </v-col>
-       <v-col>
-        <h2 class="headline font-weight-light">Approved Releases</h2>
-        <v-divider class="mb-2"></v-divider>
-        <v-data-table :headers="headers" :items="allReleases" :items-per-page="5" class="elevation-1"></v-data-table>
+      <v-col class="pb-0" cols="3">
+        <v-text-field v-model="pushedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
       </v-col>
-    </v-row>
-     <!-- <v-row>
-    <h2>Tracker Statuses</h2>
     </v-row>
     <v-row>
       <v-col>
-        <v-card
-    class="mx-auto"
-    max-width="344"
-    outlined
-  >
-    <v-list-item three-line>
-      <v-list-item-content>
-        <div class="overline mb-4">OVERLINE</div>
-        <v-list-item-title class="headline mb-1">BeyondHD</v-list-item-title>
-        <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-avatar
-        tile
-        size="80"
-        color="grey"
-      ></v-list-item-avatar>
-    </v-list-item>
-  </v-card>
+        <v-divider class="mb-2"></v-divider>
+        <v-data-table :search="pushedReleasesSearch" disable-sorting :loading="releasesLoading" calculate-widths :headers="headers"
+          :items="allReleases" :items-per-page="5" class="elevation-1">
+          <template v-slot:item.age="{ item }">
+            {{ item.age | moment("from", "now")}}
+          </template>
+          <template v-slot:item.pvr="{ item }">
+            {{ item.pvr | capitalize }}
+          </template>
+        </v-data-table>
       </v-col>
-        <v-col>
-        <v-card
-    class="mx-auto"
-    max-width="344"
-    outlined
-  >
-    <v-list-item three-line>
-      <v-list-item-content>
-        <div class="overline mb-4">OVERLINE</div>
-        <v-list-item-title class="headline mb-1">BTN</v-list-item-title>
-        <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-avatar
-        tile
-        size="80"
-        color="grey"
-      ></v-list-item-avatar>
-    </v-list-item>
-  </v-card>
+    </v-row>
+    <v-row>
+      <v-col class="pb-0" cols="9">
+        <h1 class="pt-5 headline font-weight-light">Approved Releases</h1>
       </v-col>
-        <v-col>
-        <v-card
-    class="mx-auto"
-    max-width="344"
-    outlined
-  >
-    <v-list-item three-line>
-      <v-list-item-content>
-        <div class="overline mb-4">OVERLINE</div>
-        <v-list-item-title class="headline mb-1">HD-Torrents</v-list-item-title>
-        <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-avatar
-        tile
-        size="80"
-        color="grey"
-      ></v-list-item-avatar>
-    </v-list-item>
-  </v-card>
+       <v-col class="pb-0" cols="3">
+        <v-text-field v-model="approvedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
       </v-col>
-        <v-col>
-        <v-card
-    class="mx-auto"
-    max-width="344"
-    outlined
-  >
-    <v-list-item three-line>
-      <v-list-item-content>
-        <div class="overline mb-4">OVERLINE</div>
-        <v-list-item-title class="headline mb-1">IPTorrents</v-list-item-title>
-        <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-avatar
-        tile
-        size="80"
-        color="grey"
-      ></v-list-item-avatar>
-    </v-list-item>
-  </v-card>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-divider class="mb-2"></v-divider>
+        <v-data-table :search="approvedReleasesSearch" disable-sorting :loading="releasesLoading" calculate-widths :headers="headers"
+          :items="approvedReleases" :items-per-page="5" class="elevation-1">
+          <template v-slot:item.age="{ item }">
+            {{ item.age | moment("from", "now")}}
+          </template>
+          <template v-slot:item.pvr="{ item }">
+            {{ item.pvr | capitalize }}
+          </template>
+        </v-data-table>
       </v-col>
-        <v-col>
-        <v-card
-    class="mx-auto"
-    max-width="344"
-    outlined
-  >
-    <v-list-item three-line>
-      <v-list-item-content>
-        <div class="overline mb-4">OVERLINE</div>
-        <v-list-item-title class="headline mb-1">PassThePopcorn</v-list-item-title>
-        <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-avatar
-        tile
-        size="80"
-        color="grey"
-      ></v-list-item-avatar>
-    </v-list-item>
-  </v-card>
-      </v-col>
-    </v-row> -->
+    </v-row>
   </v-container>
 
 </template>
@@ -142,54 +64,54 @@
           {
             text: 'Tracker',
             value: 'tracker'
+          },
+          {
+            text: 'PVR',
+            value: 'pvr'
           }
         ],
-        allReleases: [
-            {
-                "age":"17h",
-                "release": "Fuses.mkv",
-                "tracker": "PtP",
-                "PvrName": "radarr",
-                "Approved": false
-            },
-            {
-                
-                "release": "Mondscheinkinder [2006] - AQ.mkv",
-                "tracker": "PtP",
-                "age":"13h"
-            },
-            {
-                
-                "release": "Mondscheinkinder [2006] - AQ.mkv",
-                "tracker": "PtP",
-                "age":"13h"
-            },
-            {
-                
-                "release": "Mondscheinkinder [2006] - AQ.mkv",
-                "tracker": "PtP",
-                "age":"13h"
-            },
-            {
-                
-                "release": "Mondscheinkinder [2006] - AQ.mkv",
-                "tracker": "PtP",
-                "age":"13h"
-            },
-            ],
+        allReleases: [],
+        approvedReleases: [],
+        pushedReleasesSearch: '',
+        releasesLoading: true,
+        approvedReleasesSearch: ''
       }
     },
     methods: {
-      fetchReleases: function(){
-        this.$axios.get("http://trackarr.cloudbox.media:7337/api/releases?apikey=RGqVz47Aioa5JxwmuwAEJY").then(response =>{
-                    console.log(response);
+      fetchReleases: function () {
+        this.$axios.get(process.env.VUE_APP_RELEASE_URL).then(
+          response => {
+            for (let i = 0; i < response.data.length; i++) {
+              this.allReleases.push({
+                age: response.data[i].CreatedAt,
+                release: response.data[i].Name,
+                pvr: response.data[i].PvrName,
+                tracker: response.data[i].TrackerName
+              })
+
+              if(response.data[i].Approved){
+                this.approvedReleases.push({
+                  age: response.data[i].CreatedAt,
+                  release: response.data[i].Name,
+                  pvr: response.data[i].PvrName,
+                  tracker: response.data[i].TrackerName
                 })
+              }
+            }
+            this.releasesLoading = false;
+          })
       }
     },
-    mounted: function(){
+    mounted: function () {
       this.fetchReleases()
+    },
+    filters: {
+      capitalize: function (value) {
+        if (!value) return ''
+        value = value.toString()
+        return value.charAt(0).toUpperCase() + value.slice(1)
+      }
     }
 
   };
 </script>
-
