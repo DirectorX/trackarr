@@ -59,7 +59,7 @@ build-all:
 ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
 	@echo "Building for ${TARGET}..." && \
 	mkdir -p ${BUILD_PATH} && \
-	CGO_ENABLED=1 go build \
+	CGO_ENABLED=0 go build \
 		-mod vendor \
 		-trimpath \
 		-ldflags "-s -w -X main.buildVersion=${VERSION} -X main.buildGitCommit=${GIT_COMMIT} -X main.buildTimestamp=${TIMESTAMP}" \
