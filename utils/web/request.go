@@ -78,13 +78,9 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	// Response var
 	var resp *req.Resp
 	var err error
-	retrying := false
 
 	// Exponential backoff
 	for {
-		if retrying {
-			log.Infof("Retrying request for: %q", requestUrl)
-		}
 		switch method {
 		case GET:
 			resp, err = req.Get(requestUrl, inputs...)
@@ -95,32 +91,21 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			return nil, errors.New("request method has not been implemented")
 		}
 
-		if retrying {
-			log.Info("Retrieved resp for retry: %q", requestUrl)
-		}
-
 		// validate response
 		if err != nil {
-			log.WithError(err).Errorf("Failed requesting: %q", requestUrl)
+			log.WithError(err).Debugf("Failed requesting: %q", requestUrl)
 			if os.IsTimeout(err) {
 				if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 					return nil, err
 				}
 
 				d := retry.Duration()
-				log.Warnf("Retrying failed request in %s: %q", d, requestUrl)
-				retrying = true
+				log.Debugf("Retrying failed request in %s: %q", d, requestUrl)
 				time.Sleep(d)
-				log.Info("Slept retry duration")
 				continue
 			}
 
 			return nil, err
-		}
-
-		if retrying {
-			log.Infof("Request URL: %s", resp.Request().URL)
-			log.Infof("Request Response: %s", resp.Response().Status)
 		}
 
 		log.Tracef("Request URL: %s", resp.Request().URL)
@@ -136,17 +121,13 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 			// retry
 			d := retry.Duration()
-			log.Warnf("Retrying failed request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
+			log.Debugf("Retrying failed request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
 
 			time.Sleep(d)
 			continue
 		}
 
 		break
-	}
-
-	if retrying {
-		log.Info("Returning resp from retried http")
 	}
 
 	return resp, err
