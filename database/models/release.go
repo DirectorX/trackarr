@@ -40,7 +40,7 @@ func NewPushedRelease(db *storm.DB, name string, trackerName string, pvrName str
 }
 
 func GetLatestPushedReleases(db *storm.DB, count int) []*PushedRelease {
-	var releases []*PushedRelease
+	releases := make([]*PushedRelease, 0)
 
 	if count == 0 {
 		if err := db.All(&releases); err != nil {
@@ -56,7 +56,7 @@ func GetLatestPushedReleases(db *storm.DB, count int) []*PushedRelease {
 }
 
 func GetLatestApprovedReleases(db *storm.DB, count int) []*PushedRelease {
-	var releases []*PushedRelease
+	releases := make([]*PushedRelease, 0)
 
 	if count == 0 {
 		if err := db.Select(q.Eq("Approved", true)).Find(&releases); err != nil && err != storm.ErrNotFound {
