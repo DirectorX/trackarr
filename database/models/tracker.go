@@ -1,9 +1,8 @@
 package models
 
 import (
+	"github.com/asdine/storm/v3"
 	"github.com/l3uddz/trackarr/logger"
-
-	"github.com/jinzhu/gorm"
 )
 
 var (
@@ -12,21 +11,26 @@ var (
 
 // Tracker - Model representation of an autodl tracker file
 type Tracker struct {
-	gorm.Model
-	Name    string `sql:"type:varchar(256);unique;not null"`
-	Version string `sql:"type:varchar(256);not null"`
+	Name    string `storm:"id,unique"`
+	Version string
 }
 
 /* Methods */
 
 // NewOrExistingTracker - Return an existing or new tracker
-func NewOrExistingTracker(db *gorm.DB, name string) (*Tracker, error) {
-	tracker := &Tracker{}
+func NewOrExistingTracker(db *storm.DB, name string) (*Tracker, error) {
+	var tracker Tracker
 
-	if err := db.FirstOrInit(&tracker, Tracker{Name: name}).Error; err != nil {
-		log.WithError(err).Errorf("Failed unexpectedly finding existing tracker with name: %q", name)
+	// find existing tracker
+	if err := db.One("Name", name, &tracker); err == nil {
+		return &tracker, nil
+	}
+
+	// create new tracker
+	tracker.Name = name
+	if err := db.Save(&tracker); err != nil {
 		return nil, err
 	}
 
-	return tracker, nil
+	return &tracker, nil
 }
