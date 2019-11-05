@@ -34,7 +34,7 @@ var (
 // HTTPMethod - The HTTP request method to use
 type HTTPMethod int
 type Retry struct {
-	*backoff.Backoff
+	backoff.Backoff
 	MaxAttempts          float64
 	RetryableStatusCodes []int
 }
@@ -66,6 +66,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
+		case *Retry:
+			retry = *vT
 		case Retry:
 			retry = vT
 		default:
@@ -75,9 +77,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// Response var
 	var resp *req.Resp
+	var err error
+
 	// Exponential backoff
 	for {
-		var err error
 		switch method {
 		case GET:
 			resp, err = req.Get(requestUrl, inputs...)
@@ -85,22 +88,19 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			resp, err = req.Post(requestUrl, inputs...)
 		default:
 			log.Error("Request method has not been implemented")
-
 			return nil, errors.New("request method has not been implemented")
 		}
 
 		// validate response
 		if err != nil {
-			log.WithError(err).Errorf("Failed requesting url: %q", requestUrl)
-
+			log.WithError(err).Debugf("Failed requesting: %q", requestUrl)
 			if os.IsTimeout(err) {
-				if retry.MaxAttempts == 0 || retry.Attempt() > retry.MaxAttempts {
+				if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 					return nil, err
 				}
 
 				d := retry.Duration()
-				log.Debugf("Retrying failed HTTP request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
-
+				log.Debugf("Retrying failed request in %s: %q", d, requestUrl)
 				time.Sleep(d)
 				continue
 			}
@@ -111,13 +111,17 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		log.Tracef("Request URL: %s", resp.Request().URL)
 		log.Tracef("Request Response: %s", resp.Response().Status)
 
-		if retry.MaxAttempts == 0 || retry.Attempt() > retry.MaxAttempts {
+		if retry.MaxAttempts == 0 || retry.Attempt() >= retry.MaxAttempts {
 			break
 		}
 
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
+			// close response body
+			_ = resp.Response().Body.Close()
+
+			// retry
 			d := retry.Duration()
-			log.Debugf("Retrying failed HTTP request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
+			log.Debugf("Retrying failed request in %s: %d - %q", d, resp.Response().StatusCode, requestUrl)
 
 			time.Sleep(d)
 			continue
@@ -126,7 +130,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		break
 	}
 
-	return resp, nil
+	return resp, err
 }
 
 func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) ([]byte, error) {
@@ -137,7 +141,7 @@ func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interf
 	}
 	defer func() {
 		if err := resp.Response().Body.Close(); err != nil {
-			log.WithError(err).Errorf("Failed to close HTTP response body for url: %q", requestUrl)
+			log.WithError(err).Errorf("Failed to close response body for url: %q", requestUrl)
 		}
 	}()
 
