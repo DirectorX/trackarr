@@ -79,7 +79,11 @@ func PullTrackers(trackersPath string) error {
 
 			// update tracker in database
 			tracker.Version = trackerData.Version
-			database.DB.Save(&tracker)
+			if err := database.DB.Save(tracker); err != nil {
+				log.WithError(err).Errorf("Failed saving tracker %q, version: %s", tracker.Name, tracker.Version)
+				trackerErrors++
+				continue
+			}
 
 			trackerPulls++
 		} else {

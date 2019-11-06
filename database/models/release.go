@@ -1,19 +1,19 @@
 package models
 
 import (
-	"time"
-
+	"github.com/asdine/storm/q"
+	"github.com/asdine/storm/v3"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
-
-	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type PushedRelease struct {
-	gorm.Model
-	Name        string `sql:"type:text;not null"`
-	TrackerName string `sql:"type:varchar(256);not null"`
-	PvrName     string `sql:"type:text;not null"`
-	Approved    bool   `sql:"type:bool;not null,DEFAULT:false"`
+	Id          int `storm:"id,increment"`
+	Name        string
+	TrackerName string
+	PvrName     string
+	Approved    bool
+	CreatedAt   time.Time
 }
 
 /* Struct Methods */
@@ -22,15 +22,16 @@ func (r PushedRelease) DurationSinceCreated() string {
 }
 
 /* Methods */
-func NewPushedRelease(db *gorm.DB, name string, trackerName string, pvrName string, approved bool) (*PushedRelease, error) {
+func NewPushedRelease(db *storm.DB, name string, trackerName string, pvrName string, approved bool) (*PushedRelease, error) {
 	release := &PushedRelease{
 		Name:        name,
 		TrackerName: trackerName,
 		PvrName:     pvrName,
 		Approved:    approved,
+		CreatedAt:   time.Now().UTC(),
 	}
 
-	if err := db.FirstOrInit(&release, PushedRelease{Name: name, TrackerName: trackerName, PvrName: pvrName}).Error; err != nil {
+	if err := db.Save(release); err != nil {
 		log.WithError(err).Errorf("Failed unexpectedly finding existing pushed release with name: %q", name)
 		return nil, err
 	}
@@ -38,25 +39,34 @@ func NewPushedRelease(db *gorm.DB, name string, trackerName string, pvrName stri
 	return release, nil
 }
 
-func GetLatestPushedReleases(db *gorm.DB, count int) []*PushedRelease {
-	var releases []*PushedRelease
+func GetLatestPushedReleases(db *storm.DB, count int) []*PushedRelease {
+	releases := make([]*PushedRelease, 0)
 
 	if count == 0 {
-		db.Order("id desc").Find(&releases)
-
+		if err := db.All(&releases); err != nil {
+			log.WithError(err).Error("Failed retrieving all pushed releases from database...")
+		}
 	} else {
-		db.Limit(count).Order("id desc").Find(&releases)
+		if err := db.All(&releases, storm.Limit(count)); err != nil {
+			log.WithError(err).Errorf("Failed retrieving %d pushed releases from database...", count)
+		}
 	}
+
 	return releases
 }
 
-func GetLatestApprovedReleases(db *gorm.DB, count int) []*PushedRelease {
-	var releases []*PushedRelease
+func GetLatestApprovedReleases(db *storm.DB, count int) []*PushedRelease {
+	releases := make([]*PushedRelease, 0)
 
 	if count == 0 {
-		db.Where("approved = 1").Order("id desc").Find(&releases)
+		if err := db.Select(q.Eq("Approved", true)).Find(&releases); err != nil && err != storm.ErrNotFound {
+			log.WithError(err).Error("Failed retrieving all approved releases from database...")
+		}
 	} else {
-		db.Where("approved = 1").Limit(count).Order("id desc").Find(&releases)
+		if err := db.Select(q.Eq("Approved", true)).Limit(count).Find(&releases); err != nil && err != storm.ErrNotFound {
+			log.WithError(err).Errorf("Failed retrieving %d approved releases from database...", count)
+		}
 	}
+
 	return releases
 }

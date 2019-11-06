@@ -52,7 +52,7 @@ func (hook *WebsocketLogHook) Fire(entry *logrus.Entry) error {
 	// broadcast hooked log message
 	jsonData, err := logMessage.ToJsonString()
 	if err == nil {
-		socketWrapper.Broadcast(jsonData)
+		socketWrapper.BroadcastTopic("logs", jsonData)
 	}
 
 	return nil
