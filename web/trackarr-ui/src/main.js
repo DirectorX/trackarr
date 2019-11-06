@@ -13,6 +13,7 @@ Vue.use(require('vue-moment'));
 
 
 Vue.use(VueNativeSock, process.env.VUE_APP_WEBSOCKET, {
+  format: 'json',
   reconnection: true, // (Boolean) whether to reconnect automatically (false)
 })
 
