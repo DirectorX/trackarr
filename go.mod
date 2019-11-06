@@ -12,9 +12,7 @@ require (
 	github.com/antonmedv/expr v1.3.0
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/asdine/storm/v3 v3.0.0
-	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/daaku/go.zipexe v1.0.1 // indirect
-	github.com/desertbit/glue v0.0.0-20190619185959-06de07e1e404
 	github.com/docker/go-units v0.4.0
 	github.com/foolin/echo-template v0.0.0-20190415034849-543a88245eec
 	github.com/golang/protobuf v1.3.2 // indirect
@@ -31,6 +29,7 @@ require (
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/olahol/melody v0.0.0-20180227134253-7bd65910e5ab
 	github.com/onsi/ginkgo v1.10.2 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/pelletier/go-toml v1.5.0 // indirect

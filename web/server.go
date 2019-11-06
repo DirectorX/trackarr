@@ -29,7 +29,7 @@ type (
 /* Vars */
 var (
 	log           = logger.GetLogger("web")
-	socketWrapper *GlueWrapper
+	socketWrapper *SocketWrapper
 )
 
 /* Public */
@@ -94,8 +94,8 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	// static
 	gui.GET("/static/*", echo.WrapHandler(staticFileServer))
 
-	// glue socket server
-	gui.Any("/glue/*", socketWrapper.HandlerFunc)
+	// websocket
+	gui.Any("/ws", socketWrapper.HandlerFunc)
 
 	// index
 	gui.GET("/", handler.Index)

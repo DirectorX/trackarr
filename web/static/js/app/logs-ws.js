@@ -1,19 +1,25 @@
-let socket = glue();
+// set socketUrl
+let socketUrl = new URL('/ws', window.location.href);
+socketUrl.protocol = socketUrl.protocol.replace('http', 'ws');
 
-socket.on("connected", function () {
-    console.log('Socket connected!');
-});
+// create socket
+let socket = new WebSocket(socketUrl.href);
 
-socket.on("disconnected", function () {
-    console.log('Socket disconnected...');
-});
+socket.onopen = () => {
+    console.log('Socket connected');
+    socket.send(JSON.stringify({type: 'subscribe', 'data': 'logs'}))
+};
 
-socket.on("error", function (e, msg) {
-    console.log('Socket error: ' + msg);
-});
+socket.onclose = () => {
+    console.log('Socket disconnected');
+};
 
-socket.onMessage(function (data) {
-    let event = JSON.parse(data);
+socket.onerror = error => {
+    console.log(`Socket error: ${error}`);
+};
+
+socket.onmessage = e => {
+    let event = JSON.parse(e.data);
 
     if (event.type !== 'log') {
         // ignore messages not of the type: log
@@ -29,7 +35,8 @@ socket.onMessage(function (data) {
         '</tr>';
 
     scrollPageToBottom();
-});
+};
+
 
 function scrollPageToBottom() {
     if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {

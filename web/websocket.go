@@ -2,8 +2,9 @@ package web
 
 import (
 	"encoding/json"
-	"github.com/desertbit/glue"
 	"github.com/labstack/echo"
+	"github.com/olahol/melody"
+	"sync"
 )
 
 /* WebsocketMessage */
@@ -23,77 +24,163 @@ func (whMessage WebsocketMessage) ToJsonString() (string, error) {
 
 /* Public */
 
-type GlueWrapper struct {
-	Context       echo.Context
-	Server        *glue.Server
-	ReadCallbacks map[string][]interface{}
+type SocketWrapper struct {
+	// private
+	m *melody.Melody
+
+	sockets map[*melody.Session]map[string]bool
+	topics  map[string]map[*melody.Session]bool
+	mtx     *sync.Mutex
+
+	readCallbacks map[string][]interface{}
 }
 
-func NewWrapper() *GlueWrapper {
+func NewWrapper() *SocketWrapper {
 	// init wrapper
-	w := &GlueWrapper{
-		Server: glue.NewServer(),
+	w := &SocketWrapper{
+		m: melody.New(),
 	}
 
-	w.ReadCallbacks = make(map[string][]interface{}, 0)
+	w.sockets = make(map[*melody.Session]map[string]bool, 0)
+	w.topics = make(map[string]map[*melody.Session]bool, 0)
+	w.mtx = &sync.Mutex{}
 
-	// init server
-	w.Server.OnNewSocket(w.newSocketCreated)
+	w.m.HandleConnect(w.socketConnected)
+	w.m.HandleDisconnect(w.socketDisconnected)
+	w.m.HandleMessage(w.socketMessage)
+
+	// init default read callbacks
+	w.readCallbacks = make(map[string][]interface{}, 0)
+
+	w.AddReadCallback("subscribe", w.callbackSubscribe)
+
 	return w
 }
 
-func (w *GlueWrapper) HandlerFunc(context echo.Context) error {
-	w.Context = context
-	w.Server.ServeHTTP(context.Response(), context.Request())
-	return nil
+// core
+
+func (w *SocketWrapper) HandlerFunc(context echo.Context) error {
+	return w.m.HandleRequest(context.Response().Writer, context.Request())
 }
 
-func (w *GlueWrapper) Broadcast(data string) {
-	for _, sock := range socketWrapper.Server.Sockets() {
-		sock.Write(data)
+// broadcast
+
+func (w *SocketWrapper) BroadcastAll(data string) {
+	_ = w.m.Broadcast([]byte(data))
+}
+
+func (w *SocketWrapper) BroadcastTopic(topic string, data string) {
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
+
+	sockets, ok := w.topics[topic]
+	if !ok {
+		return
+	}
+
+	for socket, _ := range sockets {
+		_ = socket.Write([]byte(data))
 	}
 }
 
-func (w *GlueWrapper) AddReadCallback(msgType string, callback interface{}) {
-	w.ReadCallbacks[msgType] = append(w.ReadCallbacks[msgType], callback)
+func (w *SocketWrapper) Subscribe(s *melody.Session, topic string) {
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
+
+	_, ok := w.sockets[s]
+	if !ok {
+		w.sockets[s] = map[string]bool{}
+	}
+	w.sockets[s][topic] = true
+
+	_, ok = w.topics[topic]
+	if !ok {
+		w.topics[topic] = map[*melody.Session]bool{}
+	}
+	w.topics[topic][s] = true
+}
+
+func (w *SocketWrapper) Unsubscribe(s *melody.Session, topic string) {
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
+
+	_, ok := w.sockets[s]
+	if ok {
+		delete(w.topics[topic], s)
+		if len(w.topics[topic]) == 0 {
+			delete(w.topics, topic)
+		}
+		delete(w.sockets, s)
+	}
+}
+
+func (w *SocketWrapper) UnsubscribeAll(s *melody.Session) {
+	w.mtx.Lock()
+	defer w.mtx.Unlock()
+
+	for t := range w.sockets[s] {
+		delete(w.topics[t], s)
+		if len(w.topics[t]) == 0 {
+			delete(w.topics, t)
+		}
+	}
+	delete(w.sockets, s)
+}
+
+func (w *SocketWrapper) AddReadCallback(msgType string, callback interface{}) {
+	w.readCallbacks[msgType] = append(w.readCallbacks[msgType], callback)
+}
+
+// callbacks
+
+func (w *SocketWrapper) callbackSubscribe(s *melody.Session, m *WebsocketMessage) {
+	log.Tracef("Processing socket callback for %s: %#v", s.Request.RemoteAddr, m)
+
+	topic, ok := m.Data.(string)
+	if !ok {
+		return
+	}
+
+	w.Subscribe(s, topic)
+	log.Debugf("Socket %s subscribed to topic: %q", s.Request.RemoteAddr, topic)
 }
 
 /* Private */
+func (w SocketWrapper) socketConnected(s *melody.Session) {
+	log.Debugf("Socket connected: %s", s.Request.RemoteAddr)
+}
 
-func (w GlueWrapper) newSocketCreated(s *glue.Socket) {
-	log.Debugf("Socket connected: %s", s.RemoteAddr())
+func (w *SocketWrapper) socketDisconnected(s *melody.Session) {
+	log.Debugf("Socket disconnected: %s", s.Request.RemoteAddr)
+	w.UnsubscribeAll(s)
+}
 
-	s.OnClose(func() {
-		log.Debugf("Socket closed: %s", s.RemoteAddr())
-	})
+func (w *SocketWrapper) socketMessage(s *melody.Session, msg []byte) {
+	// unmarshal data
+	whMsg := &WebsocketMessage{}
+	if err := json.Unmarshal(msg, &whMsg); err != nil {
+		log.WithError(err).Errorf("Failed unmarshalling data received on socket: %#v", msg)
+		return
+	}
 
-	s.OnRead(func(data string) {
-		// unmarshal data
-		whMsg := &WebsocketMessage{}
-		if err := json.Unmarshal([]byte(data), &whMsg); err != nil {
-			log.WithError(err).Errorf("Failed unmarshalling data received on socket: %v", data)
-			return
-		}
+	// callbacks registered for this message type?
+	callbacks, ok := w.readCallbacks[whMsg.Type]
+	if !ok {
+		// there were no callbacks for this message type
+		log.Warnf("No read callbacks found for socket message type: %q", whMsg.Type)
+		return
+	}
 
-		// callbacks registered for this message type?
-		callbacks, ok := w.ReadCallbacks[whMsg.Type]
+	// iterate callbacks
+	for _, callback := range callbacks {
+		// ensure callback is in expected format
+		callFunc, ok := callback.(func(*melody.Session, *WebsocketMessage))
 		if !ok {
-			// there were no callbacks for this message type
-			log.Warnf("No read callbacks found for socket message type: %v", whMsg.Type)
-			return
+			log.Warnf("Failed type asserting read callback function for socket message type: %v", whMsg.Type)
+			continue
 		}
 
-		// iterate callbacks
-		for _, callback := range callbacks {
-			// ensure callback is in expected format
-			callFunc, ok := callback.(func(*glue.Socket, *WebsocketMessage))
-			if !ok {
-				log.Warnf("Failed type asserting read callback function for socket message type: %v", whMsg.Type)
-				continue
-			}
-
-			// trigger the callback
-			callFunc(s, whMsg)
-		}
-	})
+		// trigger the callback
+		callFunc(s, whMsg)
+	}
 }
