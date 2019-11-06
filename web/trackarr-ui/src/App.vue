@@ -24,12 +24,16 @@
       </v-list>
     </v-navigation-drawer>
     <v-content>
-      <router-view />
+      <transition name="fade" mode="out-in">
+         <router-view />
+      </transition>
+      
     </v-content>
   </v-app>
 </template>
 
 <script>
+  require('@/assets/styles/trackarr.css')
   export default {
     name: 'App',
     data: () => ({

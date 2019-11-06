@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/asdine/storm/q"
+	"github.com/asdine/storm/v3"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
 	"time"
@@ -21,8 +22,8 @@ func taskDatabasePruner() {
 	oldestDate := time.Now().UTC().Add(-time.Duration(72) * time.Hour)
 
 	query := database.DB.Select(q.Lte("CreatedAt", oldestDate))
-	if err := query.Find(&releases); err != nil {
-		log.WithError(err).Errorf("Failed fiding releases to prune from before: %s", oldestDate)
+	if err := query.Find(&releases); err != nil && err != storm.ErrNotFound {
+		log.WithError(err).Errorf("Failed finding releases to prune from before: %s", oldestDate)
 		return
 	}
 
