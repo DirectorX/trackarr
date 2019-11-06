@@ -63,7 +63,9 @@ func (w *SocketWrapper) HandlerFunc(context echo.Context) error {
 	return w.m.HandleRequest(context.Response().Writer, context.Request())
 }
 
-// broadcast
+func (w *SocketWrapper) AddReadCallback(msgType string, callback interface{}) {
+	w.readCallbacks[msgType] = append(w.readCallbacks[msgType], callback)
+}
 
 func (w *SocketWrapper) BroadcastAll(data string) {
 	_ = w.m.Broadcast([]byte(data))
@@ -83,6 +85,7 @@ func (w *SocketWrapper) BroadcastTopic(topic string, data string) {
 	}
 }
 
+// credits: https://github.com/mahmud-ridwan/tonesa/blob/master/hub/hub.go
 func (w *SocketWrapper) Subscribe(s *melody.Session, topic string) {
 	w.mtx.Lock()
 	defer w.mtx.Unlock()
@@ -127,12 +130,9 @@ func (w *SocketWrapper) UnsubscribeAll(s *melody.Session) {
 	delete(w.sockets, s)
 }
 
-func (w *SocketWrapper) AddReadCallback(msgType string, callback interface{}) {
-	w.readCallbacks[msgType] = append(w.readCallbacks[msgType], callback)
-}
+/* Private */
 
-// callbacks
-
+// - read callbacks
 func (w *SocketWrapper) callbackSubscribe(s *melody.Session, m *WebsocketMessage) {
 	log.Tracef("Processing socket callback for %s: %#v", s.Request.RemoteAddr, m)
 
@@ -145,7 +145,7 @@ func (w *SocketWrapper) callbackSubscribe(s *melody.Session, m *WebsocketMessage
 	log.Debugf("Socket %s subscribed to topic: %q", s.Request.RemoteAddr, topic)
 }
 
-/* Private */
+// - socket events
 func (w SocketWrapper) socketConnected(s *melody.Session) {
 	log.Debugf("Socket connected: %s", s.Request.RemoteAddr)
 }
