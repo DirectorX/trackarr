@@ -50,8 +50,15 @@
     methods: {
     },
     mounted: function () {
-
-     
+      this.$options.sockets.onmessage = (data) =>{
+        console.log(data)
+        this.messages.push({
+          timestamp: "foo",
+          level:"WARN",
+          component:"Test Component",
+          message:"Test Message"
+        })
+      }
     }
 
   };
