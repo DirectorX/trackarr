@@ -6,7 +6,7 @@
           <span class="font-weight-black">T</span>
         </v-list-item-title>
         <v-divider></v-divider>
-        <v-list-item link>
+        <v-list-item link to="/">
           <v-list-item-icon>
             <v-icon>mdi-home</v-icon>
           </v-list-item-icon>
@@ -14,16 +14,9 @@
           </v-list-item-content>
        
         </v-list-item>
-        <v-list-item link>
+        <v-list-item link to="/logs">
           <v-list-item-icon>
             <v-icon>mdi-folder</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-cogs</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
           </v-list-item-content>
