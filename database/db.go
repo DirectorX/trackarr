@@ -24,8 +24,7 @@ func Init() error {
 	var err error
 	DB, err = storm.Open(config.Runtime.DB)
 	if err != nil {
-		log.WithError(err).Fatalf("Failed initializing database connection to %q", config.Runtime.DB)
-		return errors.Wrap(err, "failed initializing database connection")
+		return errors.Wrapf(err, "failed initializing database connection to %q", config.Runtime.DB)
 	}
 
 	// log

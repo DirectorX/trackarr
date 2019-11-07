@@ -1,6 +1,7 @@
 package release
 
 import (
+	"html"
 	"strings"
 	"time"
 
@@ -29,7 +30,7 @@ func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars map[string]strin
 		release.Log.WithError(err).Error("Failed parsing required field from parse match")
 		return nil, errors.Wrap(err, "failed parsing required field")
 	} else {
-		release.Info.TorrentName = torrentName
+		release.Info.TorrentName = html.UnescapeString(torrentName)
 	}
 
 	if torrentURL, err := maps.GetFirstStringMapValue(vars, []string{"torrentUrl", "$torrentUrl"},
