@@ -19,11 +19,11 @@
           </template>
           <template v-slot:body.append>
             <tr>
-              <td></td>
-              <td class="pt-3">
+              <td class="d-none d-sm-flex"></td>
+              <td :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                 <v-row> 
                   <v-col class="pt-0 pb-0">
-                      <v-select prepend-icon="mdi-filter" dense multiple clearable
+                      <v-select label="Log Level" prepend-icon="mdi-filter" dense multiple clearable
                   :items="logLevels"
                   
                   :value="filterLevels">
@@ -32,17 +32,17 @@
                 </v-row>
               
               </td>
-              <td class="pt-3">
+              <td :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                 <v-row>
                   <v-col class="pt-0 pb-0">
-                      <v-select prepend-icon="mdi-filter" dense multiple clearable
+                      <v-select label="Component" prepend-icon="mdi-filter" dense multiple clearable
                   :items="getComponents()"
                   :value="filterComponents">
                   </v-select>
                   </v-col>
                 </v-row>
               </td>
-              <td></td>
+              <td class="d-none d-sm-flex"></td>
             </tr>
           </template>
         </v-data-table>
