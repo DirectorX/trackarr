@@ -22,7 +22,7 @@
               <td></td>
               <td class="pt-3">
                 <v-row> 
-                  <v-col cols="6" class="pt-0 pb-0">
+                  <v-col class="pt-0 pb-0">
                       <v-select prepend-icon="mdi-filter" dense multiple clearable
                   :items="logLevels"
                   
@@ -34,7 +34,7 @@
               </td>
               <td class="pt-3">
                 <v-row>
-                  <v-col cols="6" class="pt-0 pb-0">
+                  <v-col class="pt-0 pb-0">
                       <v-select prepend-icon="mdi-filter" dense multiple clearable
                   :items="getComponents()"
                   :value="filterComponents">
