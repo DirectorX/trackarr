@@ -108,8 +108,6 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	}
 
 	// save to database
-	r.Log.Tracef("Creating release in database...")
-
 	dbRelease, err := models.NewPushedRelease(database.DB, r.Info.TorrentName, r.Info.TrackerName, pvr.Name,
 		pvrResp.Approved)
 	if err != nil {

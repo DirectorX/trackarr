@@ -80,6 +80,6 @@ func (p *Processor) processRules(rules *xmlquery.Node, vars map[string]string) e
 		n = n.NextSibling
 	}
 
-	p.Log.Tracef("Finished processing linematched rules")
+	p.Log.Trace("Finished processing linematched rules")
 	return nil
 }

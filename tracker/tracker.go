@@ -16,7 +16,7 @@ var (
 /* Public */
 
 func Init() error {
-	log.Infof("Initializing trackers...")
+	log.Info("Initializing trackers...")
 
 	for trackerName, t := range config.Config.Trackers {
 		// skip disabled trackers

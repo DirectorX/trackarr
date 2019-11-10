@@ -95,7 +95,7 @@ func PullTrackers(trackersPath string) error {
 		log.Infof("Pulled %d %s with %d %s", trackerPulls, stringutils.Pluralize("tracker", trackerPulls),
 			trackerErrors, stringutils.Pluralize("failure", trackerErrors))
 	} else {
-		log.Infof("Trackers are up to date")
+		log.Info("Trackers are up to date")
 	}
 
 	return nil

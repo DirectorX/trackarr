@@ -20,7 +20,7 @@ const CronTaskDatabasePruner = "0 0,6,12,18 * * *"
 func taskDatabasePruner() {
 	var releases []*models.PushedRelease
 
-	log.Debugf("Database: Pruning releases from database...")
+	log.Debug("Database: Pruning releases from database...")
 
 	// find releases older than X days
 	oldestDate := time.Now().UTC().Add(-time.Duration(72) * time.Hour)
@@ -45,7 +45,7 @@ func taskDatabasePruner() {
 		if err == nil {
 			ws.BroadcastAll(jsonData)
 		} else {
-			log.WithError(err).Errorf("Failed creating database pruner websocket alert")
+			log.WithError(err).Error("Failed creating database pruner websocket alert")
 		}
 	}
 
