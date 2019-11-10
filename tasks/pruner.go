@@ -45,7 +45,7 @@ func taskDatabasePruner() {
 		if err == nil {
 			ws.BroadcastAll(jsonData)
 		} else {
-			log.WithError(err).Errorf("Failed creating database pruner task websocket alert")
+			log.WithError(err).Errorf("Failed creating database pruner websocket alert")
 		}
 	}
 

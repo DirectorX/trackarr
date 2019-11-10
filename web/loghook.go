@@ -33,28 +33,30 @@ func (hook *WebsocketLogHook) Levels() []logrus.Level {
 }
 
 func (hook *WebsocketLogHook) Fire(entry *logrus.Entry) error {
-	// get component from log entry
-	component := ""
-	if prefixValue, ok := entry.Data["prefix"]; ok {
-		component = prefixValue.(string)
-	}
+	go func(e *logrus.Entry) {
+		// get component from log entry
+		component := ""
+		if prefixValue, ok := e.Data["prefix"]; ok {
+			component = prefixValue.(string)
+		}
 
-	// create websocket message
-	logMessage := &ws.WebsocketMessage{
-		Type: "log",
-		Data: &WebsocketLogMessage{
-			Time:      entry.Time.Format(time.RFC3339),
-			Level:     entry.Level.String(),
-			Component: strings.TrimSpace(component),
-			Message:   entry.Message,
-		},
-	}
+		// create websocket message
+		logMessage := &ws.WebsocketMessage{
+			Type: "log",
+			Data: &WebsocketLogMessage{
+				Time:      e.Time.Format(time.RFC3339),
+				Level:     e.Level.String(),
+				Component: strings.TrimSpace(component),
+				Message:   e.Message,
+			},
+		}
 
-	// broadcast hooked log message
-	jsonData, err := logMessage.ToJsonString()
-	if err == nil {
-		ws.BroadcastTopic("logs", jsonData)
-	}
+		// broadcast hooked log message
+		jsonData, err := logMessage.ToJsonString()
+		if err == nil {
+			ws.BroadcastTopic("logs", jsonData)
+		}
+	}(entry)
 
 	return nil
 }
