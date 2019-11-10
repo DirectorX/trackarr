@@ -1,7 +1,7 @@
 package apis
 
 import (
-	"encoding/json"
+	"github.com/json-iterator/go"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/logger"
@@ -9,6 +9,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+)
+
+var (
+	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 /* Public */

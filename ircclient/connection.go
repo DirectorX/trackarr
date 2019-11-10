@@ -18,7 +18,7 @@ func (c *IRCClient) Start() error {
 		useSsl := false
 
 		// was a port specified ?
-		if strings.Index(serverString, ":") == -1 {
+		if !strings.Contains(serverString, ":") {
 			// there was no : so assume default port 6667
 			connString = serverString + ":6667"
 		} else {
@@ -30,7 +30,7 @@ func (c *IRCClient) Start() error {
 			}
 
 			// was the port specified with ssl, e.g. +6697 ?
-			if strings.Index(port, "+") != -1 {
+			if strings.Contains(port, "+") {
 				useSsl = true
 				port = strings.Replace(port, "+", "", -1)
 			}

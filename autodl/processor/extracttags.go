@@ -37,7 +37,7 @@ func (p *Processor) processExtractTagsRule(node *xmlquery.Node, vars map[string]
 	}
 
 	// set results map
-	results := make(map[string]string, 0)
+	results := make(map[string]string)
 
 	// iterate elements in var node
 	n := node.FirstChild

@@ -5,12 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jpillora/backoff"
+	"github.com/l3uddz/trackarr/ws"
+
+	"github.com/imroc/req"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/utils/web"
-
-	"github.com/imroc/req"
 )
 
 /* Structs */
@@ -56,7 +58,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	}
 
 	requestUrl := ""
-	if strings.Index(pvr.URL, "/api/") == -1 {
+	if !strings.Contains(pvr.URL, "/api/") {
 		requestUrl = web.JoinURL(pvr.URL, "api/release/push")
 	} else {
 		requestUrl = pvr.URL
@@ -69,8 +71,13 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	// send request
 	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest),
 		&web.Retry{
-			MaxAttempts:          3,
-			RetryableStatusCodes: []int{500,},
+			MaxAttempts:          5,
+			RetryableStatusCodes: []int{500},
+			Backoff: backoff.Backoff{
+				Jitter: true,
+				Min:    1 * time.Second,
+				Max:    5 * time.Second,
+			},
 		}, headers)
 	if err != nil {
 		r.Log.WithError(err).Errorf("Failed pushing: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
@@ -103,9 +110,21 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	// save to database
 	r.Log.Tracef("Creating release in database...")
 
-	dbRelease, err := models.NewPushedRelease(database.DB, r.Info.TorrentName, r.Info.TrackerName, pvr.Name, pvrResp.Approved)
+	dbRelease, err := models.NewPushedRelease(database.DB, r.Info.TorrentName, r.Info.TrackerName, pvr.Name,
+		pvrResp.Approved)
 	if err != nil {
 		r.Log.WithError(err).Errorf("Failed saving release in database: %q", r.Info.TorrentName)
+		return
 	}
-	database.DB.Save(&dbRelease)
+
+	// broadcast release to releases topic
+	pushMessage := &ws.WebsocketMessage{
+		Type: "release",
+		Data: dbRelease,
+	}
+
+	jsonData, err := pushMessage.ToJsonString()
+	if err == nil {
+		ws.BroadcastTopic("releases", jsonData)
+	}
 }

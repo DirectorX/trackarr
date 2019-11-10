@@ -1,8 +1,8 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/json-iterator/go"
 	"os"
 
 	"github.com/l3uddz/trackarr/logger"
@@ -44,6 +44,7 @@ var (
 
 	// Internal
 	log          = logger.GetLogger("cfg")
+	json         = jsoniter.ConfigCompatibleWithStandardLibrary
 	newOptionLen = 0
 )
 
@@ -144,41 +145,6 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("server.port", 7337, check)
 	added += setConfigDefault("server.apikey", shortuuid.New(), check)
 	added += setConfigDefault("server.publicurl", "http://trackarr.domain.com", check)
-	added += setConfigDefault("server.user", "admin", check)
-	added += setConfigDefault("server.pass", "password", check)
-
-	// pvr settings
-	added += setConfigDefault("pvr", []PvrConfig{
-		{
-			Name:    "sonarr_main",
-			Enabled: false,
-			URL:     "https://sonarr.domain.com",
-			ApiKey:  "YOUR_API_KEY",
-			Ignores: []string{
-				`Category contains "Disk"`,
-				`Category contains "DVD-R"`,
-				`TorrentName contains "Disc"`,
-			},
-			Accepts: []string{
-				`TrackerName == "IPT" && Category startsWith "TV/"`,
-			},
-			Delays: []string{
-				`Category startsWith "TV/" ? 1 : 0`,
-			},
-		},
-	}, check)
-
-	// tracker settings
-	added += setConfigDefault("trackers.iptorrents.enabled", true, check)
-	added += setConfigDefault("trackers.iptorrents.bencode.name", false, check)
-	added += setConfigDefault("trackers.iptorrents.bencode.size", false, check)
-	added += setConfigDefault("trackers.iptorrents.settings.passkey", "", check)
-	added += setConfigDefault("trackers.iptorrents.irc.nickname", "therugmuncher_autodl", check)
-	added += setConfigDefault("trackers.iptorrents.irc.channels", []string{"#ipt.announce"}, check)
-	added += setConfigDefault("trackers.iptorrents.irc.commands", []string{
-		"PRIVMSG NickServ IDENTIFY YOUR_PASS",
-	}, check)
-	added += setConfigDefault("trackers.iptorrents.irc.verbose", false, check)
 
 	// were new settings added?
 	if check && added > 0 {

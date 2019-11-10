@@ -1,10 +1,11 @@
 package web
 
 import (
-	"fmt"
-	"github.com/sirupsen/logrus"
 	"strings"
 	"time"
+
+	"github.com/l3uddz/trackarr/ws"
+	"github.com/sirupsen/logrus"
 )
 
 /* Structs */
@@ -39,10 +40,10 @@ func (hook *WebsocketLogHook) Fire(entry *logrus.Entry) error {
 	}
 
 	// create websocket message
-	logMessage := &WebsocketMessage{
+	logMessage := &ws.WebsocketMessage{
 		Type: "log",
 		Data: &WebsocketLogMessage{
-			Time:      fmt.Sprintf("%s", entry.Time.Format(time.RFC3339)),
+			Time:      entry.Time.Format(time.RFC3339),
 			Level:     entry.Level.String(),
 			Component: strings.TrimSpace(component),
 			Message:   entry.Message,
@@ -52,7 +53,7 @@ func (hook *WebsocketLogHook) Fire(entry *logrus.Entry) error {
 	// broadcast hooked log message
 	jsonData, err := logMessage.ToJsonString()
 	if err == nil {
-		socketWrapper.BroadcastTopic("logs", jsonData)
+		ws.BroadcastTopic("logs", jsonData)
 	}
 
 	return nil

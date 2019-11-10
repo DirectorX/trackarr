@@ -8,7 +8,7 @@ func StringListContains(list []string, key string, caseSensitive bool) bool {
 	for _, listKey := range list {
 		switch caseSensitive {
 		case false:
-			if strings.ToLower(listKey) == strings.ToLower(key) {
+			if strings.EqualFold(listKey, key) {
 				return true
 			}
 		default:

@@ -1,61 +1,65 @@
-.DEFAULT_GOAL := build
-CMD           := trackarr
-GOARCH        := $(shell go env GOARCH)
-GOOS          := $(shell go env GOOS)
-TARGET        := ${GOOS}_${GOARCH}
-PLATFORMS     := darwin linux windows
-ARCHITECTURES := amd64
-DIST_PATH     := dist
-BUILD_PATH    := ${DIST_PATH}/${TARGET}
-DESTDIR       := /usr/local/bin
-GO_FILES      := $(shell find . -path ./vendor -prune -or -type f -name '*.go' -print)
-GO_PACKAGES   := $(shell go list -mod vendor ./...)
-GIT_COMMIT    := $(shell git rev-parse --short HEAD)
-GIT_BRANCH    := $(shell git symbolic-ref --short HEAD)
-VERSION_PATH  := VERSION
-VERSION       := $(shell cat ${VERSION_PATH})
-TIMESTAMP     := $(shell date +%s)
-WEB_DIR       := web
-RICE_FILE     := rice-box.go
-WEB_RICE_FILE := ${WEB_DIR}/${RICE_FILE}
-WEB_FILES     := $(shell find ${WEB_DIR} -type f -and -not -name ${RICE_FILE} -print)
+.DEFAULT_GOAL  := build
+CMD            := trackarr
+GOARCH         := $(shell go env GOARCH)
+GOOS           := $(shell go env GOOS)
+TARGET         := ${GOOS}_${GOARCH}
+PLATFORMS      := darwin linux windows
+ARCHITECTURES  := amd64
+DIST_PATH      := dist
+BUILD_PATH     := ${DIST_PATH}/${CMD}_${TARGET}
+DESTDIR        := /usr/local/bin
+GO_FILES       := $(shell find . -path ./vendor -prune -or -type f -name '*.go' -print)
+GO_PACKAGES    := $(shell go list -mod vendor ./...)
+GIT_COMMIT     := $(shell git rev-parse --short HEAD)
+GIT_BRANCH     := $(shell git symbolic-ref --short HEAD)
+VERSION_PATH   := VERSION
+VERSION        := $(shell cat ${VERSION_PATH})
+TIMESTAMP      := $(shell date +%s)
+WEB_DIR        := web
+RICE_FILE      := rice-box.go
+WEB_RICE_FILE  := ${WEB_DIR}/${RICE_FILE}
+WEB_UI_PATH    := ${WEB_DIR}/trackarr-ui
+WEB_UI_MODULES := ${WEB_UI_PATH}/node_modules
+WEB_UI_DIST    := ${WEB_UI_PATH}/${DIST_PATH}
+WEB_GO_FILES   := $(shell find ${WEB_DIR} -type f -and -name '*.go' -and -not -name ${RICE_FILE} -print)
+WEB_UI_FILES   := $(shell find ${WEB_UI_PATH}/src ${WEB_UI_PATH}/public -type f -print)
 
-.PHONY: all
+.PHONY: all ## Run tests, linting and build
 all: test lint build
 
-.PHONY: test-all
+.PHONY: test-all ## Run tests and linting
 test-all: test lint
 
 .PHONY: test
-test:
+test: ## Run tests
 	@echo "*** go test ***"
 	go test -cover -mod vendor -v -race ${GO_PACKAGES}
 
 .PHONY: lint
-lint:
+lint: ## Run linting
 	@echo "*** golangci-lint ***"
 	golangci-lint run
 
 .PHONY: vendor
-vendor:
-	go mod tidy
+vendor: ## Vendor files and tidy go.mod
 	go mod vendor
+	go mod tidy
 
 .PHONY: vendor_update
-vendor_update:
+vendor_update: ## Update vendor dependencies
 	go get -u ./...
 	${MAKE} vendor
 
 .PHONY: build
-build: rice ${BUILD_PATH}/${CMD}
+build: rice ${BUILD_PATH}/${CMD} ## Build application
 
 .PHONY: rice
-rice: ${WEB_RICE_FILE}
+rice: web ${WEB_RICE_FILE} ## Generate embedded web files
 
-.PHONY: build-all
-build-all:
-	@$(foreach GOOS,$(PLATFORMS), $(foreach GOARCH,$(ARCHITECTURES), ${MAKE} build GOOS=${GOOS} GOARCH=${GOARCH};))
+.PHONY: web
+web: ${WEB_UI_MODULES} ${WEB_UI_DIST} ## Package web frontend
 
+# Binary
 ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
 	@echo "Building for ${TARGET}..." && \
 	mkdir -p ${BUILD_PATH} && \
@@ -66,15 +70,49 @@ ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
 		-o ${BUILD_PATH}/${CMD} \
 		.
 
-${WEB_RICE_FILE}: ${WEB_FILES} go.sum
+# Go generated embed files
+${WEB_RICE_FILE}: ${WEB_GO_FILES} ${WEB_UI_DIST} go.sum
 	@echo "Generating rice..." && \
 	cd ${WEB_DIR} && rice embed-go
 
+# Web files build
+${WEB_UI_DIST}: ${WEB_UI_FILES} ${WEB_UI_PATH}/vue.config.js ${WEB_UI_PATH}/yarn.lock
+	@echo "Building Web UI..." && \
+	cd ${WEB_UI_PATH} && yarn build
+
+# Web node modules
+${WEB_UI_MODULES}: ${WEB_UI_PATH}/package.json ${WEB_UI_PATH}/yarn.lock
+	@echo "Fetching node_modules..." && \
+	cd ${WEB_UI_PATH} && yarn install
+
 .PHONY: install
-install: build
+install: build ## Install binary
 	install -m 0755 ${BUILD_PATH}/${CMD} ${DESTDIR}/${CMD}
 
 .PHONY: clean
-clean:
+clean: ## Cleanup
 	rm -f ${WEB_RICE_FILE}
 	rm -rf ${DIST_PATH}
+	rm -rf ${WEB_UI_DIST}
+
+.PHONY: fetch
+fetch: ## Fetch vendor files and check dependencies
+	go mod vendor
+	@command -v rice >/dev/null || (echo "rice is required."; exit 1)
+	@command -v goreleaser >/dev/null || (echo "goreleaser is required."; exit 1)
+
+.PHONY: release
+release: fetch rice ## Generate a release, but don't publish
+	goreleaser --skip-validate --skip-publish --rm-dist
+
+.PHONY: public
+publish: fetch rice ## Generate a release, and publish
+	goreleaser --rm-dist
+
+.PHONY: snapshot
+snapshot: fetch rice ## Generate a snapshot release
+	goreleaser --snapshot --skip-validate --skip-publish --rm-dist
+
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

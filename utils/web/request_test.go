@@ -38,7 +38,7 @@ func TestGetResponse(t *testing.T) {
 				v: []interface{}{
 					&Retry{
 						MaxAttempts: 2,
-						Backoff: &backoff.Backoff{
+						Backoff: backoff.Backoff{
 							Jitter: true,
 						},
 					},

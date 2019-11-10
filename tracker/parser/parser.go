@@ -42,7 +42,7 @@ func Parse(t *config.TrackerInfo) error {
 	// get tracker doc root for xpath queries
 	doc, err := xmlquery.Parse(strings.NewReader(string(trackerData)))
 	if err != nil {
-		log.WithError(err).Errorf("Failed parsing doc root of tracker file: %q", trackerFilePath)
+		log.WithError(err).Errorf("Failed parsing doc root of tracker file: %q", *trackerFilePath)
 		return errors.Wrap(err, "failed parsing tracker file doc root")
 	}
 

@@ -118,7 +118,7 @@ func getAvailableTrackers() (map[string]*AutodlTracker, error) {
 	matches := rxp.FindAllStringSubmatch(body, -1)
 
 	// build trackers map
-	trackers := make(map[string]*AutodlTracker, 0)
+	trackers := make(map[string]*AutodlTracker)
 	for _, match := range matches {
 		// sanitize tracker name
 		sanitizedTracker := strings.Replace(match[1], ".", "", -1)

@@ -1,8 +1,12 @@
 package strings
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/json-iterator/go"
+)
+
+var (
+	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 func JsonifyStrict(obj interface{}) (string, error) {

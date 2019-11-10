@@ -32,7 +32,6 @@ func NewPushedRelease(db *storm.DB, name string, trackerName string, pvrName str
 	}
 
 	if err := db.Save(release); err != nil {
-		log.WithError(err).Errorf("Failed unexpectedly finding existing pushed release with name: %q", name)
 		return nil, err
 	}
 

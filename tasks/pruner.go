@@ -1,11 +1,15 @@
 package tasks
 
 import (
-	"github.com/asdine/storm/q"
-	"github.com/asdine/storm/v3"
+	"fmt"
+	"time"
+
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/database/models"
-	"time"
+	"github.com/l3uddz/trackarr/ws"
+
+	"github.com/asdine/storm/q"
+	"github.com/asdine/storm/v3"
 )
 
 /* Const */
@@ -31,8 +35,17 @@ func taskDatabasePruner() {
 	releasesCount := len(releases)
 	if releasesCount > 0 {
 		if err := query.Delete(new(models.PushedRelease)); err != nil {
-			log.WithError(err).Errorf("Failed pruning %d releases from before: %s", oldestDate)
+			log.WithError(err).Errorf("Failed pruning %d releases from before: %s", releasesCount, oldestDate)
 			return
+		}
+
+		// broadcast alert to sockets
+		jsonData, err := ws.NewAlert("info", "Database",
+			fmt.Sprintf("%d releases pruned", releasesCount))
+		if err == nil {
+			ws.BroadcastAll(jsonData)
+		} else {
+			log.WithError(err).Errorf("Failed creating database pruner task websocket alert")
 		}
 	}
 

@@ -2,15 +2,12 @@ package processor
 
 import (
 	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
 
 	"github.com/sirupsen/logrus"
 )
 
 /* Vars */
-var (
-	log = logger.GetLogger("autodl")
-)
+var ()
 
 /* Structs */
 

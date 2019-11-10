@@ -1,0 +1,67 @@
+# Stages
+stages: 
+  - test
+  - build
+
+# Test
+test:
+  stage: test
+  image: golang:1.13
+  script:
+    - make vendor
+    - make test
+  cache:
+    key: vendor
+    paths:
+      - vendor/
+
+# Lint
+lint:
+  stage: test
+  image: golangci/golangci-lint:latest
+  script:
+    - make vendor
+    - make lint
+  cache:
+    key: vendor
+    paths:
+      - vendor/
+
+# Build image template
+.build-image:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  variables:
+    VERSION: null
+    TAG: null
+  script:
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" ${CI_REGISTRY}
+    - docker build --pull --build-arg=VERSION=${VERSION} -f build/Dockerfile -t "${CI_REGISTRY_IMAGE}:${TAG}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${TAG}"
+
+build-image-master:
+  extends: .build-image
+  variables:
+    VERSION: ""
+    TAG: "master"
+  only:
+    - master
+
+build-image-develop:
+  extends: .build-image
+  variables:
+    VERSION: ""
+    TAG: "develop"
+  only:
+    - develop
+
+build-image-branch:
+  extends: .build-image
+  variables:
+    VERSION: ""
+    TAG: "${CI_COMMIT_SHORT_SHA}"
+  except:
+    - master
+    - develop

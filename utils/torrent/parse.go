@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/l3uddz/trackarr/cache"
-	"github.com/l3uddz/trackarr/logger"
 	"github.com/l3uddz/trackarr/utils/web"
 
 	bencode "github.com/IncSW/go-bencode"
@@ -13,9 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var (
-	log = logger.GetLogger("torrent")
-)
+var ()
 
 /* Public */
 

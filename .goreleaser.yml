@@ -1,0 +1,36 @@
+# https://goreleaser.com
+before:
+  hooks:
+builds:
+  -
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.buildVersion={{ .Version }}
+      - -X main.buildGitCommit={{ .ShortCommit }}
+      - -X main.buildTimestamp={{ .Timestamp }}
+    flags:
+      - -trimpath
+archives:
+- replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'

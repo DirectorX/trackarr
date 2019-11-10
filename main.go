@@ -42,7 +42,7 @@ func init() {
 	cmdInit()
 
 	// Init Logging
-	if err := logger.Init(flagLogLevel, flagLogPath); err != nil {
+	if err := logger.Init(flagLogLevel, flagLogFile); err != nil {
 		log.WithError(err).Fatal("Failed to initialize logging")
 	}
 
