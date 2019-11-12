@@ -24,7 +24,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-app-bar-title>Trackarr</v-app-bar-title>
+     <v-toolbar-title>Trackarr</v-toolbar-title>
     </v-app-bar>
     <v-navigation-drawer v-if="this.$vuetify.breakpoint.name != 'xs'" app mini-variant permanent>
       <v-list dense nav>
