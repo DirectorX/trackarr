@@ -1,21 +1,20 @@
 <template>
     <v-container fluid>
         <v-row align="center">
-             <v-col class="pb-0" lg="4" md="4" sm="4" xs="6">
+            <v-col class="pb-0" lg="4" md="4" sm="4" xs="6">
                 <h1 class="pt-5 headline font-weight-light">System Logs</h1>
             </v-col>
             <v-col class="pb-0 ml-auto" cols="3">
-                <v-text-field v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line
-                    hide-details></v-text-field>
+                <v-text-field v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
             </v-col>
-           
+
         </v-row>
         <v-row>
             <v-col>
                 <v-divider class="mb-2"></v-divider>
                 <v-data-table :search="logsSearch" disable-sorting calculate-widths :headers="headers"
-                              :items="filteredMessages()"
-                              :items-per-page="15 " class="elevation-1">
+                    :items="filteredMessages()" :items-per-page="15 " class="elevation-1">
                     <template v-slot:item.time="{ item }">
                         <div>
                             {{ item.time }}
@@ -23,7 +22,7 @@
                     </template>
                     <template v-slot:item.level="{ item }">
                         <div :style="{color:getLogColor(item.level)}">
-                        {{ item.level.toUpperCase() }}
+                            {{ item.level.toUpperCase() }}
                         </div>
                     </template>
                     <template v-if="$vuetify.breakpoint.xs" v-slot:item.message="{ item }">
@@ -37,23 +36,24 @@
                     <template v-slot:body.append>
                         <tr>
                             <td class="d-none d-sm-table-cell"></td>
-                            <td :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                            <td
+                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Log Level" prepend-icon="mdi-filter" dense multiple clearable
-                                                  :items="logLevels" item-text="level" item-value="level"
-                                                  v-model="filterLevels.values">
+                                            :items="logLevels" item-text="level" item-value="level"
+                                            v-model="filterLevels.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
 
                             </td>
-                            <td :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                            <td
+                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Component" prepend-icon="mdi-filter" dense multiple clearable
-                                                  :items="getComponents()"
-                                                  v-model="filterComponents.values">
+                                            :items="getComponents()" v-model="filterComponents.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
@@ -73,8 +73,7 @@
         name: 'logs',
         data() {
             return {
-                messages: [
-                ],
+                messages: [],
                 logsSearch: '',
                 filterLevels: {
                     values: []
@@ -82,35 +81,33 @@
                 filterComponents: {
                     values: []
                 },
-                logLevels: [
-                    {
-                        level:"TRACE",
+                logLevels: [{
+                        level: "TRACE",
                         color: "#808080",
-                     },
-                     {
-                        level:"DEBUG",
+                    },
+                    {
+                        level: "DEBUG",
                         color: "#00AAAA",
-                     },
-                     {
-                        level:"INFO",
+                    },
+                    {
+                        level: "INFO",
                         color: "#00AA00",
-                     },
-                     {
-                        level:"WARN",
+                    },
+                    {
+                        level: "WARN",
                         color: "#AAAA00",
-                     },
-                     {
-                        level:"ERROR",
+                    },
+                    {
+                        level: "ERROR",
                         color: "#AA0000",
-                     }
+                    }
                 ]
 
             }
         },
         computed: {
             headers() {
-                return [
-                    {
+                return [{
                         text: 'Timestamp',
                         value: 'time',
                     },
@@ -163,10 +160,10 @@
                 })
 
             },
-            getLogColor: function(level){
+            getLogColor: function (level) {
                 console.log("CALLED WITH " + level)
-                for(let x = 0; x < this.logLevels.length; x++){
-                    if(this.logLevels[x].level == level){
+                for (let x = 0; x < this.logLevels.length; x++) {
+                    if (this.logLevels[x].level == level) {
                         return this.logLevels[x].color
                     }
                 }
@@ -176,7 +173,10 @@
         beforeDestroy: function () {
             // unsubscribe from logs topic
             if (this.$socket.readyState === WebSocket.OPEN) {
-                this.$socket.sendObj({type: 'unsubscribe', data: 'logs'});
+                this.$socket.sendObj({
+                    type: 'unsubscribe',
+                    data: 'logs'
+                });
             }
         },
         mounted: function () {
@@ -187,11 +187,17 @@
 
             // subscribe to logs topic when socket is already open
             if (this.$socket.readyState === WebSocket.OPEN) {
-                this.$socket.sendObj({type: 'subscribe', data: 'logs'});
+                this.$socket.sendObj({
+                    type: 'subscribe',
+                    data: 'logs'
+                });
             } else {
                 // subscribe to logs topic when socket is connected
                 this.$options.sockets.onopen = () => {
-                    this.$socket.sendObj({type: 'subscribe', data: 'logs'});
+                    this.$socket.sendObj({
+                        type: 'subscribe',
+                        data: 'logs'
+                    });
                 };
             }
 

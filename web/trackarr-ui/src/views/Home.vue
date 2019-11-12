@@ -12,8 +12,9 @@
         <v-row>
             <v-col>
                 <v-divider class="mb-2"></v-divider>
-                <v-data-table sort-by="age" sort-desc :search="pushedReleasesSearch" disable-sorting :loading="releasesLoading" calculate-widths
-                    :headers="headersAll" :items="allReleases" :items-per-page="5" class="elevation-1">
+                <v-data-table sort-by="age" sort-desc :search="pushedReleasesSearch" disable-sorting
+                    :loading="releasesLoading" calculate-widths :headers="headersAll" :items="allReleases"
+                    :items-per-page="5" class="elevation-1">
                     <template v-if="$vuetify.breakpoint.xs" v-slot:item.release="{ item }">
                         <div class="pl-12">
                             {{ item.release }}
@@ -67,9 +68,9 @@
         <v-row>
             <v-col>
                 <v-divider class="mb-2"></v-divider>
-                <v-data-table sort-by="age" sort-desc :search="approvedReleasesSearch" disable-sorting :loading="releasesLoading"
-                    calculate-widths :headers="headersApproved" :items="approvedReleases" :items-per-page="5"
-                    class="elevation-1">
+                <v-data-table sort-by="age" sort-desc :search="approvedReleasesSearch" disable-sorting
+                    :loading="releasesLoading" calculate-widths :headers="headersApproved" :items="approvedReleases"
+                    :items-per-page="5" class="elevation-1">
                     <template v-slot:item.age="{ item }">
                         {{ item.age | moment("from", "now")}}
                     </template>
