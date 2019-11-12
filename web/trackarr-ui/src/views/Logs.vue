@@ -1,14 +1,14 @@
 <template>
     <v-container fluid>
         <v-row align="center">
-            <v-col class="pb-0" lg="4" md="4" sm="4" xs="6">
+            <v-col class="pb-0" lg="4" md="4" sm="4" cols="4">
                 <h1 class="pt-5 headline font-weight-light">System Logs</h1>
             </v-col>
-            <v-col class="pb-0 ml-auto" cols="3">
-                <v-text-field v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+            <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="8" cols="8">
+                <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
                 </v-text-field>
+                <v-btn v-on:click="clearLogs()" class="ml-3 d-inline-flex">Clear Logs</v-btn>
             </v-col>
-
         </v-row>
         <v-row>
             <v-col>
@@ -73,7 +73,12 @@
         name: 'logs',
         data() {
             return {
-                messages: [],
+                messages: [{
+                    time:"foo",
+                    level:"INFO",
+                    component:"app",
+                    message:"This is a test message"
+                }],
                 logsSearch: '',
                 filterLevels: {
                     values: []
@@ -161,13 +166,17 @@
 
             },
             getLogColor: function (level) {
-                console.log("CALLED WITH " + level)
                 for (let x = 0; x < this.logLevels.length; x++) {
                     if (this.logLevels[x].level == level) {
                         return this.logLevels[x].color
                     }
                 }
                 return ""
+            },
+            clearLogs: function(){
+                this.messages = []
+                localStorage.removeItem("logs")
+
             }
         },
         beforeDestroy: function () {
