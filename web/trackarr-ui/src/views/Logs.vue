@@ -161,9 +161,8 @@
 
             },
             getLogColor: function (level) {
-                console.log("CALLED WITH " + level)
                 for (let x = 0; x < this.logLevels.length; x++) {
-                    if (this.logLevels[x].level == level) {
+                    if (this.logLevels[x].level === level) {
                         return this.logLevels[x].color
                     }
                 }
