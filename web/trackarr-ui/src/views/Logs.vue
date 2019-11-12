@@ -1,13 +1,14 @@
 <template>
     <v-container fluid>
-        <v-row>
-            <v-col class="pb-0" col-sm="4" col-lg="4" col-xl="4" col-md="4" col-xs="2">
+        <v-row align="center">
+             <v-col class="pb-0" lg="4" md="4" sm="4" xs="6">
                 <h1 class="pt-5 headline font-weight-light">System Logs</h1>
             </v-col>
-            <v-col class="pb-0" offset-lg="5" offset-md="5" offset-sm="5" offset-xs="8" col-sm="3" col-lg="3" col-xl="3" col-xs="2" col-md="3">
-                <v-text-field v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
-                </v-text-field>
+            <v-col class="pb-0 ml-auto" cols="3">
+                <v-text-field v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line
+                    hide-details></v-text-field>
             </v-col>
+           
         </v-row>
         <v-row>
             <v-col>
@@ -15,8 +16,23 @@
                 <v-data-table :search="logsSearch" disable-sorting calculate-widths :headers="headers"
                               :items="filteredMessages()"
                               :items-per-page="15 " class="elevation-1">
+                    <template v-slot:item.time="{ item }">
+                        <div>
+                            {{ item.time }}
+                        </div>
+                    </template>
                     <template v-slot:item.level="{ item }">
+                        <div :style="{color:getLogColor(item.level)}">
                         {{ item.level.toUpperCase() }}
+                        </div>
+                    </template>
+                    <template v-if="$vuetify.breakpoint.xs" v-slot:item.message="{ item }">
+                        <div class="pl-12">
+                            {{ item.message }}
+                        </div>
+                    </template>
+                    <template v-slot:item.component="{ item }">
+                        {{ item.component }}
                     </template>
                     <template v-slot:body.append>
                         <tr>
@@ -25,7 +41,7 @@
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Log Level" prepend-icon="mdi-filter" dense multiple clearable
-                                                  :items="logLevels"
+                                                  :items="logLevels" item-text="level" item-value="level"
                                                   v-model="filterLevels.values">
                                         </v-select>
                                     </v-col>
@@ -57,7 +73,8 @@
         name: 'logs',
         data() {
             return {
-                messages: [],
+                messages: [
+                ],
                 logsSearch: '',
                 filterLevels: {
                     values: []
@@ -66,7 +83,26 @@
                     values: []
                 },
                 logLevels: [
-                    "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"
+                    {
+                        level:"TRACE",
+                        color: "#808080",
+                     },
+                     {
+                        level:"DEBUG",
+                        color: "#00AAAA",
+                     },
+                     {
+                        level:"INFO",
+                        color: "#00AA00",
+                     },
+                     {
+                        level:"WARN",
+                        color: "#AAAA00",
+                     },
+                     {
+                        level:"ERROR",
+                        color: "#AA0000",
+                     }
                 ]
 
             }
@@ -126,6 +162,15 @@
                     return true;
                 })
 
+            },
+            getLogColor: function(level){
+                console.log("CALLED WITH " + level)
+                for(let x = 0; x < this.logLevels.length; x++){
+                    if(this.logLevels[x].level == level){
+                        return this.logLevels[x].color
+                    }
+                }
+                return ""
             }
         },
         beforeDestroy: function () {
