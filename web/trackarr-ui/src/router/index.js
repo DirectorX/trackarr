@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Logs from '../views/Logs.vue'
+import Status from '../views/Status.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/logs',
     name: 'logs',
     component: Logs
+  },
+  {
+    path: '/status',
+    name: 'status',
+    component: Status
   }
 ]
 
