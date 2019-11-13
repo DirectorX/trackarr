@@ -23,5 +23,5 @@ func IrcStatus(c echo.Context) error {
 	log.Debugf("%d irc client statuses requested", len(clientStatuses))
 
 	// return response
-	return c.JSON(http.StatusBadRequest, &clientStatuses)
+	return c.JSON(http.StatusOK, &clientStatuses)
 }
