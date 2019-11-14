@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/imroc/req"
@@ -37,6 +38,7 @@ type Retry struct {
 	backoff.Backoff
 	MaxAttempts          float64
 	RetryableStatusCodes []int
+	ExpectedContentType  string
 }
 
 const (
@@ -115,6 +117,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			break
 		}
 
+		// check status code vs retryable ones
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
 			// close response body
 			_ = resp.Response().Body.Close()
@@ -125,6 +128,24 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 			time.Sleep(d)
 			continue
+		}
+
+		// check response content type vs expected one
+		if retry.ExpectedContentType != "" {
+			// check response content type
+			contentType := resp.Response().Header.Get("Content-Type")
+			if !strings.Contains(strings.ToLower(contentType), strings.ToLower(retry.ExpectedContentType)) &&
+				!strings.EqualFold(contentType, retry.ExpectedContentType) {
+				// close response body
+				_ = resp.Response().Body.Close()
+
+				// retry
+				d := retry.Duration()
+				log.Debugf("Retrying failed request in %s: %d %s - %q", d, resp.Response().StatusCode, contentType, requestUrl)
+
+				time.Sleep(d)
+				continue
+			}
 		}
 
 		break

@@ -1,6 +1,7 @@
 package torrent
 
 import (
+	"github.com/jpillora/backoff"
 	"path/filepath"
 	"time"
 
@@ -18,7 +19,14 @@ var ()
 
 func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Data, error) {
 	// retrieve torrent file
-	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, &web.Retry{MaxAttempts: 3}, headers)
+	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, &web.Retry{
+		MaxAttempts:         5,
+		ExpectedContentType: "torrent",
+		Backoff: backoff.Backoff{
+			Jitter: true,
+			Min:    500 * time.Millisecond,
+			Max:    3 * time.Second,
+		}}, headers)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentUrl)
 	}
