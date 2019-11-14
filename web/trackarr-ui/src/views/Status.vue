@@ -87,7 +87,6 @@
         methods: {
             filteredTrackers: function () {
                 return this.trackers.filter(item => {
-                    console.log(this.filterTrackerStatus);
                     if(this.filterTrackerStatus){
                         if(item.status == this.filterTrackerStatus){
                             return true
