@@ -14,6 +14,12 @@
                 <v-divider class="mb-2"></v-divider>
                 <v-data-table :search="trackerSearch" disable-sorting calculate-widths :headers="headers"
                     :items="filteredTrackers()" :items-per-page="15 " class="elevation-1">
+
+                    <template v-slot:item.status="{ item }">
+                        <div>
+                            {{ item.status | capitalize }}
+                        </div>
+                    </template>
                     <template v-slot:body.append>
                         <tr>
                             <td class="d-none d-sm-table-cell"></td>
@@ -69,7 +75,7 @@
                         text: 'Status',
                         value: 'status',
                         filter: (value) => {
-                            if (this.filterTrackerStatus == '') {
+                            if (!this.filterTrackerStatus) {
                                 return true;
                             }
                             return this.filterTrackerStatus == value;
@@ -81,7 +87,8 @@
         methods: {
             filteredTrackers: function () {
                 return this.trackers.filter(item => {
-                    if(this.filterTrackerStatus != ''){
+                    console.log(this.filterTrackerStatus);
+                    if(this.filterTrackerStatus){
                         if(item.status == this.filterTrackerStatus){
                             return true
                         }
@@ -105,11 +112,11 @@
                             {
                                 this.trackers.push({
                                     tracker: key,
-                                    status: value == true ? 'Online' : 'Offline'
+                                    status: value == true ? 'online' : 'offline'
                                 })
                             }
                             else{
-                                this.trackers[index].status = value == true ? 'Online' : 'Offline'
+                                this.trackers[index].status = value == true ? 'online' : 'offline'
                             }
                         } 
                     })
@@ -123,7 +130,7 @@
             this.fetchTrackerStatuses();
             this.interval = setInterval(() => {
                this.fetchTrackerStatuses()
-            }, 5000);
+            }, 60000);
         }
     };
 </script>
