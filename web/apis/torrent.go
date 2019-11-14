@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/imroc/req"
+	"github.com/jpillora/backoff"
 	"github.com/l3uddz/trackarr/cache"
 	"github.com/l3uddz/trackarr/logger"
 	webutils "github.com/l3uddz/trackarr/utils/web"
@@ -11,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var ()
@@ -47,7 +49,14 @@ func Torrent(c echo.Context) error {
 	}
 
 	// retrieve torrent stream
-	resp, err := webutils.GetResponse(webutils.GET, url, 30, headers)
+	resp, err := webutils.GetResponse(webutils.GET, url, 30, &webutils.Retry{
+		MaxAttempts:         5,
+		ExpectedContentType: "torrent",
+		Backoff: backoff.Backoff{
+			Jitter: true,
+			Min:    500 * time.Millisecond,
+			Max:    3 * time.Second,
+		}}, headers)
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving torrent stream: %s", url)
 		return c.JSON(http.StatusInternalServerError, &Response{
