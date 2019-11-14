@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Logs from '../views/Logs.vue'
-import Status from '../views/Status.vue'
+const Home  = () => import('../views/Home.vue')
+const Logs = () => import('../views/Logs.vue')
+const Status = () => import('../views/Status.vue')
 
 Vue.use(VueRouter)
 
