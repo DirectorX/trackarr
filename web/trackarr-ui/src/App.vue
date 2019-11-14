@@ -40,13 +40,6 @@
           </v-list-item-content>
 
         </v-list-item>
-        <v-list-item link to="/logs">
-          <v-list-item-icon>
-            <v-icon>mdi-folder</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-          </v-list-item-content>
-        </v-list-item>
         <v-list-item link to="/status">
           <v-list-item-icon>
             <v-icon>mdi-access-point</v-icon>
@@ -54,6 +47,14 @@
           <v-list-item-content>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link to="/logs">
+          <v-list-item-icon>
+            <v-icon>mdi-folder</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+          </v-list-item-content>
+        </v-list-item>
+        
       </v-list>
     </v-navigation-drawer>
     <v-content>
