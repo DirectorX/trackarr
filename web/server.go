@@ -15,7 +15,6 @@ import (
 	"github.com/foolin/echo-template/supports/gorice"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v8"
 )
 
@@ -101,7 +100,11 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	gui.Any("/*", handler.Index)
 
 	// setup log hook
-	logrus.AddHook(&WebsocketLogHook{})
+	if err := runtime.Loghook.Start(); err != nil {
+		log.WithError(err).Error("Failed starting loghook")
+	} else {
+		log.Info("Started loghook")
+	}
 
 	/* start echo server */
 	runtime.Web = &http.Server{
