@@ -16,6 +16,12 @@
             </v-list-item-title>
 
           </v-list-item>
+          <v-list-item link to="/status">
+
+            <v-list-item-title>
+              Tracker Statuses
+            </v-list-item-title>
+          </v-list-item>
           <v-list-item link to="/logs">
 
             <v-list-item-title>
