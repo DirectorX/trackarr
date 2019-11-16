@@ -7,14 +7,14 @@
             <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="8" cols="8">
                 <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
                 </v-text-field>
-                <v-btn v-on:click="clearLogs()" class="ml-3 d-inline-flex">Clear Logs</v-btn>
+                <v-btn v-on:click="clearLogs($event)" class="ml-3 d-inline-flex">Clear Logs</v-btn>
             </v-col>
         </v-row>
         <v-row>
             <v-col>
                 <v-divider class="mb-2"></v-divider>
-                <v-data-table :search="logsSearch" disable-sorting calculate-widths :headers="headers"
-                    :items="filteredMessages()" :items-per-page="15 " class="elevation-1">
+                <v-data-table :search="logsSearch" calculate-widths :headers="headers"
+                    :items="filteredMessages()" v-on:update:options="checkSortStatus($event)" :items-per-page.sync="itemsPerPage" class="elevation-1">
                     <template v-slot:item.time="{ item }">
                         <div>
                             {{ item.time }}
@@ -74,6 +74,8 @@
         data() {
             return {
                 messages: [],
+                sorted: false,
+                itemsPerPage: 15,
                 logsSearch: '',
                 filterLevels: {
                     values: []
@@ -172,6 +174,46 @@
                 this.messages = []
                 localStorage.removeItem("logs")
 
+            },
+            checkSortStatus: function(event){
+                if(event.sortBy.length == 0){
+                    this.sorted = false;
+                }
+                else{
+                    this.sorted = true;
+                }
+
+                console.log("Sort Status: " + this.sorted);
+                console.log("Items Per Page: " + this.itemsPerPage);
+                
+
+            },
+            shouldAutoScroll: function(){
+                function getDocHeight() {
+                    var D = document;
+                    return Math.max(
+                        D.body.scrollHeight, D.documentElement.scrollHeight,
+                        D.body.offsetHeight, D.documentElement.offsetHeight,
+                        D.body.clientHeight, D.documentElement.clientHeight
+                    )
+                }
+                
+                if(this.sorted || this.itemsPerPage == -1){
+                    return false;
+                }
+                else{
+
+                    var winheight= window.innerHeight || (document.documentElement || document.body).clientHeight
+                    var docheight = getDocHeight()
+                    var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop
+                    var trackLength = docheight - winheight
+                    var pctScrolled = Math.floor(scrollTop/trackLength * 100) // gets percentage scrolled (ie: 80 or NaN if tracklength == 0)
+                    if(pctScrolled <= 60){
+                        return true
+                    }
+
+                }
+                return false;
             }
         },
         beforeDestroy: function () {
@@ -224,6 +266,12 @@
                 }
 
                 localStorage.logs = JSON.stringify(this.messages);
+                
+                //Check if autoscroll should occur
+                if (this.shouldAutoScroll()){
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+                
             }
         }
     };
