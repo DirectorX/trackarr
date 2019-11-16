@@ -47,5 +47,11 @@ func shutdown() {
 	}
 	log.Info("Stopped database")
 
+	// Stop logs processor
+	if err := runtime.Loghook.Stop(); err != nil {
+		log.WithError(err).Fatalf("Failed shutting down loghook")
+	}
+	log.Info("Stopped loghook")
+
 	log.Info("Finished")
 }
