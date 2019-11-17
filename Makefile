@@ -63,7 +63,7 @@ vendor_update: ## Update vendor dependencies
 	${MAKE} vendor
 
 .PHONY: build
-build: fetch rice web ${BUILD_PATH}/${CMD} ## Build application
+build: fetch web rice ${BUILD_PATH}/${CMD} ## Build application
 
 .PHONY: rice
 rice: check_rice ${WEB_RICE_FILE} ## Generate embedded web files
