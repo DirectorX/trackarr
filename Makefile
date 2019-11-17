@@ -12,8 +12,6 @@ GO_FILES       := $(shell find . -path ./vendor -prune -or -type f -name '*.go' 
 GO_PACKAGES    := $(shell go list -mod vendor ./...)
 GIT_COMMIT     := $(shell git rev-parse --short HEAD)
 GIT_BRANCH     := $(shell git symbolic-ref --short HEAD)
-VERSION_PATH   := VERSION
-VERSION        := $(shell cat ${VERSION_PATH})
 TIMESTAMP      := $(shell date +%s)
 WEB_DIR        := web
 RICE_FILE      := rice-box.go
@@ -23,6 +21,20 @@ WEB_UI_MODULES := ${WEB_UI_PATH}/node_modules
 WEB_UI_DIST    := ${WEB_UI_PATH}/${DIST_PATH}
 WEB_GO_FILES   := $(shell find ${WEB_DIR} -type f -and -name '*.go' -and -not -name ${RICE_FILE} -print)
 WEB_UI_FILES   := $(shell find ${WEB_UI_PATH}/src ${WEB_UI_PATH}/public -type f -print)
+
+# Deps
+.PHONY: check_rice
+check_rice:
+	@command -v rice >/dev/null || (echo "rice is required."; exit 1)
+.PHONY: check_golangci
+check_golangci:
+	@command -v golangci-lint >/dev/null || (echo "golangci-lint is required."; exit 1)
+.PHONY: check_goreleaser
+check_goreleaser:
+	@command -v goreleaser >/dev/null || (echo "goreleaser is required."; exit 1)
+.PHONY: check_yarn
+check_yarn:
+	@command -v yarn >/dev/null || (echo "yarn is required."; exit 1)
 
 .PHONY: all ## Run tests, linting and build
 all: test lint build
@@ -36,7 +48,7 @@ test: ## Run tests
 	go test -cover -mod vendor -v -race ${GO_PACKAGES}
 
 .PHONY: lint
-lint: ## Run linting
+lint: check_golangci ## Run linting
 	@echo "*** golangci-lint ***"
 	golangci-lint run
 
@@ -51,13 +63,13 @@ vendor_update: ## Update vendor dependencies
 	${MAKE} vendor
 
 .PHONY: build
-build: rice ${BUILD_PATH}/${CMD} ## Build application
+build: fetch rice web ${BUILD_PATH}/${CMD} ## Build application
 
 .PHONY: rice
-rice: web ${WEB_RICE_FILE} ## Generate embedded web files
+rice: check_rice ${WEB_RICE_FILE} ## Generate embedded web files
 
 .PHONY: web
-web: ${WEB_UI_MODULES} ${WEB_UI_DIST} ## Package web frontend
+web: check_yarn ${WEB_UI_MODULES} ${WEB_UI_DIST} ## Package web frontend
 
 # Binary
 ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
@@ -66,7 +78,7 @@ ${BUILD_PATH}/${CMD}: ${GO_FILES} go.sum
 	CGO_ENABLED=0 go build \
 		-mod vendor \
 		-trimpath \
-		-ldflags "-s -w -X main.buildVersion=${VERSION} -X main.buildGitCommit=${GIT_COMMIT} -X main.buildTimestamp=${TIMESTAMP}" \
+		-ldflags "-s -w -X main.buildVersion=0.0.0-dev -X main.buildGitCommit=${GIT_COMMIT} -X main.buildTimestamp=${TIMESTAMP}" \
 		-o ${BUILD_PATH}/${CMD} \
 		.
 
@@ -76,9 +88,11 @@ ${WEB_RICE_FILE}: ${WEB_GO_FILES} ${WEB_UI_DIST} go.sum
 	cd ${WEB_DIR} && rice embed-go
 
 # Web files build
+${WEB_UI_DIST}: SKIP_WEB=false
 ${WEB_UI_DIST}: ${WEB_UI_FILES} ${WEB_UI_PATH}/vue.config.js ${WEB_UI_PATH}/yarn.lock
-	@echo "Building Web UI..." && \
-	cd ${WEB_UI_PATH} && yarn build
+	@[ "${SKIP_WEB}" = "true" ] || \
+	(echo "Building Web UI..." && \
+	cd ${WEB_UI_PATH} && yarn build)
 
 # Web node modules
 ${WEB_UI_MODULES}: ${WEB_UI_PATH}/package.json ${WEB_UI_PATH}/yarn.lock
@@ -96,21 +110,19 @@ clean: ## Cleanup
 	rm -rf ${WEB_UI_DIST}
 
 .PHONY: fetch
-fetch: ## Fetch vendor files and check dependencies
+fetch: ## Fetch vendor files
 	go mod vendor
-	@command -v rice >/dev/null || (echo "rice is required."; exit 1)
-	@command -v goreleaser >/dev/null || (echo "goreleaser is required."; exit 1)
 
 .PHONY: release
-release: fetch rice ## Generate a release, but don't publish
+release: check_goreleaser fetch rice ## Generate a release, but don't publish
 	goreleaser --skip-validate --skip-publish --rm-dist
 
-.PHONY: public
-publish: fetch rice ## Generate a release, and publish
+.PHONY: publish
+publish: check_goreleaser fetch rice ## Generate a release, and publish
 	goreleaser --rm-dist
 
 .PHONY: snapshot
-snapshot: fetch rice ## Generate a snapshot release
+snapshot: check_goreleaser fetch rice ## Generate a snapshot release
 	goreleaser --snapshot --skip-validate --skip-publish --rm-dist
 
 .PHONY: help

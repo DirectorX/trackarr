@@ -13,9 +13,9 @@ builds:
       - amd64
     ldflags:
       - -s -w
-      - -X main.buildVersion={{ .Version }}
-      - -X main.buildGitCommit={{ .ShortCommit }}
-      - -X main.buildTimestamp={{ .Timestamp }}
+      - -X "main.buildVersion={{ .Version }}"
+      - -X "main.buildGitCommit={{ .ShortCommit }}"
+      - -X "main.buildTimestamp={{ .Timestamp }}"
     flags:
       - -trimpath
 archives:
@@ -27,7 +27,7 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Tag }}-next-{{ .ShortCommit }}"
 changelog:
   sort: asc
   filters:
