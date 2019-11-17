@@ -5,7 +5,8 @@
                 <h1 class="pt-5 headline font-weight-light">System Logs</h1>
             </v-col>
             <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="8" cols="8">
-                <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search"
+                              single-line hide-details>
                 </v-text-field>
                 <v-btn v-on:click="clearLogs($event)" class="ml-3 d-inline-flex">Clear Logs</v-btn>
             </v-col>
@@ -14,7 +15,8 @@
             <v-col>
                 <v-divider class="mb-2"></v-divider>
                 <v-data-table :search="logsSearch" calculate-widths :headers="headers"
-                    :items="filteredMessages()" v-on:update:options="checkSortStatus($event)" :items-per-page.sync="itemsPerPage" class="elevation-1">
+                              :items="filteredMessages()" v-on:update:options="checkSortStatus($event)"
+                              :items-per-page.sync="itemsPerPage" class="elevation-1">
                     <template v-slot:item.time="{ item }">
                         <div>
                             {{ item.time }}
@@ -37,23 +39,23 @@
                         <tr>
                             <td class="d-none d-sm-table-cell"></td>
                             <td
-                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                                    :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Log Level" prepend-icon="mdi-filter" dense multiple clearable
-                                            :items="logLevels" item-text="level" item-value="level"
-                                            v-model="filterLevels.values">
+                                                  :items="logLevels" item-text="level" item-value="level"
+                                                  v-model="filterLevels.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
 
                             </td>
                             <td
-                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                                    :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Component" prepend-icon="mdi-filter" dense multiple clearable
-                                            :items="getComponents()" v-model="filterComponents.values">
+                                                  :items="getComponents()" v-model="filterComponents.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
@@ -84,9 +86,9 @@
                     values: []
                 },
                 logLevels: [{
-                        level: "TRACE",
-                        color: "#808080",
-                    },
+                    level: "TRACE",
+                    color: "#808080",
+                },
                     {
                         level: "DEBUG",
                         color: "#00AAAA",
@@ -110,9 +112,9 @@
         computed: {
             headers() {
                 return [{
-                        text: 'Timestamp',
-                        value: 'time',
-                    },
+                    text: 'Timestamp',
+                    value: 'time',
+                },
                     {
                         text: 'Level',
                         value: 'level',
@@ -164,51 +166,44 @@
             },
             getLogColor: function (level) {
                 for (let x = 0; x < this.logLevels.length; x++) {
-                    if (this.logLevels[x].level == level.toUpperCase()) {
+                    if (this.logLevels[x].level === level.toUpperCase()) {
                         return this.logLevels[x].color
                     }
                 }
                 return ""
             },
-            clearLogs: function(){
-                this.messages = []
+            clearLogs: function () {
+                this.messages = [];
                 localStorage.removeItem("logs")
 
             },
-            checkSortStatus: function(event){
-                if(event.sortBy.length == 0){
+            checkSortStatus: function (event) {
+                if (event.sortBy.length === 0) {
                     this.sorted = false;
-                }
-                else{
+                } else {
                     this.sorted = true;
                 }
-
-                console.log("Sort Status: " + this.sorted);
-                console.log("Items Per Page: " + this.itemsPerPage);
-                
-
             },
-            shouldAutoScroll: function(){
+            shouldAutoScroll: function () {
                 function getDocHeight() {
-                    var D = document;
+                    let D = document;
                     return Math.max(
                         D.body.scrollHeight, D.documentElement.scrollHeight,
                         D.body.offsetHeight, D.documentElement.offsetHeight,
                         D.body.clientHeight, D.documentElement.clientHeight
                     )
                 }
-                
-                if(this.sorted || this.itemsPerPage == -1){
-                    return false;
-                }
-                else{
 
-                    var winheight= window.innerHeight || (document.documentElement || document.body).clientHeight
-                    var docheight = getDocHeight()
-                    var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop
-                    var trackLength = docheight - winheight
-                    var pctScrolled = Math.floor(scrollTop/trackLength * 100) // gets percentage scrolled (ie: 80 or NaN if tracklength == 0)
-                    if(pctScrolled <= 60){
+                if (this.sorted || this.itemsPerPage === -1) {
+                    return false;
+                } else {
+
+                    let winheight = window.innerHeight || (document.documentElement || document.body).clientHeight;
+                    let docheight = getDocHeight();
+                    let scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+                    let trackLength = docheight - winheight;
+                    let pctScrolled = Math.floor(scrollTop / trackLength * 100); // gets percentage scrolled (ie: 80 or NaN if tracklength == 0)
+                    if (pctScrolled <= 60) {
                         return true
                     }
 
@@ -266,12 +261,12 @@
                 }
 
                 localStorage.logs = JSON.stringify(this.messages);
-                
+
                 //Check if autoscroll should occur
-                if (this.shouldAutoScroll()){
+                if (this.shouldAutoScroll()) {
                     window.scrollTo(0, document.body.scrollHeight);
                 }
-                
+
             }
         }
     };
