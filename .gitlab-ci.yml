@@ -1,14 +1,14 @@
 # Stages
 stages:
-  - .pre
+  - vendor
   - test
   - build-web
   - build
   - build-image
 
 # Vendor
-.pre:vendor:
-  stage: .pre
+vendor:
+  stage: vendor
   image: golang:1.13-alpine
   script:
     - make vendor
