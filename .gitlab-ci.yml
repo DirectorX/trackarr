@@ -87,7 +87,8 @@ build-web:web:
 build:master:
   extends: .build-binary
   script:
-    - if [ -z "${CI_COMMIT_TAG}" ]; then
+    - |-
+      if [ -z "${CI_COMMIT_TAG}" ]; then
         make release SKIP_WEB=true
       else
         make publish SKIP_WEB=true
@@ -137,7 +138,8 @@ build-image:master:
     - docker push "${CI_REGISTRY_IMAGE}:${TAG}"
     - docker tag "${CI_REGISTRY_IMAGE}:${TAG}" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
-    - if [ -z "${CI_COMMIT_TAG}" ]; then
+    - |-
+      if [ -z "${CI_COMMIT_TAG}" ]; then
         # Tag version
         docker tag "${CI_REGISTRY_IMAGE}:${TAG}" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
         docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
