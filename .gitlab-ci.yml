@@ -7,16 +7,17 @@ stages:
   - build-image
 
 .cache_vendor: &cache_vendor
-  variables:
-    CACHE_POLICY: pull
   cache:
-    key:
-      files:
-        - go.mod
-        - go.sum
-    policy: ${CACHE_POLICY}
-    paths:
+    key: vendor
+    policy: pull-push
+    paths: &cache_vendor_path
       - vendor/
+
+.cache_vendor_pull: &cache_vendor_pull
+  cache:
+    key: vendor
+    policy: pull
+    paths: *cache_vendor_path
 
 # Vendor
 vendor:
@@ -27,8 +28,6 @@ vendor:
     - make vendor
   # Overwrite anchor to also push
   <<: *cache_vendor
-  variables:
-    CACHE_POLICY: pull-push
 
 # Test
 test:test:
@@ -36,7 +35,7 @@ test:test:
   image: golang:1.13-buster
   script:
     - make test
-  <<: *cache_vendor
+  <<: *cache_vendor_pull
 
 # Lint
 test:lint:
@@ -44,7 +43,7 @@ test:lint:
   image: golangci/golangci-lint:latest
   script:
     - make lint
-  <<: *cache_vendor
+  <<: *cache_vendor_pull
 
 # Build web
 build-web:web:
@@ -54,10 +53,7 @@ build-web:web:
     - apk add --no-cache make
     - make web
   cache:
-    key:
-      files:
-        - web/trackarr-ui/package.json
-        - web/trackarr-ui/yarn.lock
+    key: vendor-web
     policy: pull-push
     paths:
       - web/trackarr-ui/node_modules
@@ -80,7 +76,7 @@ build-web:web:
   script:
     # Run goreleaser
     - make snapshot
-  <<: *cache_vendor
+  <<: *cache_vendor_pull
   artifacts:
     name: build_${CI_COMMIT_SHORT_SHA}
     paths:
