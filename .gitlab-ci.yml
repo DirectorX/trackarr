@@ -33,7 +33,7 @@ stages:
 
 .only_develop: &only_develop
   only:
-    - master
+    - develop
   except:
     - tags
 
