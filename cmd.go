@@ -17,7 +17,6 @@ var (
 	flagLogFile       = "activity.log"
 	flagDbFile        = "vault.db"
 	flagTrackerFolder = "trackers"
-	flagVersion       bool
 )
 
 func cmdInit() {
@@ -28,7 +27,6 @@ func cmdInit() {
 	pflag.StringVarP(&flagLogFile, "log", "l", flagLogFile, "Log file")
 	pflag.StringVarP(&flagDbFile, "db", "d", flagDbFile, "Database file")
 	pflag.StringVarP(&flagTrackerFolder, "trackers", "t", flagTrackerFolder, "Trackers folder")
-	pflag.BoolVarP(&flagVersion, "version", "V", flagVersion, "Show version")
 
 	// Parse CLI Flags
 	pflag.Parse()

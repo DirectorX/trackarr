@@ -112,10 +112,6 @@ func Init(build *BuildVars) error {
 	return nil
 }
 
-func PrintVersion() {
-	log.Infof("Trackarr version %s (%s@%s)", Build.Version, Build.GitCommit, Build.Timestamp)
-}
-
 /* Private */
 
 func setConfigDefault(key string, value interface{}, check bool) int {
