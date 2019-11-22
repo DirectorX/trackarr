@@ -25,7 +25,6 @@ type BuildVars struct {
 
 type Configuration struct {
 	Server   ServerConfig
-	Database DatabaseConfiguration
 	Pvr      []PvrConfig
 	Trackers map[string]TrackerConfig
 }
@@ -90,8 +89,7 @@ func Init(build *BuildVars) error {
 				log.WithError(err).Fatalf("Failed dumping default configuration to %q", Runtime.Config)
 			}
 
-			log.Infof("Dumped default configuration to %q. Please edit before running again!",
-				viper.ConfigFileUsed())
+			log.Infof("Dumped default configuration to %q. Please edit before running again!", viper.ConfigFileUsed())
 			log.Logger.Exit(0)
 		}
 
@@ -127,8 +125,7 @@ func setConfigDefault(key string, value interface{}, check bool) int {
 			newOptionLen = keyLen + 2
 		}
 
-		log.Warnf("New config option: %s = %v", stringutils.StringLeftJust(fmt.Sprintf("%q", key),
-			" ", newOptionLen), value)
+		log.Warnf("New config option: %s = %v", stringutils.StringLeftJust(fmt.Sprintf("%q", key), " ", newOptionLen), value)
 	}
 
 	viper.SetDefault(key, value)
@@ -144,9 +141,6 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("server.port", 7337, check)
 	added += setConfigDefault("server.apikey", shortuuid.New(), check)
 	added += setConfigDefault("server.publicurl", "http://trackarr.domain.com", check)
-
-	// database settings
-	added += setConfigDefault("database.maxagehours", 72, check)
 
 	// were new settings added?
 	if check && added > 0 {

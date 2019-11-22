@@ -10,6 +10,6 @@ import (
 
 func Index(c echo.Context) error {
 	return c.Render(http.StatusOK, "index.html", echo.Map{
-		"apikey": config.GetStringValue("server.apikey", "THIS-SHOULD-NEVER-HAPPEN"),
+		"apikey":    config.Config.Server.ApiKey,
 	})
 }
