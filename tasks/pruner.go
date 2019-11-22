@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"fmt"
+	"github.com/l3uddz/trackarr/config"
 	"time"
 
 	"github.com/l3uddz/trackarr/database"
@@ -23,7 +24,7 @@ func taskDatabasePruner() {
 	log.Debug("Database: Pruning releases from database...")
 
 	// find releases older than X days
-	oldestDate := time.Now().UTC().Add(-time.Duration(72) * time.Hour)
+	oldestDate := time.Now().UTC().Add(-time.Duration(config.Config.Database.MaxAgeHours) * time.Hour)
 
 	query := database.DB.Select(q.Lte("CreatedAt", oldestDate))
 	if err := query.Find(&releases); err != nil && err != storm.ErrNotFound {
