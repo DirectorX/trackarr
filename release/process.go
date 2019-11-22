@@ -18,14 +18,19 @@ const TorrentFileTimeout = 15
 
 func (r *Release) getProxiedTorrentURL(cookie *string) (string, error) {
 	// parse torrent api url
-	u, err := url.Parse(web.JoinURL(config.Config.Server.PublicURL, "/api/torrent"))
+	publicUrl := config.GetStringValue("server.publicurl", "")
+	if publicUrl == "" {
+		return "", errors.New("failed to retrieve server.publicurl configuration value")
+	}
+
+	u, err := url.Parse(web.JoinURL(publicUrl, "/api/torrent"))
 	if err != nil {
 		return "", errors.Wrap(err, "failed parsing public torrent api endpoint")
 	}
 
 	// add query params
 	q := u.Query()
-	q.Set("apikey", config.Config.Server.ApiKey)
+	q.Set("apikey", config.GetStringValue("server.apikey", "THIS-SHOULD-NEVER-HAPPEN"))
 	q.Set("url", r.Info.TorrentURL)
 	if cookie != nil && *cookie != "" {
 		q.Set("cookie", *cookie)
