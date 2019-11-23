@@ -1,13 +1,15 @@
 package loghook
 
 import (
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/l3uddz/trackarr/ws"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"go.uber.org/atomic"
-	"strings"
-	"time"
 )
 
 /* Var */
@@ -17,8 +19,9 @@ var (
 
 /* Struct */
 type Loghooker struct {
-	running *atomic.Bool
-	hooked  *atomic.Bool
+	running bool
+	hooked  bool
+	wg      sync.WaitGroup
 	queue   chan *logrus.Entry
 }
 
@@ -32,9 +35,7 @@ type WebsocketLogMessage struct {
 /* Public */
 func NewLoghooker() *Loghooker {
 	return &Loghooker{
-		running: atomic.NewBool(false),
-		hooked:  atomic.NewBool(false),
-		queue:   make(chan *logrus.Entry, 128),
+		queue: make(chan *logrus.Entry, 128),
 	}
 }
 
@@ -45,41 +46,36 @@ func (l *Loghooker) Push(entry *logrus.Entry) error {
 	default:
 		// dont log the error as it will just trigger another push that will fail
 		return errors.New("failed adding log entry to queue as it was full")
-
 	}
 
 	return nil
 }
 
 func (l *Loghooker) Start() error {
-	if l.running.Load() {
-		return errors.New("loghooker has already been started")
-	}
-
-	if l.queue == nil {
-		l.queue = make(chan *logrus.Entry, 128)
+	if l.running {
+		return errors.New("loghooker has already started")
 	}
 
 	go l.processor()
 
-	if !l.hooked.Load() {
+	if !l.hooked {
 		logrus.AddHook(l)
-		l.hooked.Store(true)
+		l.hooked = true
 	}
 
-	l.running.Store(true)
+	l.running = true
 	return nil
 }
 
 func (l *Loghooker) Stop() error {
-	if !l.running.Load() {
-		return errors.New("loghooker has not been started")
+	if !l.running {
+		return errors.New("loghooker has not started")
 	}
 
+	l.running = false
+	l.wg.Wait()
 	close(l.queue)
-	l.queue = nil
 
-	l.running.Store(false)
 	return nil
 }
 

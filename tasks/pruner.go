@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/config"
 	"time"
 
 	"github.com/l3uddz/trackarr/database"
@@ -13,18 +12,20 @@ import (
 	"github.com/asdine/storm/v3"
 )
 
-/* Const */
-const CronTaskDatabasePruner = "0 0,6,12,18 * * *"
+type TaskPruner struct {
+	Cron        string
+	MaxAgeHours time.Duration
+}
 
 /* Private */
 
-func taskDatabasePruner() {
+func (t *Tasks) taskDatabasePruner() {
 	var releases []*models.PushedRelease
 
 	log.Debug("Database: Pruning releases from database...")
 
 	// find releases older than X days
-	oldestDate := time.Now().UTC().Add(-time.Duration(config.Config.Database.MaxAgeHours) * time.Hour)
+	oldestDate := time.Now().UTC().Add(-t.TaskPruner.MaxAgeHours * time.Hour)
 
 	query := database.DB.Select(q.Lte("CreatedAt", oldestDate))
 	if err := query.Find(&releases); err != nil && err != storm.ErrNotFound {

@@ -17,11 +17,16 @@ func (l *Loghooker) Levels() []logrus.Level {
 
 func (l *Loghooker) Fire(entry *logrus.Entry) error {
 	// dont process entry when loghook is not enabled
-	if !l.running.Load() {
+	if !l.running {
 		return nil
 	}
 
+	// Increment WaitGroup
+	l.wg.Add(1)
 	// push entry to be processed
 	_ = l.Push(entry)
+	// WaitGroup done
+	l.wg.Done()
+
 	return nil
 }

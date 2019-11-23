@@ -94,6 +94,9 @@ test:lint:
 # Build web
 build-web:web:
   stage: build-web
+  needs:
+    - "test:test"
+    - "test:lint"
   image: node:12-alpine
   script:
     - apk add --no-cache make
@@ -111,6 +114,8 @@ build-web:web:
 # Build binary template
 .build-binary:
   stage: build
+  needs:
+    - "build-web:web"
   dependencies:
     - build-web:web
   image: golang:1.13-alpine
@@ -233,3 +238,4 @@ build-image:branch:
   script:
     - *docker_build_push
   <<: *only_branches
+  when: manual
