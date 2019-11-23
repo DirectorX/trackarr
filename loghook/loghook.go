@@ -35,7 +35,7 @@ type WebsocketLogMessage struct {
 /* Public */
 func NewLoghooker() *Loghooker {
 	return &Loghooker{
-		queue: make(chan *logrus.Entry, 128),
+		queue: nil,
 	}
 }
 
@@ -54,6 +54,8 @@ func (l *Loghooker) Push(entry *logrus.Entry) error {
 func (l *Loghooker) Start() error {
 	if l.running {
 		return errors.New("loghooker has already started")
+	} else {
+		l.queue = make(chan *logrus.Entry, 128)
 	}
 
 	go l.processor()
