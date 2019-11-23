@@ -85,10 +85,10 @@ func init() {
 	}
 
 	// Init Task Scheduler
-	if err := tasks.Init(); err != nil {
+	runtime.Tasks = tasks.New()
+	if err := runtime.Tasks.Init(); err != nil {
 		log.WithError(err).Fatal("Failed initializing task scheduler")
 	}
-
 }
 
 /* Main */
@@ -113,7 +113,7 @@ func main() {
 	startupChecks()
 
 	// Startup scheduled tasks
-	tasks.Start()
+	runtime.Tasks.Start()
 
 	// Wait for shutdown
 	waitShutdown()
