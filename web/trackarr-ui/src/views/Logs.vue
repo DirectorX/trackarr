@@ -182,33 +182,26 @@
                 else{
                     this.sorted = true;
                 }
-
-                console.log("Sort Status: " + this.sorted);
-                console.log("Items Per Page: " + this.itemsPerPage);
                 
 
             },
             shouldAutoScroll: function(){
-                function getDocHeight() {
-                    var D = document;
-                    return Math.max(
-                        D.body.scrollHeight, D.documentElement.scrollHeight,
-                        D.body.offsetHeight, D.documentElement.offsetHeight,
-                        D.body.clientHeight, D.documentElement.clientHeight
-                    )
+                function getScrollPercent() {
+                    var h = document.documentElement, 
+                        b = document.body,
+                        st = 'scrollTop',
+                        sh = 'scrollHeight';
+                    return (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
                 }
                 
-                if(this.sorted || this.itemsPerPage == -1){
+
+                if(this.sorted || this.itemsPerPage != -1){
                     return false;
                 }
                 else{
-
-                    var winheight= window.innerHeight || (document.documentElement || document.body).clientHeight
-                    var docheight = getDocHeight()
-                    var scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop
-                    var trackLength = docheight - winheight
-                    var pctScrolled = Math.floor(scrollTop/trackLength * 100) // gets percentage scrolled (ie: 80 or NaN if tracklength == 0)
-                    if(pctScrolled <= 60){
+                    var percentScrolled = getScrollPercent()
+                    if(percentScrolled >= 90){
+                        
                         return true
                     }
 
