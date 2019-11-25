@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	prefixLen = 14
+	prefixLen       = 14
+	loggingFilePath string
 )
 
 /* Public */
@@ -66,12 +67,18 @@ func Init(logLevel int, logFilePath string) error {
 	// set logging level
 	logrus.SetLevel(useLevel)
 
-	// info
-	log := GetLogger("log")
-	log.Infof("Using %s = %s", strings.StringLeftJust("LOG_LEVEL", " ", 10), logrus.GetLevel().String())
-	log.Infof("Using %s = %q", strings.StringLeftJust("LOG", " ", 10), logFilePath)
+	// set globals
+	loggingFilePath = logFilePath
 
 	return nil
+}
+
+func ShowUsing() {
+	log := GetLogger("log")
+
+	log.Infof("Using %s = %s", strings.StringLeftJust("LOG_LEVEL", " ", 10),
+		logrus.GetLevel().String())
+	log.Infof("Using %s = %q", strings.StringLeftJust("LOG", " ", 10), loggingFilePath)
 }
 
 func GetLogger(prefix string) *logrus.Entry {

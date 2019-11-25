@@ -1,46 +1,62 @@
 package tasks
 
 import (
+	"time"
+
+	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/pkg/errors"
 	"github.com/robfig/cron/v3"
-	"time"
 )
 
 var (
-	log       = logger.GetLogger("tasks")
-	scheduler *cron.Cron
+	log = logger.GetLogger("tasks")
 )
+
+type Tasks struct {
+	scheduler  *cron.Cron
+	TaskPruner *TaskPruner
+}
 
 /* Public */
 
-func Init() error {
-	scheduler = cron.New()
+// New instance
+func New() *Tasks {
+	return &Tasks{
+		TaskPruner: &TaskPruner{
+			Cron:        "0 0,6,12,18 * * *",
+			MaxAgeHours: time.Duration(config.Config.Database.MaxAgeHours),
+		},
+	}
+}
+
+func (t *Tasks) Init() error {
+	t.scheduler = cron.New()
 
 	/* database tasks */
-
 	// - prune old releases
-	if _, err := scheduler.AddFunc(CronTaskDatabasePruner, taskDatabasePruner); err != nil {
+	if _, err := t.scheduler.AddFunc(t.TaskPruner.Cron, t.taskDatabasePruner); err != nil {
 		return errors.Wrap(err, "failed initializing task: database pruner")
 	}
 
 	return nil
 }
 
-func Start() {
-	scheduler.Start()
+func (t *Tasks) Start() {
+	t.scheduler.Start()
 	log.Info("Started scheduler")
 }
 
-func Stop() {
-	ctx := scheduler.Stop()
+func (t *Tasks) Stop() {
+	ctx := t.scheduler.Stop()
 	select {
 	case <-ctx.Done():
 		log.Info("Stopped scheduler")
 	case <-time.After(5 * time.Second):
+		log.Warn("Timed out waiting for scheduled jobs to finish")
 	}
 }
 
-func AddTask(expression string, task func()) (cron.EntryID, error) {
-	return scheduler.AddFunc(expression, task)
+func (t *Tasks) AddTask(expression string, task func()) (cron.EntryID, error) {
+	return t.scheduler.AddFunc(expression, task)
 }

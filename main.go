@@ -8,13 +8,12 @@ import (
 	"github.com/l3uddz/trackarr/tasks"
 	"github.com/l3uddz/trackarr/web"
 
-	// "github.com/l3uddz/trackarr/ircclient"
 	"github.com/l3uddz/trackarr/logger"
 	"github.com/l3uddz/trackarr/pvr"
 	"github.com/l3uddz/trackarr/runtime"
 	"github.com/l3uddz/trackarr/tracker"
 
-	// "github.com/l3uddz/trackarr/web"
+	stringutils "github.com/l3uddz/trackarr/utils/strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -48,15 +47,16 @@ func init() {
 
 	log = logger.GetLogger("app")
 
+	// Version info
+	log.Infof("Using %s = %s (%s@%s)", stringutils.StringLeftJust("VERSION", " ", 10),
+		buildConfig.Version, buildConfig.GitCommit, buildConfig.Timestamp)
+
+	// Logging info
+	logger.ShowUsing()
+
 	// Init Config
 	if err := config.Init(buildConfig); err != nil {
 		log.WithError(err).Fatal("Failed to initialize config")
-	}
-
-	// Print and exit if version flag is set
-	config.PrintVersion()
-	if flagVersion {
-		log.Logger.Exit(0)
 	}
 
 	// Init Database
@@ -85,7 +85,8 @@ func init() {
 	}
 
 	// Init Task Scheduler
-	if err := tasks.Init(); err != nil {
+	runtime.Tasks = tasks.New()
+	if err := runtime.Tasks.Init(); err != nil {
 		log.WithError(err).Fatal("Failed initializing task scheduler")
 	}
 }
@@ -112,7 +113,7 @@ func main() {
 	startupChecks()
 
 	// Startup scheduled tasks
-	tasks.Start()
+	runtime.Tasks.Start()
 
 	// Wait for shutdown
 	waitShutdown()

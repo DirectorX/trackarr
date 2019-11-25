@@ -1,4 +1,4 @@
-FROM horjulf/alpine-s6overlay:3.10
+FROM sc4h/alpine-s6overlay:3.10
 
 ENV \
   CONFIG_DIR=/config/trackarr
