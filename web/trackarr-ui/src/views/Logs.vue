@@ -6,7 +6,7 @@
             </v-col>
             <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="8" cols="8">
                 <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search"
-                              single-line hide-details>
+                    single-line hide-details>
                 </v-text-field>
                 <v-btn v-on:click="clearLogs($event)" class="ml-3 d-inline-flex">Clear Logs</v-btn>
             </v-col>
@@ -14,9 +14,9 @@
         <v-row>
             <v-col>
                 <v-divider class="mb-2"></v-divider>
-                <v-data-table :search="logsSearch" calculate-widths :headers="headers"
-                              :items="filteredMessages()" v-on:update:options="checkSortStatus($event)"
-                              :items-per-page.sync="itemsPerPage" class="elevation-1">
+                <v-data-table :search="logsSearch" calculate-widths :headers="headers" fixed-header
+                    :items="filteredMessages()" v-on:update:options="checkSortStatus($event)"
+                    :items-per-page.sync="itemsPerPage" class="elevation-1">
                     <template v-slot:item.time="{ item }">
                         <div>
                             {{ item.time }}
@@ -39,23 +39,23 @@
                         <tr>
                             <td class="d-none d-sm-table-cell"></td>
                             <td
-                                    :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Log Level" prepend-icon="mdi-filter" dense multiple clearable
-                                                  :items="logLevels" item-text="level" item-value="level"
-                                                  v-model="filterLevels.values">
+                                            :items="logLevels" item-text="level" item-value="level"
+                                            v-model="filterLevels.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
 
                             </td>
                             <td
-                                    :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
+                                :class="{'mt-6 mb-6':$vuetify.breakpoint.xs,'pt-5':$vuetify.breakpoint.smAndUp,'v-data-table__mobile-row':$vuetify.breakpoint.xs,'text-start':!$vuetify.breakpoint.xs}">
                                 <v-row>
                                     <v-col class="pt-0 pb-0">
                                         <v-select label="Component" prepend-icon="mdi-filter" dense multiple clearable
-                                                  :items="getComponents()" v-model="filterComponents.values">
+                                            :items="getComponents()" v-model="filterComponents.values">
                                         </v-select>
                                     </v-col>
                                 </v-row>
@@ -64,6 +64,8 @@
                         </tr>
                     </template>
                 </v-data-table>
+
+
             </v-col>
         </v-row>
     </v-container>
@@ -86,9 +88,9 @@
                     values: []
                 },
                 logLevels: [{
-                    level: "TRACE",
-                    color: "#808080",
-                },
+                        level: "TRACE",
+                        color: "#808080",
+                    },
                     {
                         level: "DEBUG",
                         color: "#00AAAA",
@@ -112,12 +114,14 @@
         computed: {
             headers() {
                 return [{
-                    text: 'Timestamp',
-                    value: 'time',
-                },
+                        text: 'Timestamp',
+                        value: 'time',
+                        width: '7%'
+                    },
                     {
                         text: 'Level',
                         value: 'level',
+                        width: '5%',
                         filter: (value) => {
                             if (this.filterLevels.values.length === 0) {
                                 return true;
@@ -128,6 +132,7 @@
                     {
                         text: 'Component',
                         value: 'component',
+                        width: '5%',
                         filter: (value) => {
                             if (this.filterComponents.values.length === 0) {
                                 return true;
@@ -137,6 +142,7 @@
                     },
                     {
                         text: 'Message',
+                        width:'83%',
                         value: 'message'
                     }
                 ]
@@ -183,26 +189,26 @@
                 } else {
                     this.sorted = true;
                 }
-                
+
 
             },
-            shouldAutoScroll: function(){
+            shouldAutoScroll: function () {
                 function getScrollPercent() {
-                    var h = document.documentElement, 
-                        b = document.body,
-                        st = 'scrollTop',
-                        sh = 'scrollHeight';
-                    return (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-                }
-                
 
-                if(this.sorted || this.itemsPerPage != -1){
-                    return false;
+                    var h  = document.evaluate("//div[@class='v-data-table__wrapper']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+                    var st = 'scrollTop'
+                    var sh = 'scrollHeight'
+                    return (h[st]) / ((h[sh]) - h.clientHeight) * 100;
                 }
-                else{
+
+
+                if (this.sorted || this.itemsPerPage != -1) {
+                   
+                    return false;
+                } else {
                     var percentScrolled = getScrollPercent()
-                    if(percentScrolled >= 90){
-                        
+                    if (percentScrolled >= 90) {
+
                         return true
                     }
 
@@ -263,7 +269,8 @@
 
                 //Check if autoscroll should occur
                 if (this.shouldAutoScroll()) {
-                    window.scrollTo(0, document.body.scrollHeight);
+                    let table = document.evaluate("//div[@class='v-data-table__wrapper']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+                    table.scrollTop = table.scrollHeight
                 }
 
             }
