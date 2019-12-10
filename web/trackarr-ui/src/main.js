@@ -57,7 +57,7 @@ Vue.use(VueToastr, {
     defaultTimeout: 5000,
     defaultPosition: 'toast-bottom-right',
     defaultType: 'info',
-    defaultStyle: {'opacity':'100%'}
+    defaultStyle: {'font-family':'roboto','opacity':'100%'}
 });
 
 Vue.use(VueNativeSock, CORE_WEBSOCKET_URL, {
