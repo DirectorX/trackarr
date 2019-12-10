@@ -19,7 +19,7 @@
                     :items-per-page.sync="itemsPerPage" class="elevation-1">
                     <template v-slot:item.time="{ item }">
                         <div>
-                            {{ item.time }}
+                            {{ item.time | moment("MM/DD/YY, h:mm:ss a")}}
                         </div>
                     </template>
                     <template v-slot:item.level="{ item }">
