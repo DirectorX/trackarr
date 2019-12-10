@@ -56,7 +56,8 @@ Vue.use(require('vue-moment'));
 Vue.use(VueToastr, {
     defaultTimeout: 5000,
     defaultPosition: 'toast-bottom-right',
-    defaultType: 'info'
+    defaultType: 'info',
+    defaultStyle: {'opacity':'100%'}
 });
 
 Vue.use(VueNativeSock, CORE_WEBSOCKET_URL, {
@@ -80,7 +81,7 @@ new Vue({
         this.$options.sockets.onmessage = (message) => {
             // parse message
             let event = JSON.parse(message.data);
-
+            
             // alert events
             if (event.type === 'alert') {
                 switch (event.data.level) {
