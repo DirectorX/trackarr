@@ -17,8 +17,11 @@
 
                     <template v-slot:item.status="{ item }">
                         <div>
+                            <status-indicator v-if="item.status == 'online'" class="mr-3" status="positive" pulse/>
+                            <status-indicator v-if="item.status == 'offline'" class="mr-3" status="negative" pulse/>
                             {{ item.status | capitalize }}
                         </div>
+                        
                     </template>
                     <template v-slot:body.append>
                         <tr>
@@ -45,8 +48,13 @@
 
 
 <script>
+    import { StatusIndicator } from 'vue-status-indicator';
+
     export default {
         name: 'status',
+        components: {
+            StatusIndicator,
+        },
         data() {
             return {
                 trackers: [],
