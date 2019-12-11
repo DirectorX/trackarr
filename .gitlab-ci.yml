@@ -151,7 +151,7 @@ build:master:
 build:develop-publish:
   extends: .build-binary
   script:
-    - make release SKIP_WEB=true
+    - make publish SKIP_WEB=true
   <<: *only_develop_tag
 
 # Develop build
