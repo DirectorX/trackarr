@@ -9,7 +9,7 @@ require (
 	github.com/ReneKroon/ttlcache v1.6.0
 	github.com/antchfx/xmlquery v1.2.1
 	github.com/antchfx/xpath v1.1.2 // indirect
-	github.com/antlr/antlr4 v0.0.0-20191115170859-54daca92f7b0 // indirect
+	github.com/antlr/antlr4 v0.0.0-20191209171355-242d900ba631 // indirect
 	github.com/antonmedv/expr v1.4.1
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/asdine/storm/v3 v3.0.0
@@ -28,7 +28,7 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lithammer/shortuuid v3.0.0+incompatible
 	github.com/mattn/go-colorable v0.1.4 // indirect
-	github.com/mattn/go-isatty v0.0.10 // indirect
+	github.com/mattn/go-isatty v0.0.11 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -43,14 +43,14 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.5.0
+	github.com/spf13/viper v1.6.1
 	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.etcd.io/bbolt v1.3.3 // indirect
-	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
-	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
+	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
+	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
 	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2
