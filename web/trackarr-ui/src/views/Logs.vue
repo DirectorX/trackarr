@@ -116,7 +116,7 @@
                 return [{
                         text: 'Timestamp',
                         value: 'time',
-                        width: '7%'
+                        width: '15%'
                     },
                     {
                         text: 'Level',
@@ -142,7 +142,7 @@
                     },
                     {
                         text: 'Message',
-                        width:'83%',
+                        width:'75%',
                         value: 'message'
                     }
                 ]
