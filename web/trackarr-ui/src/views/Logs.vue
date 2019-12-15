@@ -1,10 +1,10 @@
 <template>
     <v-container fluid>
         <v-row align="center">
-            <v-col class="pb-0" lg="4" md="4" sm="4" cols="4">
+            <v-col class="pb-0" lg="4" md="4" sm="2" cols="2">
                 <h1 class="pt-5 headline font-weight-light">System Logs</h1>
             </v-col>
-            <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="8" cols="8">
+            <v-col class="text-right pb-0 ml-auto" lg="7" md="7" sm="10" cols="10">
                 <v-text-field class="d-inline-flex" v-model="logsSearch" append-icon="mdi-magnify" label="Search"
                     single-line hide-details>
                 </v-text-field>
