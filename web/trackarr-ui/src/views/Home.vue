@@ -1,10 +1,10 @@
 <template>
     <v-container fluid>
         <v-row>
-            <v-col class="pb-0" cols="9">
+            <v-col class="pb-0" cols="6">
                 <h1 class="pt-5 headline font-weight-light">Pushed Releases</h1>
             </v-col>
-            <v-col class="pb-0" cols="3">
+            <v-col class="pb-0" cols="6">
                 <v-text-field v-model="pushedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line
                     hide-details></v-text-field>
             </v-col>
@@ -57,10 +57,10 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col class="pb-0" cols="9">
+            <v-col class="pb-0" cols="6">
                 <h1 class="pt-5 headline font-weight-light">Approved Releases</h1>
             </v-col>
-            <v-col class="pb-0" cols="3">
+            <v-col class="pb-0" cols="6">
                 <v-text-field v-model="approvedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line
                     hide-details></v-text-field>
             </v-col>
