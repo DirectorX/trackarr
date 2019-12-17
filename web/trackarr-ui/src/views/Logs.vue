@@ -116,12 +116,12 @@
                 return [{
                         text: 'Timestamp',
                         value: 'time',
-                        width: '15%'
+                        width: '10%'
                     },
                     {
                         text: 'Level',
                         value: 'level',
-                        width: '5%',
+                        width: '7%',
                         filter: (value) => {
                             if (this.filterLevels.values.length === 0) {
                                 return true;
@@ -132,7 +132,7 @@
                     {
                         text: 'Component',
                         value: 'component',
-                        width: '5%',
+                        width: '7%',
                         filter: (value) => {
                             if (this.filterComponents.values.length === 0) {
                                 return true;
@@ -142,7 +142,7 @@
                     },
                     {
                         text: 'Message',
-                        width:'75%',
+                        width:'76%',
                         value: 'message'
                     }
                 ]
