@@ -47,9 +47,8 @@
             </v-row>
         </v-container>
         <v-footer absolute dark padless>
-
             <v-col class="text-right" cols="12">
-                <v-btn color="secondary" class="ma-2">Check For Update</v-btn>
+                <v-btn v-on:click="checkForUpdate()" color="secondary" class="ma-2">Check For Update</v-btn>
                 <label><strong>Trackarr v{{currentVersion}}</strong></label>
 
             </v-col>
@@ -150,6 +149,26 @@
                     }
                 }).then(response => {
                     this.currentVersion = response.data.current_version
+                })
+            },
+            checkForUpdate: function(){
+                this.$axios.get('/update/status', {
+                    params: {
+                        apikey: this.CORE_API_KEY
+                    }
+                }).then(response => {
+                    if(response.data.update_available){
+                        this.$toastr.Add({
+                            msg: "Newer version " + response.data.latest_version + " is available!",
+                            position: 'toast-top-right'    
+                        })
+                    }
+                    else{
+                        this.$toastr.Add({
+                            msg: "You're already on the latest version",
+                            position: 'toast-top-right'    
+                        })
+                    }
                 })
             }
         },
