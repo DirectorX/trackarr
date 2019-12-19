@@ -59,7 +59,7 @@ func Torrent(c echo.Context) error {
 		}}, headers)
 	if err != nil {
 		log.WithError(err).Errorf("Failed retrieving torrent stream: %s", url)
-		return c.JSON(http.StatusInternalServerError, &Response{
+		return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 			Error:   true,
 			Message: fmt.Sprintf("Failed retrieving torrent: %v", err),
 		})
@@ -67,7 +67,7 @@ func Torrent(c echo.Context) error {
 		defer resp.Response().Body.Close()
 
 		log.Errorf("Failed retrieving torrent stream: %s (response: %s)", url, resp.Response().Status)
-		return c.JSON(http.StatusInternalServerError, &Response{
+		return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 			Error:   true,
 			Message: fmt.Sprintf("Failed retrieving torrent: %s", resp.Response().Status),
 		})
@@ -79,7 +79,7 @@ func Torrent(c echo.Context) error {
 		defer resp.Response().Body.Close()
 
 		log.Errorf("Failed retrieving torrent stream: %s (Content-Type: %s)", url, respContentType)
-		return c.JSON(http.StatusInternalServerError, &Response{
+		return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 			Error:   true,
 			Message: fmt.Sprintf("Failed retrieving torrent: %s", respContentType),
 		})

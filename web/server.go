@@ -91,6 +91,7 @@ func Listen(configuration *config.Configuration, logLevel int) {
 	api.GET("/torrent", apis.Torrent)
 	api.GET("/releases", apis.Releases)
 	api.GET("/irc/status", apis.IrcStatus)
+	api.GET("/update/status", apis.UpdateStatus)
 
 	/* init frontend routes */
 	// static
