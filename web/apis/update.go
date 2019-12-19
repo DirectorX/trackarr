@@ -14,6 +14,7 @@ import (
 type UpdateResponse struct {
 	UpdateAvailable bool   `json:"update_available" xml:"update_available"`
 	LatestVersion   string `json:"latest_version" xml:"latest_version"`
+	CurrentVersion  string `json:"current_version" xml:"current_version"`
 }
 
 /* Public */
@@ -31,5 +32,6 @@ func UpdateStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, &UpdateResponse{
 		UpdateAvailable: !usingLatest,
 		LatestVersion:   latestVersion,
+		CurrentVersion:  config.Build.Version,
 	})
 }
