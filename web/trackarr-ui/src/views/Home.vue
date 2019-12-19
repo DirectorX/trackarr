@@ -1,12 +1,12 @@
 <template>
     <v-container fluid>
         <v-row>
-            <v-col class="pb-0" cols="6">
+            <v-col class="pb-0" lg="5" md="5" sm="5" cols="5">
                 <h1 class="pt-5 headline font-weight-light">Pushed Releases</h1>
             </v-col>
-            <v-col class="pb-0" cols="6">
-                <v-text-field v-model="pushedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line
-                    hide-details></v-text-field>
+            <v-col class="text-right pb-0 ml-auto" lg="6" md="6" sm="7" cols="7">
+                <v-text-field class="d-inline-flex" v-model="trackerSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
             </v-col>
         </v-row>
         <v-row>
@@ -57,12 +57,12 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col class="pb-0" cols="6">
+            <v-col class="pb-0" lg="5" md="5" sm="5" cols="5">
                 <h1 class="pt-5 headline font-weight-light">Approved Releases</h1>
             </v-col>
-            <v-col class="pb-0" cols="6">
-                <v-text-field v-model="approvedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line
-                    hide-details></v-text-field>
+            <v-col class="text-right pb-0 ml-auto" lg="6" md="6" sm="7" cols="7">
+                <v-text-field class="d-inline-flex" v-model="trackerSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
             </v-col>
         </v-row>
         <v-row>
