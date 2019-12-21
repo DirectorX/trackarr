@@ -9,6 +9,10 @@ type PvrConfig struct {
 	Enabled bool
 	URL     string
 	ApiKey  string
+	Filters *PvrFilters
+}
+
+type PvrFilters struct {
 	Ignores []string
 	Accepts []string
 	Delays  []string
