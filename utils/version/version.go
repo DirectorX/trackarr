@@ -21,7 +21,7 @@ func IsLatestGitlabVersion(apiUrl string, privateToken string, currentVersion st
 	releases, err := gitlabReleases(apiUrl, privateToken)
 	if err != nil {
 		log.WithError(err).Error("Failed retrieving latest Gitlab releases...")
-		return true, currentVersion
+		return true, cVer.String()
 	}
 	log.Debugf("Found %d Gitlab releases", len(releases))
 
@@ -48,9 +48,9 @@ func IsLatestGitlabVersion(apiUrl string, privateToken string, currentVersion st
 		}
 	}
 
-	if highestVersion != nil {
+	if highestVersion != nil && highestVersion.String() != "0.0.0" {
 		return false, highestVersion.String()
 	}
 
-	return true, currentVersion
+	return true, cVer.String()
 }
