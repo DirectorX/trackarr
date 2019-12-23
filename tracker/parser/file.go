@@ -14,7 +14,7 @@ func trackerFilePath(t *config.TrackerInfo) (*string, error) {
 	// TODO: remove this once viper.SetCaseInsensitive is public
 	trackerName := ""
 
-	err := filepath.Walk(".",
+	err := filepath.Walk(config.Runtime.Trackers,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
