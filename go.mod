@@ -11,7 +11,6 @@ require (
 	github.com/antchfx/xpath v1.1.2 // indirect
 	github.com/antlr/antlr4 v0.0.0-20191217191749-ff67971f8580 // indirect
 	github.com/antonmedv/expr v1.4.2
-	github.com/asdine/storm v2.1.2+incompatible
 	github.com/asdine/storm/v3 v3.1.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0

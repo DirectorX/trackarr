@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/asdine/storm/q"
 	"github.com/asdine/storm/v3"
+	"github.com/asdine/storm/v3/q"
 	stringutils "github.com/l3uddz/trackarr/utils/strings"
 	"time"
 )

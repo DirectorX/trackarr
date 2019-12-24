@@ -8,7 +8,7 @@ import (
 	"github.com/l3uddz/trackarr/database/models"
 	"github.com/l3uddz/trackarr/ws"
 
-	"github.com/asdine/storm/q"
+	"github.com/asdine/storm/v3/q"
 	"github.com/asdine/storm/v3"
 )
 
