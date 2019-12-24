@@ -6,7 +6,7 @@ import (
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/tasks"
-	"github.com/l3uddz/trackarr/utils/version"
+	"github.com/l3uddz/trackarr/version"
 	"github.com/l3uddz/trackarr/web"
 
 	"github.com/l3uddz/trackarr/logger"
@@ -97,10 +97,9 @@ func main() {
 	log.Info("Initialized core")
 
 	// Check version
-	usingLatest, latestVersion := version.IsLatestGitlabVersion(
-		"https://gitlab.com/api/v4/projects/15385789/releases", "", config.Build.Version)
+	usingLatest, latestVersion := version.Trackarr.IsLatest()
 	if !usingLatest {
-		log.Warnf("You are not using the latest version: %s", latestVersion)
+		log.Warnf("You are not using the latest version: %q", latestVersion)
 	}
 
 	// Defer de-inits
