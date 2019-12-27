@@ -23,7 +23,7 @@ func Init(buildConfig *config.BuildVars) error {
 	// Parse current version
 	c, err := semver.NewVersion(buildConfig.Version)
 	if err != nil {
-		return errors.Wrapf(err, "Failed creating semver from currentVersion: %s", config.Build.Version)
+		return errors.Wrapf(err, "Failed creating semver from currentVersion: %s", buildConfig.Version)
 	}
 
 	Trackarr = &Version{
