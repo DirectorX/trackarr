@@ -103,7 +103,7 @@ func main() {
 	// Check version
 	usingLatest, latestVersion := version.Trackarr.IsLatest()
 	if !usingLatest {
-		log.Warnf("You are not using the latest version: %q", latestVersion)
+		log.Warnf("You are not using the latest version: %s", latestVersion)
 	}
 
 	// Defer de-inits
