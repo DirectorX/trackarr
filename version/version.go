@@ -4,6 +4,7 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -18,17 +19,19 @@ type Version struct {
 }
 
 // init sets the exported object
-func init() {
+func Init(buildConfig *config.BuildVars) error {
 	// Parse current version
-	c, err := semver.NewVersion(config.Build.Version)
+	c, err := semver.NewVersion(buildConfig.Version)
 	if err != nil {
-		log.WithError(err).Errorf("Failed creating semver from currentVersion: %s", config.Build.Version)
+		return errors.Wrapf(err, "Failed creating semver from currentVersion: %s", config.Build.Version)
 	}
 
 	Trackarr = &Version{
 		apiUrl:  "https://gitlab.com/api/v4/projects/15385789/releases",
 		Current: c,
 	}
+
+	return nil
 }
 
 func (v *Version) IsLatest() (bool, *semver.Version) {

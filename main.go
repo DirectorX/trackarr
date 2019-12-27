@@ -49,6 +49,10 @@ func init() {
 	log = logger.GetLogger("app")
 
 	// Version info
+	if err := version.Init(buildConfig); err != nil {
+		log.WithError(err).Fatal("Failed to initialize version")
+	}
+
 	log.Infof("Using %s = %s (%s@%s)", stringutils.StringLeftJust("VERSION", " ", 10),
 		buildConfig.Version, buildConfig.GitCommit, buildConfig.Timestamp)
 
