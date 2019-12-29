@@ -5,13 +5,13 @@ import (
 	"gitlab.com/cloudb0x/trackarr/cache"
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/database"
-	"gitlab.com/cloudb0x/trackarr/tasks"
-	"gitlab.com/cloudb0x/trackarr/version"
-	"gitlab.com/cloudb0x/trackarr/web"
 	"gitlab.com/cloudb0x/trackarr/logger"
 	"gitlab.com/cloudb0x/trackarr/pvr"
 	"gitlab.com/cloudb0x/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/tasks"
 	"gitlab.com/cloudb0x/trackarr/tracker"
+	"gitlab.com/cloudb0x/trackarr/version"
+	"gitlab.com/cloudb0x/trackarr/web"
 
 	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 
@@ -41,7 +41,7 @@ func init() {
 	cmdInit()
 
 	// Init Logging
-	if err := logger.Init(flagLogLevel, flagLogFile); err != nil {
+	if err := logger.Init(config.Runtime.Verbose, config.Runtime.Log); err != nil {
 		log.WithError(err).Fatal("Failed to initialize logging")
 	}
 
@@ -114,7 +114,7 @@ func main() {
 	}
 
 	// Start web
-	web.Listen(config.Config, flagLogLevel)
+	web.Listen(config.Config, config.Runtime.Verbose)
 
 	// Start IRC clients
 	initIRC()

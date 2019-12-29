@@ -57,14 +57,18 @@ func (cfg Configuration) ToJsonString() (string, error) {
 	return string(bs), err
 }
 
-func Init(build *BuildVars) error {
-	// Set build vars
-	Build = build
-
+func InitRuntime() error {
 	// Unmarshal runtime/cmd config
 	if err := RuntimeViper.Unmarshal(&Runtime); err != nil {
 		return errors.Wrap(err, "failed to unmarshal runtime config")
 	}
+
+	return nil
+}
+
+func Init(build *BuildVars) error {
+	// Set build vars
+	Build = build
 
 	// Info
 	log.Infof("Using %s = %q", stringutils.StringLeftJust("CONFIG", " ", 10), Runtime.Config)

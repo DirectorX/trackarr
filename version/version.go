@@ -1,9 +1,10 @@
 package version
 
 import (
-	"github.com/Masterminds/semver"
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/logger"
+
+	"github.com/Masterminds/semver"
 	"github.com/pkg/errors"
 )
 

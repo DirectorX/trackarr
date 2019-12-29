@@ -2,10 +2,12 @@ package version
 
 import (
 	"fmt"
-	"github.com/imroc/req"
-	"gitlab.com/cloudb0x/trackarr/utils/web"
-	"github.com/pkg/errors"
 	"time"
+
+	"gitlab.com/cloudb0x/trackarr/utils/web"
+
+	"github.com/imroc/req"
+	"github.com/pkg/errors"
 )
 
 type GitlabRelease struct {

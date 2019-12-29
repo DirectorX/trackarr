@@ -47,9 +47,14 @@ func cmdInit() {
 
 	// Bind flags to Viper config, `config.RuntimeConfig`
 	if err := config.RuntimeViper.BindPFlags(pflag.CommandLine); err != nil {
-		log.Fatal("Failed to bind cmd flags to config")
+		log.WithError(err).Fatal("Failed to bind cmd flags to config")
 	}
 
 	// Bind Env vars
 	config.RuntimeViper.AutomaticEnv()
+
+	// Parse runtime config
+	if err := config.InitRuntime(); err != nil {
+		log.WithError(err).Fatal("Failed to init runtime config")
+	}
 }
