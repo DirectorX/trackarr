@@ -1,10 +1,12 @@
 package models
 
 import (
+	"time"
+
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
+
 	"github.com/asdine/storm/v3"
 	"github.com/asdine/storm/v3/q"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
-	"time"
 )
 
 type PushedRelease struct {

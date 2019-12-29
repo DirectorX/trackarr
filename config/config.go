@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
 	"os"
 
-	"github.com/l3uddz/trackarr/logger"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
+	jsoniter "github.com/json-iterator/go"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 
 	"github.com/lithammer/shortuuid"
 	"github.com/pkg/errors"

@@ -1,9 +1,10 @@
 package processor
 
 import (
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/release"
-	"github.com/l3uddz/trackarr/utils/maps"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/release"
+	"gitlab.com/cloudb0x/trackarr/utils/maps"
+
 	"github.com/pkg/errors"
 )
 

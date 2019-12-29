@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/l3uddz/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/config"
 	"github.com/labstack/echo"
 	"net/http"
 )

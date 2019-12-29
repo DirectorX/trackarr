@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/l3uddz/trackarr/database"
-	"github.com/l3uddz/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/database"
+	"gitlab.com/cloudb0x/trackarr/runtime"
 )
 
 func waitShutdown() {

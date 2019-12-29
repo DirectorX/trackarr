@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/utils/lists"
+
 	"github.com/imroc/req"
 	"github.com/jpillora/backoff"
 	"github.com/pkg/errors"
-
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/utils/lists"
 )
 
 var (

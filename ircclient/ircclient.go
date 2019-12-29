@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/l3uddz/trackarr/autodl/processor"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/autodl/processor"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
 
 	"github.com/sirupsen/logrus"
 	irc "github.com/thoj/go-ircevent"

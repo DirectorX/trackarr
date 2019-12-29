@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/l3uddz/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/runtime"
 )
 
 func startupChecks() {

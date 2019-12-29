@@ -1,4 +1,4 @@
-module github.com/l3uddz/trackarr
+module gitlab.com/cloudb0x/trackarr
 
 go 1.13
 

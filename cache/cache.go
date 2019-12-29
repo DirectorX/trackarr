@@ -3,7 +3,7 @@ package cache
 import (
 	"time"
 
-	"github.com/l3uddz/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/logger"
 
 	"github.com/ReneKroon/ttlcache"
 )

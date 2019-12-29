@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/l3uddz/trackarr/cache"
-	"github.com/l3uddz/trackarr/utils/web"
+	"gitlab.com/cloudb0x/trackarr/cache"
+	"gitlab.com/cloudb0x/trackarr/utils/web"
 
 	bencode "github.com/IncSW/go-bencode"
 	"github.com/imroc/req"

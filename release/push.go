@@ -5,14 +5,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jpillora/backoff"
-	"github.com/l3uddz/trackarr/ws"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/database"
+	"gitlab.com/cloudb0x/trackarr/database/models"
+	"gitlab.com/cloudb0x/trackarr/utils/web"
+	"gitlab.com/cloudb0x/trackarr/ws"
 
 	"github.com/imroc/req"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/database"
-	"github.com/l3uddz/trackarr/database/models"
-	"github.com/l3uddz/trackarr/utils/web"
+	"github.com/jpillora/backoff"
 )
 
 /* Structs */

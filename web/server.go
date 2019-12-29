@@ -2,14 +2,14 @@ package web
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/ws"
 	"net/http"
 
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/runtime"
-	"github.com/l3uddz/trackarr/web/apis"
-	"github.com/l3uddz/trackarr/web/handler"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/web/apis"
+	"gitlab.com/cloudb0x/trackarr/web/handler"
+	"gitlab.com/cloudb0x/trackarr/ws"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/foolin/echo-template/supports/gorice"

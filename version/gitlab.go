@@ -3,7 +3,7 @@ package version
 import (
 	"fmt"
 	"github.com/imroc/req"
-	"github.com/l3uddz/trackarr/utils/web"
+	"gitlab.com/cloudb0x/trackarr/utils/web"
 	"github.com/pkg/errors"
 	"time"
 )

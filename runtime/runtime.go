@@ -1,12 +1,12 @@
 package runtime
 
 import (
-	"github.com/l3uddz/trackarr/loghook"
-	"github.com/l3uddz/trackarr/tasks"
 	"net/http"
 
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/ircclient"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/ircclient"
+	"gitlab.com/cloudb0x/trackarr/loghook"
+	"gitlab.com/cloudb0x/trackarr/tasks"
 )
 
 var (

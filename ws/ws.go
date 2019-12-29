@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/l3uddz/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/logger"
 	"github.com/olahol/melody"
 )
 

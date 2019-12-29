@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"github.com/l3uddz/trackarr/utils/strings"
 	"runtime"
+
+	"gitlab.com/cloudb0x/trackarr/utils/strings"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

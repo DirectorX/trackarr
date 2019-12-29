@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/ws"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/ws"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/l3uddz/trackarr/config"
-	listutils "github.com/l3uddz/trackarr/utils/lists"
+	"gitlab.com/cloudb0x/trackarr/config"
+	listutils "gitlab.com/cloudb0x/trackarr/utils/lists"
 
 	"github.com/antchfx/xmlquery"
 )

@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 
 	"github.com/asdine/storm/v3"
 	"github.com/pkg/errors"

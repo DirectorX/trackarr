@@ -1,11 +1,13 @@
 package apis
 
 import (
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/runtime"
+	"net/http"
+
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/runtime"
+
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 /* Public */

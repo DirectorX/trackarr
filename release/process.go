@@ -3,11 +3,12 @@ package release
 import (
 	"net/url"
 
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/utils/torrent"
+	"gitlab.com/cloudb0x/trackarr/utils/web"
+
 	"github.com/docker/go-units"
 	"github.com/imroc/req"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/utils/torrent"
-	"github.com/l3uddz/trackarr/utils/web"
 	"github.com/pkg/errors"
 )
 

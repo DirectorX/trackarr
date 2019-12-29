@@ -3,7 +3,7 @@ package ircclient
 import (
 	"strings"
 
-	listutils "github.com/l3uddz/trackarr/utils/lists"
+	listutils "gitlab.com/cloudb0x/trackarr/utils/lists"
 
 	irc "github.com/thoj/go-ircevent"
 )

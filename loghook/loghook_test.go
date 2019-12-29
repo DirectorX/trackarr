@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/l3uddz/trackarr/ws"
+	"gitlab.com/cloudb0x/trackarr/ws"
 )
 
 var (

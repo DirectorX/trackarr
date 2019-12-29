@@ -1,10 +1,10 @@
 package tracker
 
 import (
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/runtime"
-	"github.com/l3uddz/trackarr/tracker/parser"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/tracker/parser"
 
 	"github.com/pkg/errors"
 )

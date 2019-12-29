@@ -1,8 +1,8 @@
 package pvr
 
 import (
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
 
 	"github.com/antonmedv/expr"
 	"github.com/pkg/errors"

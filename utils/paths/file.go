@@ -4,7 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/l3uddz/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/logger"
+
 	"github.com/sirupsen/logrus"
 )
 

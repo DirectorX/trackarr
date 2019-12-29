@@ -3,19 +3,19 @@ package apis
 import (
 	"bytes"
 	"fmt"
-	"github.com/imroc/req"
-	"github.com/jpillora/backoff"
-	"github.com/l3uddz/trackarr/cache"
-	"github.com/l3uddz/trackarr/logger"
-	webutils "github.com/l3uddz/trackarr/utils/web"
-	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 	"time"
-)
 
-var ()
+	"gitlab.com/cloudb0x/trackarr/cache"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	webutils "gitlab.com/cloudb0x/trackarr/utils/web"
+
+	"github.com/imroc/req"
+	"github.com/jpillora/backoff"
+	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
+)
 
 /* Public */
 

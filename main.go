@@ -1,20 +1,19 @@
 package main
 
 import (
-	"github.com/l3uddz/trackarr/autodl"
-	"github.com/l3uddz/trackarr/cache"
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/database"
-	"github.com/l3uddz/trackarr/tasks"
-	"github.com/l3uddz/trackarr/version"
-	"github.com/l3uddz/trackarr/web"
+	"gitlab.com/cloudb0x/trackarr/autodl"
+	"gitlab.com/cloudb0x/trackarr/cache"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/database"
+	"gitlab.com/cloudb0x/trackarr/tasks"
+	"gitlab.com/cloudb0x/trackarr/version"
+	"gitlab.com/cloudb0x/trackarr/web"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/pvr"
+	"gitlab.com/cloudb0x/trackarr/runtime"
+	"gitlab.com/cloudb0x/trackarr/tracker"
 
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/pvr"
-	"github.com/l3uddz/trackarr/runtime"
-	"github.com/l3uddz/trackarr/tracker"
-
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 
 	"github.com/sirupsen/logrus"
 )

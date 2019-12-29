@@ -7,11 +7,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/l3uddz/trackarr/database"
-	models "github.com/l3uddz/trackarr/database/models"
-	"github.com/l3uddz/trackarr/logger"
-	stringutils "github.com/l3uddz/trackarr/utils/strings"
-	"github.com/l3uddz/trackarr/utils/web"
+	"gitlab.com/cloudb0x/trackarr/database"
+	models "gitlab.com/cloudb0x/trackarr/database/models"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
+	"gitlab.com/cloudb0x/trackarr/utils/web"
 
 	"github.com/pkg/errors"
 )

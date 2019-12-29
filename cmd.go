@@ -3,8 +3,8 @@ package main
 import (
 	"path/filepath"
 
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/utils/paths"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/utils/paths"
 
 	"github.com/spf13/pflag"
 )

@@ -3,9 +3,9 @@ package apis
 import (
 	"net/http"
 
-	"github.com/l3uddz/trackarr/config"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/version"
+	"gitlab.com/cloudb0x/trackarr/config"
+	"gitlab.com/cloudb0x/trackarr/logger"
+	"gitlab.com/cloudb0x/trackarr/version"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"

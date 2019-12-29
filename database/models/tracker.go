@@ -1,8 +1,9 @@
 package models
 
 import (
+	"gitlab.com/cloudb0x/trackarr/logger"
+
 	"github.com/asdine/storm/v3"
-	"github.com/l3uddz/trackarr/logger"
 )
 
 var (

@@ -1,14 +1,16 @@
 package apis
 
 import (
-	"github.com/json-iterator/go"
-	"github.com/l3uddz/trackarr/database"
-	"github.com/l3uddz/trackarr/database/models"
-	"github.com/l3uddz/trackarr/logger"
-	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+
+	"gitlab.com/cloudb0x/trackarr/database"
+	"gitlab.com/cloudb0x/trackarr/database/models"
+	"gitlab.com/cloudb0x/trackarr/logger"
+
+	jsoniter "github.com/json-iterator/go"
+	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 )
 
 var (

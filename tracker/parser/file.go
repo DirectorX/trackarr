@@ -2,10 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"github.com/l3uddz/trackarr/config"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"gitlab.com/cloudb0x/trackarr/config"
 
 	"github.com/pkg/errors"
 )
