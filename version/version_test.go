@@ -7,12 +7,6 @@ import (
 )
 
 func TestVersion_BranchGreater(t *testing.T) {
-	type fields struct {
-		Current      *semver.Version
-		apiUrl       string
-		privateToken string
-	}
-
 	tests := []struct {
 		name        string
 		version     *semver.Version
