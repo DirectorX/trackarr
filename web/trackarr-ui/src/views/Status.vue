@@ -49,7 +49,7 @@
         <v-footer absolute dark padless>
             <v-col class="text-right" cols="12">
                 <v-btn v-on:click="checkForUpdate()" color="secondary" class="ma-2">Check For Update</v-btn>
-                <label><strong>Trackarr v{{currentVersion}}</strong></label>
+                <label><strong>Trackarr {{currentVersion}}</strong></label>
 
             </v-col>
 
@@ -159,13 +159,13 @@
                 }).then(response => {
                     if(response.data.update_available){
                         this.$toastr.Add({
-                            msg: "Newer version " + response.data.latest_version + " is available!",
+                            msg: "Newer version available: " + response.data.latest_version,
                             position: 'toast-top-right'    
                         })
                     }
                     else{
                         this.$toastr.Add({
-                            msg: "You're already on the latest version",
+                            msg: "You're already on the latest version!",
                             position: 'toast-top-right'    
                         })
                     }
