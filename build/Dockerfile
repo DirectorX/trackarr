@@ -9,4 +9,6 @@ COPY ["dist/trackarr_linux_amd64/trackarr", "/app/trackarr/trackarr"]
 # Add root files
 COPY ["build/root/", "/"]
 
+EXPOSE 7337
+
 VOLUME ["/config"]
