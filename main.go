@@ -6,7 +6,7 @@ import (
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/database"
 	"github.com/l3uddz/trackarr/tasks"
-	"github.com/l3uddz/trackarr/utils/version"
+	"github.com/l3uddz/trackarr/version"
 	"github.com/l3uddz/trackarr/web"
 
 	"github.com/l3uddz/trackarr/logger"
@@ -49,6 +49,10 @@ func init() {
 	log = logger.GetLogger("app")
 
 	// Version info
+	if err := version.Init(buildConfig); err != nil {
+		log.WithError(err).Fatal("Failed to initialize version")
+	}
+
 	log.Infof("Using %s = %s (%s@%s)", stringutils.StringLeftJust("VERSION", " ", 10),
 		buildConfig.Version, buildConfig.GitCommit, buildConfig.Timestamp)
 
@@ -97,8 +101,7 @@ func main() {
 	log.Info("Initialized core")
 
 	// Check version
-	usingLatest, latestVersion := version.IsLatestGitlabVersion(
-		"https://gitlab.com/api/v4/projects/15385789/releases", "", config.Build.Version)
+	usingLatest, latestVersion := version.Trackarr.IsLatest()
 	if !usingLatest {
 		log.Warnf("You are not using the latest version: %s", latestVersion)
 	}

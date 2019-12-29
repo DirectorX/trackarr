@@ -1,12 +1,14 @@
 package apis
 
 import (
+	"net/http"
+
 	"github.com/l3uddz/trackarr/config"
 	"github.com/l3uddz/trackarr/logger"
-	"github.com/l3uddz/trackarr/utils/version"
+	"github.com/l3uddz/trackarr/version"
+
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 /* Structs */
@@ -24,14 +26,13 @@ func UpdateStatus(c echo.Context) error {
 	log := logger.GetLogger("api").WithFields(logrus.Fields{"client": c.RealIP()})
 
 	// is there an update available?
-	usingLatest, latestVersion := version.IsLatestGitlabVersion(
-		"https://gitlab.com/api/v4/projects/15385789/releases", "", config.Build.Version)
+	usingLatest, latestVersion := version.Trackarr.IsLatest()
 	log.Debugf("Latest version: %q, update available: %v", latestVersion, !usingLatest)
 
 	// return response
 	return c.JSON(http.StatusOK, &UpdateResponse{
 		UpdateAvailable: !usingLatest,
-		LatestVersion:   latestVersion,
+		LatestVersion:   latestVersion.String(),
 		CurrentVersion:  config.Build.Version,
 	})
 }
