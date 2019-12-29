@@ -12,6 +12,10 @@ var (
 	Trackarr *Version
 )
 
+const (
+	apiUrl = "https://gitlab.com/api/v4/projects/15385789/releases"
+)
+
 type Version struct {
 	Current      *semver.Version
 	apiUrl       string
@@ -27,7 +31,7 @@ func Init(buildConfig *config.BuildVars) error {
 	}
 
 	Trackarr = &Version{
-		apiUrl:  "https://gitlab.com/api/v4/projects/15385789/releases",
+		apiUrl:  apiUrl,
 		Current: c,
 	}
 
@@ -44,32 +48,32 @@ func (v *Version) IsLatest() (bool, *semver.Version) {
 	log.Debugf("Found %d Gitlab releases", len(releases))
 
 	// iterate releases
-	highestVersion := &semver.Version{}
-
 	for _, release := range releases {
 		// translate release tag to semver
 		rV, err := semver.NewVersion(release.Tag)
 		if err != nil {
-			log.WithError(err).Errorf("Failed converting release tag to version: %q", release.Tag)
+			log.WithError(err).Errorf("Failed converting release tag to version: %s", release.Tag)
 			continue
 		}
 
-		// are we interested in this version?
-		// skip non matching pre releases
-		if (v.Current.Prerelease() == "" && rV.Prerelease() != "") ||
-			(v.Current.Prerelease() != "" && rV.Prerelease() == "") {
-			continue
-		}
+		if v.isSameBranch(rV) {
+			if v.isGreater(rV) {
+				return false, rV
+			}
 
-		// is this greater than our current version?
-		if rV.GreaterThan(v.Current) && rV.GreaterThan(highestVersion) {
-			highestVersion = rV
+			// Most recent release in the same branch isn't newer, discard everything else
+			break
 		}
-	}
-
-	if highestVersion != nil && highestVersion.String() != "0.0.0" {
-		return false, highestVersion
 	}
 
 	return true, v.Current
+}
+
+func (v *Version) isSameBranch(rV *semver.Version) bool {
+	return v.Current.Prerelease() == rV.Prerelease()
+}
+
+func (v *Version) isGreater(rV *semver.Version) bool {
+	// is this greater than our current version?
+	return rV.GreaterThan(v.Current)
 }
