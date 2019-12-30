@@ -36,6 +36,9 @@ Trackarr also allows you to filter out unwanted releases using 'expressions'.
 
 Supports these trackers: https://github.com/autodl-community/autodl-trackers/tree/master/trackers
 
+# Installation
+
+See [Wiki](https://gitlab.com/cloudb0x/trackarr/-/wikis/home).
 
 # Donate
 
