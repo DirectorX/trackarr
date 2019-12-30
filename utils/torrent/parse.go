@@ -20,12 +20,12 @@ var ()
 func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Data, error) {
 	// retrieve torrent file
 	torrentBytes, err := web.GetBodyBytes(web.GET, torrentUrl, timeout, &web.Retry{
-		MaxAttempts:         5,
+		MaxAttempts:         6,
 		ExpectedContentType: "torrent",
 		Backoff: backoff.Backoff{
 			Jitter: true,
 			Min:    500 * time.Millisecond,
-			Max:    3 * time.Second,
+			Max:    10 * time.Second,
 		}}, headers)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentUrl)
