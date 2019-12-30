@@ -44,9 +44,8 @@ See [Wiki](https://gitlab.com/cloudb0x/trackarr/-/wikis/home).
 
 If you find this project helpful, feel free to make a small donation to the developer:
 
+  - [GitHub Sponsor](https://github.com/sponsors/l3uddz) - Credit Cards, PayPal, etc
   - [Monzo](https://monzo.me/today): Credit Cards, Apple Pay, Google Pay
-
-  - [Beerpay](https://beerpay.io/l3uddz/traktarr): Credit Cards
 
   - [Paypal: l3uddz@gmail.com](https://www.paypal.me/l3uddz)
 
