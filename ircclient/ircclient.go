@@ -109,10 +109,8 @@ func (c *IRCClient) setConfigPrecedence() {
 	// set server from config
 	if c.Tracker.Config.IRC.Host != nil && c.Tracker.Config.IRC.Port != nil {
 		c.log.Debugf("Using host and port from config: %s:%s", *c.Tracker.Config.IRC.Host, *c.Tracker.Config.IRC.Port)
-		serverString := fmt.Sprintf("%s:%s", *c.Tracker.Config.IRC.Host, *c.Tracker.Config.IRC.Port)
-		c.Tracker.Info.Servers = nil
 		c.Tracker.Info.Servers = []string{
-			serverString,
+			fmt.Sprintf("%s:%s", *c.Tracker.Config.IRC.Host, *c.Tracker.Config.IRC.Port),
 		}
 	}
 
