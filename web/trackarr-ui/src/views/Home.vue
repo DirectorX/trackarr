@@ -5,7 +5,7 @@
                 <h1 class="pt-5 headline font-weight-light">Pushed Releases</h1>
             </v-col>
             <v-col class="text-right pb-0 ml-auto" lg="6" md="6" sm="7" cols="7">
-                <v-text-field class="d-inline-flex" v-model="trackerSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                <v-text-field class="d-inline-flex" v-model="pushedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
                 </v-text-field>
             </v-col>
         </v-row>
@@ -61,7 +61,7 @@
                 <h1 class="pt-5 headline font-weight-light">Approved Releases</h1>
             </v-col>
             <v-col class="text-right pb-0 ml-auto" lg="6" md="6" sm="7" cols="7">
-                <v-text-field class="d-inline-flex" v-model="trackerSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                <v-text-field class="d-inline-flex" v-model="approvedReleasesSearch" append-icon="mdi-magnify" label="Search" single-line hide-details>
                 </v-text-field>
             </v-col>
         </v-row>
