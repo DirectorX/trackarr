@@ -1,3 +1,6 @@
+/*eslint no-undef: "off"*/
+__webpack_public_path__ = window.baseurl.endsWith("/") ? window.baseurl : window.baseurl + "/";
+
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -5,6 +8,8 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios'
 import VueNativeSock from 'vue-native-websocket'
 import VueToastr from "vue-toastr";
+
+var path = require('path');
 
 /* generate dynamic variables */
 
@@ -16,7 +21,7 @@ if (process.env.VUE_APP_API_URL && process.env.VUE_APP_API_KEY) {
     CORE_API_URL = process.env.VUE_APP_API_URL;
     CORE_API_KEY = process.env.VUE_APP_API_KEY;
 } else {
-    CORE_API_URL = new URL('/api', window.location.href).href;
+    CORE_API_URL = new URL(path.join(window.baseurl, '/api'), window.location.href).href;
     CORE_API_KEY = window.apikey;
 }
 
@@ -25,7 +30,7 @@ let CORE_WEBSOCKET_URL = '';
 if (process.env.VUE_APP_WEBSOCKET) {
     CORE_WEBSOCKET_URL = process.env.VUE_APP_WEBSOCKET;
 } else {
-    let socketUrl = new URL('/api/ws', window.location.href);
+    let socketUrl = new URL(path.join(window.baseurl, '/api/ws'), window.location.href);
     socketUrl.protocol = socketUrl.protocol.replace('http', 'ws');
     socketUrl.searchParams.set('apikey', CORE_API_KEY);
     CORE_WEBSOCKET_URL = socketUrl.href;

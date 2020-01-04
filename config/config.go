@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	jsoniter "github.com/json-iterator/go"
 	"gitlab.com/cloudb0x/trackarr/logger"
@@ -115,6 +116,13 @@ func Init(build *BuildVars) error {
 		return errors.Wrap(err, "failed decoding config")
 	}
 
+	// Base URL
+	var err error
+	if Config.Server.BaseURL, err = filepath.Abs(Config.Server.BaseURL); err != nil {
+		log.WithError(err).Error("Failed to convert base URL into an absolute path")
+		return errors.Wrap(err, "failed to convert base URL into an absolute path")
+	}
+
 	return nil
 }
 
@@ -148,6 +156,7 @@ func setConfigDefaults(check bool) error {
 	added += setConfigDefault("server.port", 7337, check)
 	added += setConfigDefault("server.apikey", shortuuid.New(), check)
 	added += setConfigDefault("server.publicurl", "http://trackarr.domain.com", check)
+	added += setConfigDefault("server.baseurl", "/", check)
 
 	// database settings
 	added += setConfigDefault("database.maxagehours", 72, check)

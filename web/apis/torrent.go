@@ -13,7 +13,7 @@ import (
 
 	"github.com/imroc/req"
 	"github.com/jpillora/backoff"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 )
 
