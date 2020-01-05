@@ -1,8 +1,6 @@
 /*eslint no-undef: "off"*/
-if (window.baseurl !== "/") {
-    // set public_path where custom baseurl set
-    __webpack_public_path__ = window.baseurl.endsWith("/") ? window.baseurl : window.baseurl + "/";
-}
+// Overwrite Vue publicPath with a runtime dynamic var
+__webpack_public_path__ = window.baseurl.endsWith("/") ? window.baseurl : window.baseurl + "/";
 
 import Vue from 'vue'
 import App from './App.vue'
