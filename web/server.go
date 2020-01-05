@@ -106,7 +106,7 @@ func Listen(cfg *config.Configuration, logLevel int) {
 	}
 
 	// - UI routes
-	gui.Any("*", handler.Index)
+	gui.Any("/*", handler.Index)
 	gui.GET("/static/*", echo.WrapHandler(staticFileServer))
 
 	// API
