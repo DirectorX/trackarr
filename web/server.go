@@ -134,15 +134,14 @@ func Listen(cfg *config.Configuration, logLevel int) {
 	}
 
 	/* start echo server */
-	runtime.Web = &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
-		Handler: e,
-	}
+	runtime.Web = e
+	e.HideBanner = true
+	e.HidePort = true
 
 	log.Infof("Listening on %s:%d%s", cfg.Server.Host, cfg.Server.Port, cfg.Server.BaseURL)
 
 	go func() {
-		if err := runtime.Web.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)); err != nil && err != http.ErrServerClosed {
 			log.WithError(err).Fatalf("Failed listening on %s:%d", cfg.Server.Host, cfg.Server.Port)
 		}
 	}()
