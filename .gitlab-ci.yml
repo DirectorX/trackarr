@@ -126,7 +126,7 @@ build-web:web:
     - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | BINDIR=/usr/local/bin/ sh
   script:
     # Run goreleaser
-    - make snapshot
+    - make snapshot SKIP_WEB=true
   <<: *cache_vendor_pull
   artifacts:
     name: build_${CI_COMMIT_SHORT_SHA}
@@ -143,8 +143,6 @@ build:master-publish:
 # Master build
 build:master:
   extends: .build-binary
-  script:
-    - make snapshot SKIP_WEB=true
   <<: *only_master
 
 # Develop release
@@ -157,14 +155,10 @@ build:develop-publish:
 # Develop build
 build:develop:
   extends: .build-binary
-  script:
-    - make snapshot SKIP_WEB=true
   <<: *only_develop
 
 build:branch:
   extends: .build-binary
-  script:
-    - make snapshot SKIP_WEB=true
   <<: *only_branches
   when: manual
 

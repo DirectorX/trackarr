@@ -23,7 +23,7 @@ builds:
 # Archive
 archives:
   -
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format: "tar.gz"
 
 # Checksum
@@ -33,7 +33,7 @@ checksum:
 
 # Snapshot
 snapshot:
-  name_template: "{{ .Tag }}+{{ .ShortCommit }}"
+  name_template: "{{ .Major }}.{{ .Minor }}.{{ .Patch }}-dev+{{ .ShortCommit }}"
 
 # Changelog
 changelog:
