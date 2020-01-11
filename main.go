@@ -99,12 +99,6 @@ func init() {
 func main() {
 	log.Info("Initialized core")
 
-	// Check version
-	usingLatest, latestVersion := version.Trackarr.IsLatest()
-	if !usingLatest {
-		log.Warnf("You are not using the latest version: %s", latestVersion)
-	}
-
 	// Defer de-inits
 	defer cache.Close()
 
