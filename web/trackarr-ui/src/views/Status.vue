@@ -85,8 +85,7 @@
                     }
 
                 ],
-                currentVersion: ''
-
+                currentVersion: this.CORE_APP_VERSION
             }
         },
         computed: {
@@ -142,15 +141,6 @@
                         }
                     })
             },
-            fetchVersion: function () {
-                this.$axios.get('/update/status', {
-                    params: {
-                        apikey: this.CORE_API_KEY
-                    }
-                }).then(response => {
-                    this.currentVersion = response.data.current_version
-                })
-            },
             checkForUpdate: function(){
                 this.$axios.get('/update/status', {
                     params: {
@@ -176,8 +166,6 @@
             clearInterval(this.interval)
         },
         mounted: function () {
-            // retrive version of trackarr
-            this.fetchVersion();
             // retrieve releases
             this.fetchTrackerStatuses();
             this.interval = setInterval(() => {

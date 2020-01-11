@@ -17,6 +17,7 @@ var path = require('path');
 // - api
 let CORE_API_URL = '';
 let CORE_API_KEY = '';
+let CORE_APP_VERSION = '';
 
 if (process.env.VUE_APP_API_URL && process.env.VUE_APP_API_KEY) {
     CORE_API_URL = process.env.VUE_APP_API_URL;
@@ -25,6 +26,9 @@ if (process.env.VUE_APP_API_URL && process.env.VUE_APP_API_KEY) {
     CORE_API_URL = new URL(path.join(window.baseurl, '/api'), window.location.href).href;
     CORE_API_KEY = window.apikey;
 }
+
+// - version
+CORE_APP_VERSION = window.version;
 
 // - websocket
 let CORE_WEBSOCKET_URL = '';
@@ -44,6 +48,7 @@ if (process.env.VUE_APP_WEBSOCKET) {
 console.log('Using WEBSOCKET_URL =', CORE_WEBSOCKET_URL);
 console.log('Using API_URL =', CORE_API_URL);
 console.log('Using API_KEY =', CORE_API_KEY);
+console.log('using APP_VERSION =', CORE_APP_VERSION);
 
 /* eslint-enable no-console */
 
@@ -53,6 +58,8 @@ console.log('Using API_KEY =', CORE_API_KEY);
 Vue.prototype.CORE_API_URL = CORE_API_URL;
 Vue.prototype.CORE_API_KEY = CORE_API_KEY;
 Vue.prototype.CORE_WEBSOCKET_URL = CORE_WEBSOCKET_URL;
+Vue.prototype.CORE_APP_VERSION = CORE_APP_VERSION;
+
 Vue.prototype.$axios = axios.create({
     baseURL: CORE_API_URL
 });
