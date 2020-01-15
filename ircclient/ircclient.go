@@ -73,9 +73,9 @@ func New(t *config.TrackerInstance) (*IRCClient, error) {
 
 	// initialize irc client
 	client := &IRCClient{
-		Conn:      conn,
-		Tracker:   t,
-		Processor: processor.New(ircLogger, t),
+		Conn:          conn,
+		Tracker:       t,
+		Processor:     processor.New(ircLogger, t),
 		LastAnnounced: atomic.NewString(""),
 		// Private
 		log: ircLogger,
