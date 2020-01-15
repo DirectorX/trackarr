@@ -44,6 +44,7 @@ require (
 	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
+	go.uber.org/atomic v1.4.0
 	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8 // indirect
