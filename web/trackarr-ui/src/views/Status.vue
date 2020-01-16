@@ -26,6 +26,11 @@
                             </div>
 
                         </template>
+                          <template v-slot:item.last_announced="{ item }">
+                            <div>
+                                {{ item.last_announced | moment("from", "now") | capitalize}}
+                            </div>
+                        </template>
                         <template v-slot:body.append>
                             <tr>
                                 <td class="d-none d-sm-table-cell"></td>
@@ -104,6 +109,10 @@
                             return this.filterTrackerStatus == value;
                         },
                     },
+                    {
+                        text: 'Last Announced',
+                        value: 'last_announced'
+                    }
                 ]
             }
         },
@@ -133,10 +142,12 @@
                             if (index == -1) {
                                 this.trackers.push({
                                     tracker: key,
-                                    status: value == true ? 'online' : 'offline'
+                                    status: value.connected == true ? 'online' : 'offline',
+                                    last_announced: value.last_announced != '' ? value.last_announced : 'Never'
                                 })
                             } else {
-                                this.trackers[index].status = value == true ? 'online' : 'offline'
+                                this.trackers[index].status = value.connected == true ? 'online' : 'offline'
+                                this.trackers[index].last_announced = value.last_announced != '' ? value.last_announced : 'Never'
                             }
                         }
                     })
