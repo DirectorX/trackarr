@@ -28,7 +28,7 @@
                         </template>
                           <template v-slot:item.last_announced="{ item }">
                             <div>
-                                {{ item.last_announced | moment("from", "now") | capitalize}}
+                                {{ item.last_announced | moment("from", "now") }}
                             </div>
                         </template>
                         <template v-slot:body.append>

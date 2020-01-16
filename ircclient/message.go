@@ -41,7 +41,7 @@ func (c *IRCClient) handleMessage(event *irc.Event) {
 	}
 
 	// update last announced
-	c.LastAnnounced.Store(time.Now().UTC().String())
+	c.LastAnnounced.Store(time.Now().UTC().Format("2006-01-02T15:04:05.0000Z07:00"))
 }
 
 func (c IRCClient) cleanMessage(message string) string {
