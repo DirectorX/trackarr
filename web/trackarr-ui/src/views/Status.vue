@@ -146,7 +146,7 @@
                                 this.trackers.push({
                                     tracker: key,
                                     status: value.connected === true ? 'online' : 'offline',
-                                    last_announced: value.last_announced !== '' ? value.last_announced : 'Never'
+                                    last_announced: value.last_announced !== '' ? value.last_announced : null
                                 })
                             } else {
                                 this.trackers[index].status = value.connected === true ? 'online' : 'offline';
