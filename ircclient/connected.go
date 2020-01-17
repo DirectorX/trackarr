@@ -12,6 +12,9 @@ import (
 func (c *IRCClient) handleConnected(event *irc.Event) {
 	identified := false
 
+	// reset LastJoined
+	c.LastJoined.Store("")
+
 	// send commands
 	for _, command := range c.Tracker.Config.IRC.Commands {
 		cmdToSend := strings.TrimLeft(command, "/")

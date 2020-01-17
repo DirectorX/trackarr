@@ -2,6 +2,7 @@ package ircclient
 
 import (
 	"strings"
+	"time"
 
 	listutils "gitlab.com/cloudb0x/trackarr/utils/lists"
 
@@ -25,6 +26,9 @@ func (c *IRCClient) handleJoined(event *irc.Event) {
 		c.log.Debugf("Leaving non-announce channel: %s", channelName)
 		c.Conn.Part(channelName)
 	}
+
+	// this is an announce channel, set LastJoined
+	c.LastJoined.Store(time.Now().UTC().Format("2006-01-02T15:04:05.0000Z07:00"))
 }
 
 func (c *IRCClient) handleJoinFailure(event *irc.Event) {
