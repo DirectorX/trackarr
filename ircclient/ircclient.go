@@ -13,6 +13,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	irc "github.com/thoj/go-ircevent"
+	"go.uber.org/atomic"
 )
 
 var (
@@ -30,6 +31,8 @@ type IRCClient struct {
 	Conn      *irc.Connection
 	Tracker   *config.TrackerInstance
 	Processor *processor.Processor
+	// Counters
+	LastAnnounced *atomic.String
 	// Private
 	log *logrus.Entry
 }
@@ -70,12 +73,14 @@ func New(t *config.TrackerInstance) (*IRCClient, error) {
 
 	// initialize irc client
 	client := &IRCClient{
-		Conn:      conn,
-		Tracker:   t,
-		Processor: processor.New(ircLogger, t),
+		Conn:          conn,
+		Tracker:       t,
+		Processor:     processor.New(ircLogger, t),
+		LastAnnounced: atomic.NewString(""),
 		// Private
 		log: ircLogger,
 	}
+
 	// set IRC connection in the Tracker struct
 	client.Tracker.IRC = conn
 

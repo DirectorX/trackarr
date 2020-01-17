@@ -10,6 +10,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+/* Struct */
+
+type IrcTrackerStatus struct {
+	Connected     bool   `json:"connected"`
+	LastAnnounced string `json:"last_announced"`
+}
+
 /* Public */
 
 func IrcStatus(c echo.Context) error {
@@ -17,9 +24,12 @@ func IrcStatus(c echo.Context) error {
 	log := logger.GetLogger("api").WithFields(logrus.Fields{"client": c.RealIP()})
 
 	// build map of irc statuses
-	clientStatuses := map[string]bool{}
+	clientStatuses := map[string]IrcTrackerStatus{}
 	for _, client := range runtime.Irc {
-		clientStatuses[client.Tracker.Name] = client.Conn.Connected()
+		clientStatuses[client.Tracker.Name] = IrcTrackerStatus{
+			Connected:     client.Conn.Connected(),
+			LastAnnounced: client.LastAnnounced.Load(),
+		}
 	}
 
 	log.Debugf("%d irc client statuses requested", len(clientStatuses))

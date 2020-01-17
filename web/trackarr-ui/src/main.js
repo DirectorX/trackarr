@@ -1,6 +1,14 @@
 /*eslint no-undef: "off"*/
 // Overwrite Vue publicPath with a runtime dynamic var
-__webpack_public_path__ = window.baseurl.endsWith("/") ? window.baseurl : window.baseurl + "/";
+let CORE_APP_BASE_URL = '';
+
+if (process.env.VUE_APP_BASE_URL) {
+    __webpack_public_path__ = process.env.VUE_APP_BASE_URL.endsWith("/") ? process.env.VUE_APP_BASE_URL : process.env.VUE_APP_BASE_URL + "/";
+    CORE_APP_BASE_URL = process.env.VUE_APP_BASE_URL;
+} else {
+    __webpack_public_path__ = window.baseurl.endsWith("/") ? window.baseurl : window.baseurl + "/";
+    CORE_APP_BASE_URL = window.baseurl;
+}
 
 import Vue from 'vue'
 import App from './App.vue'
@@ -22,13 +30,14 @@ let CORE_APP_VERSION = '';
 if (process.env.VUE_APP_API_URL && process.env.VUE_APP_API_KEY) {
     CORE_API_URL = process.env.VUE_APP_API_URL;
     CORE_API_KEY = process.env.VUE_APP_API_KEY;
+    CORE_APP_VERSION = 'Local Build';
 } else {
     CORE_API_URL = new URL(path.join(window.baseurl, '/api'), window.location.href).href;
     CORE_API_KEY = window.apikey;
+    CORE_APP_VERSION = window.version;
 }
 
 // - version
-CORE_APP_VERSION = window.version;
 
 // - websocket
 let CORE_WEBSOCKET_URL = '';
@@ -48,6 +57,7 @@ if (process.env.VUE_APP_WEBSOCKET) {
 console.log('Using WEBSOCKET_URL =', CORE_WEBSOCKET_URL);
 console.log('Using API_URL =', CORE_API_URL);
 console.log('Using API_KEY =', CORE_API_KEY);
+console.log('Using APP_BASE_URL =', CORE_APP_BASE_URL);
 console.log('using APP_VERSION =', CORE_APP_VERSION);
 
 /* eslint-enable no-console */
