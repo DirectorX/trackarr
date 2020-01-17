@@ -22,7 +22,17 @@
                                 <status-indicator v-if="item.status == 'online'" class="mr-3" status="positive" pulse/>
                                 <status-indicator v-if="item.status == 'offline'" class="mr-3" status="negative"
                                                   pulse/>
-                                {{ item.status | capitalize }}
+                                <span v-if="item.status === 'online'">
+                                    <span v-if="item.last_joined !== null">
+                                        {{ item.status | capitalize }} <i>(joined {{ item.last_joined | moment("from", "now") }})</i>
+                                    </span>
+                                    <span v-else>
+                                        {{ item.status | capitalize }}
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    {{ item.status | capitalize }}
+                                </span>
                             </div>
 
                         </template>
@@ -109,7 +119,7 @@
                             if (!this.filterTrackerStatus) {
                                 return true;
                             }
-                            return this.filterTrackerStatus == value;
+                            return this.filterTrackerStatus === value;
                         },
                     },
                     {
@@ -123,11 +133,7 @@
             filteredTrackers: function () {
                 return this.trackers.filter(item => {
                     if (this.filterTrackerStatus) {
-                        if (item.status == this.filterTrackerStatus) {
-                            return true
-                        }
-                        return false
-
+                        return item.status === this.filterTrackerStatus;
                     }
                     return true;
                 })
@@ -146,10 +152,12 @@
                                 this.trackers.push({
                                     tracker: key,
                                     status: value.connected === true ? 'online' : 'offline',
+                                    last_joined: value.last_joined !== '' ? value.last_joined : null,
                                     last_announced: value.last_announced !== '' ? value.last_announced : null
                                 })
                             } else {
                                 this.trackers[index].status = value.connected === true ? 'online' : 'offline';
+                                this.trackers[index].last_joined = value.last_joined !== '' ? value.last_joined : null;
                                 this.trackers[index].last_announced = value.last_announced !== '' ? value.last_announced : null
                             }
                         }

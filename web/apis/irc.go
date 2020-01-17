@@ -14,6 +14,7 @@ import (
 
 type IrcTrackerStatus struct {
 	Connected     bool   `json:"connected"`
+	LastJoined    string `json:"last_joined"`
 	LastAnnounced string `json:"last_announced"`
 }
 
@@ -28,6 +29,7 @@ func IrcStatus(c echo.Context) error {
 	for _, client := range runtime.Irc {
 		clientStatuses[client.Tracker.Name] = IrcTrackerStatus{
 			Connected:     client.Conn.Connected(),
+			LastJoined:    client.LastJoined.Load(),
 			LastAnnounced: client.LastAnnounced.Load(),
 		}
 	}
