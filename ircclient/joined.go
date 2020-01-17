@@ -25,6 +25,7 @@ func (c *IRCClient) handleJoined(event *irc.Event) {
 		// this is not an announce channel, lets leave.
 		c.log.Debugf("Leaving non-announce channel: %s", channelName)
 		c.Conn.Part(channelName)
+		return
 	}
 
 	// this is an announce channel, set LastJoined
