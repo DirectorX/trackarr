@@ -3,7 +3,7 @@ package version
 import (
 	"testing"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 )
 
 func TestVersion_BranchGreater(t *testing.T) {
