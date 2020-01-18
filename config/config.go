@@ -9,7 +9,7 @@ import (
 	"gitlab.com/cloudb0x/trackarr/logger"
 	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 
-	"github.com/lithammer/shortuuid"
+	"github.com/lithammer/shortuuid/v3"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
