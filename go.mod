@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/GeertJohan/go.rice v1.0.0
 	github.com/IncSW/go-bencode v0.0.0-20191006112700-dd0b375b2060
-	github.com/Masterminds/semver v1.5.0
+	github.com/Masterminds/semver/v3 v3.0.3
 	github.com/ReneKroon/ttlcache v1.6.0
 	github.com/antchfx/xmlquery v1.2.3
 	github.com/antchfx/xpath v1.1.2 // indirect
