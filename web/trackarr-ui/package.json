@@ -11,7 +11,7 @@
     "axios": "0.19.1",
     "core-js": "3.3.5",
     "vue": "2.6.11",
-    "vue-moment": "4.0.0",
+    "vue-moment": "4.1.0",
     "vue-native-websocket": "2.0.13",
     "vue-router": "3.1.5",
     "vue-status-indicator": "1.2.1",
