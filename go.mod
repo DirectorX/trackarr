@@ -39,7 +39,7 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	go.uber.org/atomic v1.4.0
+	go.uber.org/atomic v1.5.1
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/ini.v1 v1.51.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
