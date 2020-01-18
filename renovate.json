@@ -2,5 +2,10 @@
   "extends": [
     "config:base"
   ],
-  "baseBranches": ["develop"]
+  "baseBranches": [
+    "develop"
+  ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ]
 }
