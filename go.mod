@@ -17,7 +17,7 @@ require (
 	github.com/foolin/goview v0.2.0
 	github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7 // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
-	github.com/imroc/req v0.2.4
+	github.com/imroc/req v0.3.0
 	github.com/jpillora/backoff v1.0.0
 	github.com/json-iterator/go v1.1.9
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
