@@ -12,7 +12,7 @@
     "core-js": "3.6.4",
     "vue": "2.6.11",
     "vue-moment": "4.1.0",
-    "vue-native-websocket": "2.0.13",
+    "vue-native-websocket": "2.0.14",
     "vue-router": "3.1.5",
     "vue-status-indicator": "1.2.1",
     "vue-toastr": "2.1.2",
