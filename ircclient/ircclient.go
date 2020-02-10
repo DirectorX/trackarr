@@ -33,6 +33,7 @@ type IRCClient struct {
 	Processor *processor.Processor
 	// Counters
 	LastAnnounced *atomic.String
+	LastJoined    *atomic.String
 	// Private
 	log *logrus.Entry
 }
@@ -77,6 +78,7 @@ func New(t *config.TrackerInstance) (*IRCClient, error) {
 		Tracker:       t,
 		Processor:     processor.New(ircLogger, t),
 		LastAnnounced: atomic.NewString(""),
+		LastJoined:    atomic.NewString(""),
 		// Private
 		log: ircLogger,
 	}
