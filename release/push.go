@@ -1,6 +1,7 @@
 package release
 
 import (
+	"gitlab.com/cloudb0x/trackarr/utils/defaults"
 	"strconv"
 	"strings"
 	"time"
@@ -69,8 +70,8 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	}
 
 	// send request
-	resp, err := web.GetResponse(web.POST, requestUrl, 30, req.BodyJSON(&pvrRequest),
-		&web.Retry{
+	resp, err := web.GetResponse(web.POST, requestUrl, defaults.GetOrDefaultInt(&pvr.Timeout, 30),
+		req.BodyJSON(&pvrRequest), &web.Retry{
 			MaxAttempts:          5,
 			RetryableStatusCodes: []int{500},
 			Backoff: backoff.Backoff{
