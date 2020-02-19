@@ -51,25 +51,6 @@ func init() {
 	req.SetTimeout(0)
 }
 
-func getInputsWithTimeout(inputs []interface{}, timeout int) []interface{} {
-	// return existing inputs when no timeout provided
-	if timeout == 0 {
-		return inputs
-	}
-
-	// make copy of inputs to return
-	newInputs := make([]interface{}, 0)
-	for _, v := range inputs {
-		newInputs = append(newInputs, v)
-	}
-
-	// add timeout context
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
-	newInputs = append(newInputs, ctx)
-
-	return newInputs
-}
-
 /* Public */
 
 func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) (*req.Resp, error) {
@@ -96,7 +77,16 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	// Exponential backoff
 	for {
 		// set inputs
-		inputs := getInputsWithTimeout(reqInputs, timeout)
+		var inputs []interface{}
+		if timeout <= 0 {
+			inputs = reqInputs
+		} else {
+			// add timeout context
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+			inputs = append(reqInputs, ctx)
+			// TODO: discard context during current request instead of stacking
+			defer cancel()
+		}
 
 		// do request
 		switch method {
