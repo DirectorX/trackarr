@@ -22,7 +22,6 @@ func Init() error {
 		// skip disabled trackers
 		if !t.Enabled {
 			log.Debugf("Skipping disabled tracker: %s", trackerName)
-
 			continue
 		}
 
