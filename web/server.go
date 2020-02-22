@@ -16,9 +16,9 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/foolin/goview/supports/echoview-v4"
 	"github.com/foolin/goview/supports/gorice"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"gopkg.in/go-playground/validator.v8"
 )
 
 /* Structs */
@@ -52,10 +52,7 @@ func Listen(cfg *config.Configuration, logLevel int) {
 
 	// setup validator
 	e.Validator = &CustomValidator{
-		validator: validator.New(&validator.Config{
-			TagName:      "validate",
-			FieldNameTag: "validate",
-		}),
+		validator: validator.New(),
 	}
 
 	// setup template renderer
