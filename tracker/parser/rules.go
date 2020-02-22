@@ -14,7 +14,7 @@ func parseRules(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	// the actual parsing / processing will happen via the processor package
 	rules := xmlquery.FindOne(doc, "//parseinfo/linematched")
 	if rules == nil {
-		log.Errorf("Failed parsing tracker linematched rules")
+		log.Error("Failed parsing tracker linematched rules")
 		return errors.New("failed to parse tracker line matched rules")
 	}
 

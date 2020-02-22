@@ -13,7 +13,7 @@ func (r *Release) shouldIgnore(pvr *config.PvrInstance) (bool, error) {
 	for _, expression := range pvr.IgnoresExpr {
 		result, err := expr.Run(expression, r.Info)
 		if err != nil {
-			return true, errors.Wrapf(err, "failed checking ignore expression")
+			return true, errors.Wrap(err, "failed checking ignore expression")
 		}
 
 		expResult, ok := result.(bool)

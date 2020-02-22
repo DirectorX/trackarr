@@ -14,7 +14,7 @@ import (
 func parsePatterns(t *config.TrackerInfo, doc *xmlquery.Node) error {
 	// parse line patterns
 	if err := parsePattern(t, xmlquery.Find(doc, "//parseinfo/linepatterns/extract"), config.LinePattern); err != nil {
-		log.WithError(err).Errorf("Failed parsing tracker linepatterns")
+		log.WithError(err).Error("Failed parsing tracker linepatterns")
 		return errors.Wrap(err, "failed to parse tracker line patterns")
 	}
 

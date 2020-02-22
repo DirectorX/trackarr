@@ -13,7 +13,7 @@ func (r *Release) shouldAccept(pvr *config.PvrInstance) (bool, error) {
 	for _, expression := range pvr.AcceptsExpr {
 		result, err := expr.Run(expression, r.Info)
 		if err != nil {
-			return false, errors.Wrapf(err, "failed checking accept expression")
+			return false, errors.Wrap(err, "failed checking accept expression")
 		}
 
 		expResult, ok := result.(bool)

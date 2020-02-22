@@ -19,7 +19,7 @@ func (p *Processor) processQueue(queue chan string) {
 	} else if len(p.Tracker.Info.MultiLinePatterns) > 0 {
 		patterns = p.Tracker.Info.MultiLinePatterns
 	} else {
-		p.Log.Fatalf("Failed determining pattern type for processor...")
+		p.Log.Fatal("Failed determining pattern type for processor...")
 		return
 	}
 
@@ -36,7 +36,7 @@ func (p *Processor) processQueue(queue chan string) {
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
 				// if an error occurred, the only possible cause is due to the channel being closed
-				p.Log.WithError(err).Errorf("Failed dequeuing line to process, processor shutting down...")
+				p.Log.WithError(err).Error("Failed dequeuing line to process, processor shutting down...")
 				return
 			}
 
@@ -49,12 +49,12 @@ func (p *Processor) processQueue(queue chan string) {
 				// try next pattern (for LinePattern type only)
 				if pattern.PatternType == config.LinePattern && (pos+1) < patternsSize {
 					// try the next pattern
-					p.Log.WithError(err).Tracef("Failed matching pattern, trying next...")
+					p.Log.WithError(err).Trace("Failed matching pattern, trying next...")
 					continue
 				}
 
 				// multi-line pattern failed or all line patterns failed.
-				p.Log.WithError(err).Errorf("Failed matching pattern, discarding release...")
+				p.Log.WithError(err).Error("Failed matching pattern, discarding release...")
 				break
 
 			} else {
@@ -79,7 +79,7 @@ func (p *Processor) processQueue(queue chan string) {
 
 		// finished parsing release lines - process rules
 		if err := p.processRules(p.Tracker.Info.LineMatchedRules, vars); err != nil {
-			p.Log.WithError(err).Errorf("Failed processing release lines due to rules failure...")
+			p.Log.WithError(err).Error("Failed processing release lines due to rules failure...")
 			continue
 		}
 
@@ -87,7 +87,7 @@ func (p *Processor) processQueue(queue chan string) {
 
 		// convert parsed release vars to release struct and begin release processing
 		if trackerRelease, err := release.FromMap(p.Tracker, p.Log, vars); err != nil {
-			p.Log.WithError(err).Errorf("Failed converting release vars to a release struct...")
+			p.Log.WithError(err).Error("Failed converting release vars to a release struct...")
 		} else {
 			// start processing this release
 			go func(tr *release.Release) {
