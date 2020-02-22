@@ -14,7 +14,6 @@ func initIRC() {
 		c, err := ircclient.New(t2)
 		if err != nil {
 			log.WithError(err).Errorf("Failed initializing irc client for tracker: %s", tName)
-
 			continue
 		}
 		log.Debugf("Initialized irc client: %s", tName)
@@ -22,7 +21,6 @@ func initIRC() {
 		// start client
 		if err := c.Start(); err != nil {
 			log.WithError(err).Errorf("Failed starting irc client for tracker: %s", tName)
-
 			continue
 		}
 
