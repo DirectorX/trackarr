@@ -13,7 +13,7 @@ func (r *Release) shouldDelay(pvr *config.PvrInstance) (*int64, error) {
 	for _, expression := range pvr.DelaysExpr {
 		result, err := expr.Run(expression, r.Info)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed checking delay expression")
+			return nil, errors.Wrap(err, "failed checking delay expression")
 		}
 
 		expResult, ok := result.(int64)

@@ -9,6 +9,7 @@ type PvrConfig struct {
 	Enabled bool
 	URL     string
 	ApiKey  string
+	Timeout int
 	Filters *PvrFilters
 }
 

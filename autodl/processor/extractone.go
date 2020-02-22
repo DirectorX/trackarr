@@ -1,7 +1,7 @@
 package processor
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 
 	"github.com/antchfx/xmlquery"
@@ -41,5 +41,5 @@ func (p *Processor) processExtractOneRule(node *xmlquery.Node, vars map[string]s
 	}
 
 	// if we are here, all extracts failed
-	return fmt.Errorf("failed finding any matches for extractone rules")
+	return errors.New("failed finding any matches for extractone rules")
 }

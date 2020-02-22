@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 	"path"
 
 	"gitlab.com/cloudb0x/trackarr/config"
@@ -126,6 +127,9 @@ func Listen(cfg *config.Configuration, logLevel int) {
 	api.GET("/releases", apis.Releases)
 	api.GET("/irc/status", apis.IrcStatus)
 	api.GET("/update/status", apis.UpdateStatus)
+
+	// - Debug routes
+	gui.GET("/debug/pprof/*", echo.WrapHandler(http.DefaultServeMux))
 
 	// setup log hook
 	if err := runtime.Loghook.Start(); err != nil {

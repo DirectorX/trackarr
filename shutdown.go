@@ -33,7 +33,7 @@ func shutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := runtime.Web.Shutdown(ctx); err != nil {
-		log.WithError(err).Fatalf("Failed shutting down")
+		log.WithError(err).Fatal("Failed shutting down")
 	}
 	log.Info("Stopped web server")
 
@@ -42,13 +42,13 @@ func shutdown() {
 
 	// Close DB
 	if err := database.DB.Close(); err != nil {
-		log.WithError(err).Errorf("Failed closing database connection...")
+		log.WithError(err).Error("Failed closing database connection...")
 	}
 	log.Info("Stopped database")
 
 	// Stop logs processor
 	if err := runtime.Loghook.Stop(); err != nil {
-		log.WithError(err).Fatalf("Failed shutting down loghook")
+		log.WithError(err).Fatal("Failed shutting down loghook")
 	}
 	log.Info("Stopped loghook")
 

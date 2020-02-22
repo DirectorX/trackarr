@@ -2,8 +2,6 @@ package web
 
 import (
 	"io/ioutil"
-	"net"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -18,16 +16,8 @@ import (
 
 var (
 	// Logging
-	log = logger.GetLogger("web")
-
-	// HTTP client
-	httpClient = &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout: 10 * time.Second,
-			}).Dial,
-		},
-	}
+	log        = logger.GetLogger("web")
+	httpClient = *req.Client()
 )
 
 /* Structs */
@@ -52,19 +42,30 @@ const (
 	DELETE
 )
 
+/* Private */
+
+func init() {
+	// dont json escape html
+	req.SetJSONEscapeHTML(false)
+
+	// use timeout from getresponse
+	httpClient.Timeout = time.Duration(0)
+}
+
 /* Public */
 
 func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interface{}) (*req.Resp, error) {
 	// prepare request
-	client := httpClient
-	client.Timeout = time.Duration(timeout) * time.Second
-
-	req.SetJSONEscapeHTML(false)
-
 	inputs := make([]interface{}, 0)
-	inputs = append(inputs, client)
 
-	// Extract Retry struct, append everything else
+	// prepare client
+	client := httpClient
+	if timeout > 0 {
+		client.Timeout = time.Duration(timeout) * time.Second
+	}
+	inputs = append(inputs, &client)
+
+	// prepare request
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
@@ -83,6 +84,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// Exponential backoff
 	for {
+		// do request
 		switch method {
 		case GET:
 			resp, err = req.Get(requestUrl, inputs...)

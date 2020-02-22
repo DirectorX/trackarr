@@ -37,10 +37,15 @@ func New(log *logrus.Entry, t *config.TrackerInstance) *Processor {
 	}
 
 	// init queue processors
-	for _, queue := range processor.queues {
-		go func(q chan string) {
+	for queueName, queue := range processor.queues {
+		go func(name string, q chan string) {
+			// log start
+			log.Tracef("Queue processor started: %q", name)
+			// process queue
 			processor.processQueue(q)
-		}(queue)
+			// log finish
+			log.Tracef("Queue processor finished: %q", name)
+		}(queueName, queue)
 	}
 
 	return processor

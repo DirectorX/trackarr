@@ -9,7 +9,7 @@ import (
 func initIRC() {
 	for tName, t := range runtime.Tracker {
 		// load irc client
-		log.Debugf("Initializing IRC client: %s", tName)
+		log.Debugf("Initializing irc client: %s", tName)
 		t2 := t
 		c, err := ircclient.New(t2)
 		if err != nil {

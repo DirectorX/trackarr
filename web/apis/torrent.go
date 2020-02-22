@@ -50,7 +50,10 @@ func Torrent(c echo.Context) error {
 
 	// retrieve torrent stream
 	resp, err := webutils.GetResponse(webutils.GET, url, 30, &webutils.Retry{
-		MaxAttempts:         5,
+		MaxAttempts: 5,
+		RetryableStatusCodes: []int{
+			504,
+		},
 		ExpectedContentType: "torrent",
 		Backoff: backoff.Backoff{
 			Jitter: true,

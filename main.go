@@ -104,7 +104,7 @@ func main() {
 
 	// Validate we have at-least one active tracker
 	if len(runtime.Tracker) < 1 {
-		log.Fatalf("At-least one tracker must be enabled...")
+		log.Fatal("At-least one tracker must be enabled...")
 	}
 
 	// Start web
