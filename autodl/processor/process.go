@@ -23,13 +23,16 @@ func (p *Processor) processQueue(queue chan string) {
 		return
 	}
 
+	patternsSize := len(patterns)
+
 	// process lines
 	for {
 		vars := map[string]string{}
 		parseFailed := false
+		linePatternParsed := false
 
 		// iterate each pattern finding a match
-		for _, pattern := range patterns {
+		for pos, pattern := range patterns {
 			line, err := p.nextGoodLine(queue)
 			if err != nil {
 				// if an error occurred, the only possible cause is due to the channel being closed
@@ -41,17 +44,36 @@ func (p *Processor) processQueue(queue chan string) {
 			p.Log.Debugf("Processing line: %s", line)
 			patternVars, err := p.matchPattern(&pattern, line)
 			if err != nil {
-				p.Log.WithError(err).Errorf("Failed matching pattern, discarding release...")
 				parseFailed = true
-				break
-			}
 
-			// update vars
-			maps.MergeStringMap(vars, patternVars)
+				// try next pattern (for LinePattern type only)
+				if pattern.PatternType == config.LinePattern && (pos+1) < patternsSize {
+					// try the next pattern
+					p.Log.WithError(err).Tracef("Failed matching pattern, trying next...")
+					continue
+				}
+
+				// multi-line pattern failed or all line patterns failed.
+				p.Log.WithError(err).Errorf("Failed matching pattern, discarding release...")
+				break
+
+			} else {
+				// update vars
+				maps.MergeStringMap(vars, patternVars)
+
+				// flag that a LinePattern was parsed
+				if pattern.PatternType == config.LinePattern {
+					linePatternParsed = true
+					// line patterns need only one match before proceeding with processing rules
+					break
+				}
+
+				// multi-line patterns must continue until all patterns matched before processing rules
+			}
 		}
 
-		if parseFailed {
-			// pattern parsing above failed to parse a complete release
+		if parseFailed && !linePatternParsed {
+			// pattern parsing failed to parse a complete release
 			continue
 		}
 
