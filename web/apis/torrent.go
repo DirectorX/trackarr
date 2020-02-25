@@ -93,15 +93,15 @@ func Torrent(c echo.Context) error {
 			// - check ignore expressions
 			ignore, err := pvrInstance.ShouldIgnore(cacheItem.Release, log)
 			if err != nil {
-				log.WithError(err).Warnf("Failed checking release on sweep-two against ignore expressions for pvr: %q", pvrInstance.Config.Name)
+				log.WithError(err).Warn("Failed checking release on sweep-two against ignore expressions")
 				return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 					Error:   true,
-					Message: fmt.Sprintf("Failed evaluating ignore expressions on sweep-two against pvr %q: %v", pvrInstance.Config.Name, err),
+					Message: fmt.Sprintf("Failed evaluating ignore expressions on sweep-two for pvr %q: %v", pvrInstance.Config.Name, err),
 				})
 			}
 
 			if ignore {
-				log.Debugf("Ignoring release after sweep-two for pvr: %q", pvrInstance.Config.Name)
+				log.Debug("Ignoring release after sweep-two of ignore expressions")
 				return c.JSON(http.StatusNotFound, &ErrorResponse{
 					Error:   true,
 					Message: fmt.Sprintf("Ignoring release on sweep-two for pvr: %q", pvrInstance.Config.Name),
@@ -109,7 +109,7 @@ func Torrent(c echo.Context) error {
 			}
 
 			// send release
-			log.Debugf("Release passed sweep-two for pvr: %q", pvrInstance.Config.Name)
+			log.Debug("Release passed sweep-two of ignore expressions")
 			return c.Stream(http.StatusOK, "application/x-bittorrent", bytes.NewReader(cacheItem.Data))
 		}
 	}
