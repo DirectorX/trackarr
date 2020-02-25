@@ -1,6 +1,7 @@
 package release
 
 import (
+	"gitlab.com/cloudb0x/trackarr/cache"
 	"net/url"
 
 	"gitlab.com/cloudb0x/trackarr/config"
@@ -84,6 +85,12 @@ func (r *Release) Process() {
 			// bencode size was set to true (or we had no size from parsed release)
 			r.Info.SizeBytes = torrentData.Size
 		}
+
+		// add torrent to cache
+		go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
+			Name: r.Info.TorrentName,
+			Data: torrentData.Bytes,
+		})
 
 		bencodeUsed = true
 	}

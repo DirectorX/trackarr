@@ -33,4 +33,5 @@ type Data struct {
 	Name  string
 	Size  int64
 	Files []string
+	Bytes []byte
 }

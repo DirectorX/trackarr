@@ -26,6 +26,7 @@ func Torrent(c echo.Context) error {
 	// parse query params
 	url := c.QueryParam("url")
 	cookie := c.QueryParam("cookie")
+	pvr := c.QueryParam("pvr")
 
 	// validate query params
 	if url == "" {
@@ -34,7 +35,7 @@ func Torrent(c echo.Context) error {
 	}
 
 	// does this torrent exist in the cache?
-	if cacheItem, ok := cache.GetItem(url); ok {
+	if cacheItem, ok := cache.GetItem(url); ok && cacheItem.Data != nil {
 		log.Infof("Torrent requested: %s (cache: %s)", url, cacheItem.Name)
 		return c.Stream(http.StatusOK, "application/x-bittorrent", bytes.NewReader(cacheItem.Data))
 	}
