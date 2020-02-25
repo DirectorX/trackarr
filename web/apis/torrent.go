@@ -101,7 +101,7 @@ func Torrent(c echo.Context) error {
 			}
 
 			if ignore {
-				log.Debug("Ignoring release after sweep-two of ignore expressions")
+				log.WithField("name", cacheItem.Name).Warn("Ignoring approved release after sweep-two of ignore expressions")
 				return c.JSON(http.StatusNotFound, &ErrorResponse{
 					Error:   true,
 					Message: fmt.Sprintf("Ignoring release on sweep-two for pvr: %q", pvrInstance.Config.Name),
