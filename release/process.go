@@ -14,11 +14,11 @@ import (
 )
 
 /* Const */
-const TorrentFileTimeout = 15
+const TorrentFileTimeout = 30
 
 /* Private */
 
-func (r *Release) getProxiedTorrentURL(cookie *string) (string, error) {
+func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, error) {
 	// parse torrent api url
 	u, err := url.Parse(web.JoinURL(config.Config.Server.PublicURL, "/api/torrent"))
 	if err != nil {
@@ -29,6 +29,7 @@ func (r *Release) getProxiedTorrentURL(cookie *string) (string, error) {
 	q := u.Query()
 	q.Set("apikey", config.Config.Server.ApiKey)
 	q.Set("url", r.Info.TorrentURL)
+	q.Set("pvr", pvr)
 	if cookie != nil && *cookie != "" {
 		q.Set("cookie", *cookie)
 	}
@@ -88,40 +89,27 @@ func (r *Release) Process() {
 
 		// add torrent to cache
 		go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
-			Name: r.Info.TorrentName,
-			Data: torrentData.Bytes,
+			Name:    r.Info.TorrentName,
+			Data:    torrentData.Bytes,
+			Release: r.Info,
 		})
 
 		bencodeUsed = true
+	} else {
+		// store item in cache to be used by second-sweep
+		go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
+			Name:    r.Info.TorrentName,
+			Data:    nil,
+			Release: r.Info,
+		})
 	}
 
 	r.Log.Debugf("Processing release: %s", r.Info.TorrentName)
 
-	// was bencode used, or does this tracker have a cookie set?
-	cookie, hasCookie := r.Tracker.Config.Settings["cookie"]
-	if bencodeUsed || hasCookie {
-		// we will proxy this torrent via the /api/torrent endpoint
-		proxiedURL, err := r.getProxiedTorrentURL(&cookie)
-		if err != nil {
-			// we must abort this release as pvr's cant grab from these trackers without a cookie
-			if hasCookie {
-				r.Log.WithError(err).Errorf("Failed building proxied torrent url for: %q, aborting...",
-					r.Info.TorrentURL)
-				return
-			}
-
-			// as this tracker does not require a cookie, we can continue with the original torrent url
-			r.Log.WithError(err).Warnf("Failed building proxied torrent url for: %q", r.Info.TorrentURL)
-		} else {
-			// set the torrent url to the proxied one
-			r.Info.TorrentURL = proxiedURL
-		}
-	}
-
 	// iterate pvr's
 	for _, pvr := range config.Pvr {
 		// check ignore expressions
-		ignore, err := r.shouldIgnore(pvr)
+		ignore, err := pvr.ShouldIgnore(r.Info, r.Log)
 		if err != nil {
 			r.Log.WithError(err).Warnf("Failed checking release against ignore expressions for pvr: %q", pvr.Config.Name)
 			continue
@@ -132,7 +120,7 @@ func (r *Release) Process() {
 		}
 
 		// check accept expressions
-		accept, err := r.shouldAccept(pvr)
+		accept, err := pvr.ShouldAccept(r.Info, r.Log)
 		if err != nil {
 			r.Log.WithError(err).Warnf("Failed checking release against accept expressions for pvr: %q", pvr.Config.Name)
 			continue
@@ -143,15 +131,37 @@ func (r *Release) Process() {
 		}
 
 		// check delay expressions
-		delay, err := r.shouldDelay(pvr)
+		delay, err := pvr.ShouldDelay(r.Info, r.Log)
 		if err != nil {
 			r.Log.WithError(err).Warnf("Failed checking release against delay expressions for pvr: %q", pvr.Config.Name)
 			continue
 		}
 
+		// was bencode used / tracker requires a cookie / bencode should be used later on (to evaluate against torrent file data)
+		torrentUrl := r.Info.TorrentURL
+		cookie, hasCookie := r.Tracker.Config.Settings["cookie"]
+		if bencodeUsed || hasCookie || (!bencodeUsed && pvr.HasFileExpressions) {
+			// we will proxy this torrent via the /api/torrent endpoint
+			proxiedURL, err := r.getProxiedTorrentURL(&cookie, pvr.Config.Name)
+			if err != nil {
+				// we must abort this release as pvr's cant grab from these trackers without a cookie
+				if hasCookie {
+					r.Log.WithError(err).Errorf("Failed building proxied torrent url for: %q, aborting...",
+						r.Info.TorrentURL)
+					return
+				}
+
+				// as this tracker does not require a cookie, we can continue with the original torrent url
+				r.Log.WithError(err).Warnf("Failed building proxied torrent url for: %q", r.Info.TorrentURL)
+			} else {
+				// set the torrent url to the proxied url
+				torrentUrl = proxiedURL
+			}
+		}
+
 		// push release to pvr
-		go func(p *config.PvrConfig, d *int64) {
-			r.Push(p, d)
-		}(pvr.Config, delay)
+		go func(p *config.PvrConfig, d *int64, url *string) {
+			r.Push(p, d, url)
+		}(pvr.Config, delay, &torrentUrl)
 	}
 }
