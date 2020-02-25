@@ -25,15 +25,18 @@ const TorrentFileTimeout = 30
 /* Public */
 
 func Torrent(c echo.Context) error {
-	// log
-	log := logger.GetLogger("api").WithFields(logrus.Fields{"client": c.RealIP()})
-
 	// parse query params
 	url := c.QueryParam("url")
 	cookie := c.QueryParam("cookie")
 	pvr := c.QueryParam("pvr")
 
 	// validate query params
+	if pvr == "" {
+		pvr = "Unknown"
+	}
+
+	log := logger.GetLogger("api").WithFields(logrus.Fields{"client": c.RealIP(), "pvr": pvr})
+
 	if url == "" {
 		log.Warn("Torrent request with no URL...")
 		return c.String(http.StatusNotAcceptable, "URL was not provided")
@@ -61,7 +64,7 @@ func Torrent(c echo.Context) error {
 	}
 
 	// retrieve pvr instance if set
-	if pvr != "" && cacheItem != nil && cacheItem.Release != nil && len(cacheItem.Release.Files) == 0 {
+	if pvr != "Unknown" && cacheItem != nil && cacheItem.Release != nil && len(cacheItem.Release.Files) == 0 {
 		// the release has no files - meaning bencode was not previously done / evaluated against
 		if pvrInstance, ok := config.Pvr[pvr]; ok && pvrInstance.HasFileExpressions {
 			// pvr instance was found, and file expressions were present - we need to re-evaluate before sending torrent
@@ -79,14 +82,21 @@ func Torrent(c echo.Context) error {
 			cacheItem.Release.Files = torrentData.Files
 			cacheItem.Data = torrentData.Bytes
 
+			// update/store item in cache (for any future calls within N seconds)
+			go cache.AddItem(url, &cache.CacheItem{
+				Name:    cacheItem.Name,
+				Data:    cacheItem.Data,
+				Release: cacheItem.Release,
+			})
+
 			// evaluate release against expressions (sweep-two)
 			// - check ignore expressions
 			ignore, err := pvrInstance.ShouldIgnore(cacheItem.Release, log)
 			if err != nil {
-				log.WithError(err).Warnf("Failed checking release against ignore expressions for pvr: %q", pvrInstance.Config.Name)
+				log.WithError(err).Warnf("Failed checking release on sweep-two against ignore expressions for pvr: %q", pvrInstance.Config.Name)
 				return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 					Error:   true,
-					Message: fmt.Sprintf("Failed evaluating ignore expressions against pvr %q: %v", pvrInstance.Config.Name, err),
+					Message: fmt.Sprintf("Failed evaluating ignore expressions on sweep-two against pvr %q: %v", pvrInstance.Config.Name, err),
 				})
 			}
 
@@ -94,11 +104,12 @@ func Torrent(c echo.Context) error {
 				log.Debugf("Ignoring release after sweep-two for pvr: %q", pvrInstance.Config.Name)
 				return c.JSON(http.StatusNotFound, &ErrorResponse{
 					Error:   true,
-					Message: fmt.Sprintf("Ignoring release for pvr: %q", pvrInstance.Config.Name),
+					Message: fmt.Sprintf("Ignoring release on sweep-two for pvr: %q", pvrInstance.Config.Name),
 				})
 			}
 
 			// send release
+			log.Debugf("Release passed sweep-two for pvr: %q", pvrInstance.Config.Name)
 			return c.Stream(http.StatusOK, "application/x-bittorrent", bytes.NewReader(cacheItem.Data))
 		}
 	}

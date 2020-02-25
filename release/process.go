@@ -43,6 +43,7 @@ func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, erro
 
 func (r *Release) Process() {
 	bencodeUsed := false
+	addedToCache := false
 
 	r.Log.Tracef("Pre-processing: %s", r.Info.TorrentName)
 
@@ -94,14 +95,8 @@ func (r *Release) Process() {
 			Release: r.Info,
 		})
 
+		addedToCache = true
 		bencodeUsed = true
-	} else {
-		// store item in cache to be used by second-sweep
-		go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
-			Name:    r.Info.TorrentName,
-			Data:    nil,
-			Release: r.Info,
-		})
 	}
 
 	r.Log.Debugf("Processing release: %s", r.Info.TorrentName)
@@ -135,6 +130,18 @@ func (r *Release) Process() {
 		if err != nil {
 			r.Log.WithError(err).Warnf("Failed checking release against delay expressions for pvr: %q", pvr.Config.Name)
 			continue
+		}
+
+		// add item to cache if not added already
+		if !addedToCache {
+			// store item in cache to be used by second-sweep
+			go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
+				Name:    r.Info.TorrentName,
+				Data:    nil,
+				Release: r.Info,
+			})
+
+			addedToCache = true
 		}
 
 		// was bencode used / tracker requires a cookie / bencode should be used later on (to evaluate against torrent file data)
