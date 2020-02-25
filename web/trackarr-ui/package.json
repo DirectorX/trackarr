@@ -16,7 +16,7 @@
     "vue-router": "3.1.5",
     "vue-status-indicator": "1.2.1",
     "vue-toastr": "2.1.2",
-    "vuetify": "2.2.14"
+    "vuetify": "2.2.15"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.2.2",
