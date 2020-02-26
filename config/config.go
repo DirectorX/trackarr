@@ -2,11 +2,13 @@ package config
 
 import (
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
+	"os"
+	"path"
+
 	"gitlab.com/cloudb0x/trackarr/logger"
 	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
-	"os"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/lithammer/shortuuid/v3"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -115,11 +117,12 @@ func Init(build *BuildVars) error {
 	}
 
 	// Base URL
-	//var err error
-	//if Config.Server.BaseURL, err = filepath.Abs(Config.Server.BaseURL); err != nil {
-	//	log.WithError(err).Error("Failed to convert base URL into an absolute path")
-	//	return errors.Wrap(err, "failed to convert base URL into an absolute path")
-	//}
+	switch path.Clean(Config.Server.BaseURL) {
+	case ".", "/":
+		Config.Server.BaseURL = "/"
+	default:
+		Config.Server.BaseURL = path.Join("/", Config.Server.BaseURL) + "/"
+	}
 
 	return nil
 }
