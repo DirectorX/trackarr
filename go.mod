@@ -41,7 +41,7 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	go.uber.org/atomic v1.5.1
+	go.uber.org/atomic v1.6.0
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
 	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
 	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
