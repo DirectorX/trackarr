@@ -13,7 +13,7 @@ require (
 	github.com/asdine/storm/v3 v3.1.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
-	github.com/foolin/goview v0.2.0
+	github.com/foolin/goview v0.3.0
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
