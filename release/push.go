@@ -36,7 +36,7 @@ type (
 
 /* Public */
 
-func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
+func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) {
 	if delay != nil && *delay > 0 {
 		r.Log.Debugf("Delaying: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
 		time.Sleep(time.Duration(*delay) * time.Second)
@@ -46,7 +46,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64) {
 	// prepare request
 	pvrRequest := pushRequest{
 		Title:            r.Info.TorrentName,
-		DownloadUrl:      r.Info.TorrentURL,
+		DownloadUrl:      *torrentUrl,
 		Size:             "0",
 		Indexer:          r.Tracker.Info.LongName,
 		DownloadProtocol: "torrent",

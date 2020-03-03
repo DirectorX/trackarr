@@ -3,6 +3,7 @@ package pvr
 import (
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/logger"
+	"strings"
 
 	"github.com/antonmedv/expr"
 	"github.com/pkg/errors"
@@ -53,6 +54,11 @@ func compileExpr(p *config.PvrInstance) error {
 			}
 
 			p.IgnoresExpr = append(p.IgnoresExpr, program)
+
+			if strings.Contains(ignoreExpr, "Files") {
+				// used by proxy torrent endpoint to check expressions (only ignore will trigger second-sweep)
+				p.HasFileExpressions = true
+			}
 		}
 
 		// iterate pvr accept expressions
@@ -74,7 +80,6 @@ func compileExpr(p *config.PvrInstance) error {
 
 			p.DelaysExpr = append(p.DelaysExpr, program)
 		}
-
 	}
 
 	log.Debugf("Compiled expressions for pvr %q: %d ignores, %d accepts, %d delays",

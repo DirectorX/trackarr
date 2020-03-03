@@ -9,8 +9,7 @@ require (
 	github.com/ReneKroon/ttlcache v1.6.0
 	github.com/antchfx/xmlquery v1.2.3
 	github.com/antchfx/xpath v1.1.4 // indirect
-	github.com/antlr/antlr4 v0.0.0-20200222180617-2d9f45d9bf3e // indirect
-	github.com/antonmedv/expr v1.4.5
+	github.com/antonmedv/expr v1.5.2
 	github.com/asdine/storm/v3 v3.1.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
@@ -45,8 +44,8 @@ require (
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
 	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
 	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
-	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
-	golang.org/x/tools v0.0.0-20200221224223-e1da425f72fd // indirect
+	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
+	golang.org/x/tools v0.0.0-20200225022059-a0ec867d517c // indirect
 	gopkg.in/ini.v1 v1.52.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
