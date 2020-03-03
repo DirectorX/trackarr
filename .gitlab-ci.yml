@@ -11,16 +11,23 @@ stages:
 # Anchors
 ###
 # Cache
+.cache_vendor_key: &cache_vendor_key
+  key:
+    files:
+      - go.mod
+      - go.sum
+    prefix: vendor
+
 .cache_vendor: &cache_vendor
   cache:
-    key: vendor
+    <<: *cache_vendor_key
     policy: pull-push
     paths: &cache_vendor_path
       - vendor/
 
 .cache_vendor_pull: &cache_vendor_pull
   cache:
-    key: vendor
+    <<: *cache_vendor_key
     policy: pull
     paths: *cache_vendor_path
 
