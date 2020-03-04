@@ -3,6 +3,7 @@ package release
 import (
 	"gitlab.com/cloudb0x/trackarr/cache"
 	"net/url"
+	"strings"
 
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/torrent"
@@ -46,6 +47,11 @@ func (r *Release) Process() {
 	addedToCache := false
 
 	r.Log.Tracef("Pre-processing: %s", r.Info.TorrentName)
+
+	// replace https torrent urls with http (if ForceHTTP set)
+	if r.Tracker.Config.ForceHTTP {
+		r.Info.TorrentURL = strings.Replace(r.Info.TorrentURL, "https:", "http:", 1)
+	}
 
 	// convert parsed release size string to bytes (required by pvr)
 	if r.Info.SizeString != "" {

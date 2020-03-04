@@ -15,10 +15,11 @@ type TrackerInstance struct {
 }
 
 type TrackerConfig struct {
-	Enabled  bool
-	Bencode  *TrackerBencodeConfig
-	Settings map[string]string
-	IRC      *TrackerIrcConfig
+	Enabled   bool
+	ForceHTTP bool
+	Bencode   *TrackerBencodeConfig
+	Settings  map[string]string
+	IRC       *TrackerIrcConfig
 }
 
 type TrackerBencodeConfig struct {
