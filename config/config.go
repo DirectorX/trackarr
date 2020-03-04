@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"gitlab.com/cloudb0x/trackarr/logger"
 	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
@@ -121,7 +122,7 @@ func Init(build *BuildVars) error {
 	case ".", "/":
 		Config.Server.BaseURL = "/"
 	default:
-		Config.Server.BaseURL = path.Join("/", Config.Server.BaseURL) + "/"
+		Config.Server.BaseURL = strings.TrimRight(path.Join("/", Config.Server.BaseURL), "/")
 	}
 
 	return nil
