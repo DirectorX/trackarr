@@ -9,12 +9,11 @@ require (
 	github.com/ReneKroon/ttlcache v1.6.0
 	github.com/antchfx/xmlquery v1.2.3
 	github.com/antchfx/xpath v1.1.4 // indirect
-	github.com/antlr/antlr4 v0.0.0-20200222180617-2d9f45d9bf3e // indirect
-	github.com/antonmedv/expr v1.4.5
+	github.com/antonmedv/expr v1.5.10
 	github.com/asdine/storm/v3 v3.1.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
-	github.com/foolin/goview v0.2.0
+	github.com/foolin/goview v0.3.0
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
@@ -22,9 +21,8 @@ require (
 	github.com/jpillora/backoff v1.0.0
 	github.com/json-iterator/go v1.1.9
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/labstack/echo/v4 v4.1.14
+	github.com/labstack/echo/v4 v4.1.15
 	github.com/lithammer/shortuuid/v3 v3.0.4
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/olahol/melody v0.0.0-20180227134253-7bd65910e5ab
@@ -41,12 +39,9 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/thoj/go-ircevent v0.0.0-20190807115034-8e7ce4b5a1eb
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
-	go.uber.org/atomic v1.5.1
-	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
+	go.uber.org/atomic v1.6.0
 	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
-	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
-	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
-	golang.org/x/tools v0.0.0-20200221224223-e1da425f72fd // indirect
+	golang.org/x/tools v0.0.0-20200225022059-a0ec867d517c // indirect
 	gopkg.in/ini.v1 v1.52.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect

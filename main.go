@@ -102,9 +102,9 @@ func main() {
 	// Defer de-inits
 	defer cache.Close()
 
-	// Validate we have at-least one active tracker
+	// Alert user when no trackers were loaded
 	if len(runtime.Tracker) < 1 {
-		log.Fatal("At-least one tracker must be enabled...")
+		log.Warn("No trackers were enabled/loaded...")
 	}
 
 	// Start web

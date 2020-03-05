@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"gitlab.com/cloudb0x/trackarr/cache"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
 
 	bencode "github.com/IncSW/go-bencode"
@@ -50,16 +49,11 @@ func GetTorrentDetails(torrentUrl string, timeout int, headers req.Header) (*Dat
 		}
 	}
 
-	// add torrent to cache
-	go cache.AddItem(torrentUrl, &cache.CacheItem{
-		Name: tf.Info.Name,
-		Data: torrentBytes,
-	})
-
 	return &Data{
 		Name:  tf.Info.Name,
 		Size:  tf.Info.Length,
 		Files: files,
+		Bytes: torrentBytes,
 	}, nil
 }
 

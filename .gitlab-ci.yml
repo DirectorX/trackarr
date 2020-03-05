@@ -11,16 +11,23 @@ stages:
 # Anchors
 ###
 # Cache
+.cache_vendor_key: &cache_vendor_key
+  key:
+    files:
+      - go.mod
+      - go.sum
+    prefix: vendor
+
 .cache_vendor: &cache_vendor
   cache:
-    key: vendor
+    <<: *cache_vendor_key
     policy: pull-push
     paths: &cache_vendor_path
       - vendor/
 
 .cache_vendor_pull: &cache_vendor_pull
   cache:
-    key: vendor
+    <<: *cache_vendor_key
     policy: pull
     paths: *cache_vendor_path
 
@@ -69,7 +76,7 @@ stages:
 # Vendor
 vendor:
   stage: vendor
-  image: golang:1.13-alpine
+  image: golang:1.14-alpine
   script:
     - apk add --no-cache make git
     - make vendor
@@ -78,7 +85,7 @@ vendor:
 # Test
 test:test:
   stage: test
-  image: golang:1.13-buster
+  image: golang:1.14-buster
   script:
     - make test
   <<: *cache_vendor_pull
@@ -118,7 +125,7 @@ build-web:web:
     - "build-web:web"
   dependencies:
     - build-web:web
-  image: golang:1.13-alpine
+  image: golang:1.14-alpine
   before_script:
     # Install dependencies
     - apk add --no-cache make git curl
