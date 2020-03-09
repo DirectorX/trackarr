@@ -1,6 +1,7 @@
 package web
 
 import (
+	"gitlab.com/cloudb0x/trackarr/config"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -66,6 +67,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	inputs = append(inputs, &client)
 
 	// prepare request
+	setUserAgent := false
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
@@ -73,9 +75,25 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			retry = *vT
 		case Retry:
 			retry = vT
+		case req.Header:
+			vT["User-Agent"] = "trackarr/" + config.Build.Version
+			inputs = append(inputs, vT)
+
+			setUserAgent = true
+		case *req.Header:
+			(*vT)["User-Agent"] = "trackarr/" + config.Build.Version
+			inputs = append(inputs, vT)
+
+			setUserAgent = true
 		default:
 			inputs = append(inputs, vT)
 		}
+	}
+
+	if !setUserAgent {
+		inputs = append(inputs, req.Header{
+			"User-Agent": "trackarr/" + config.Build.Version,
+		})
 	}
 
 	// Response var
