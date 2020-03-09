@@ -76,14 +76,20 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		case Retry:
 			retry = vT
 		case req.Header:
+			if config.Build == nil || vT == nil {
+				continue
+			}
+
 			vT["User-Agent"] = "trackarr/" + config.Build.Version
 			inputs = append(inputs, vT)
-
 			setUserAgent = true
 		case *req.Header:
+			if config.Build == nil || vT == nil {
+				continue
+			}
+
 			(*vT)["User-Agent"] = "trackarr/" + config.Build.Version
 			inputs = append(inputs, vT)
-
 			setUserAgent = true
 		default:
 			inputs = append(inputs, vT)
@@ -91,8 +97,15 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	}
 
 	if !setUserAgent {
+		bV := ""
+		if config.Build != nil {
+			bV = config.Build.Version
+		} else {
+			bV = "v1.0.0"
+		}
+
 		inputs = append(inputs, req.Header{
-			"User-Agent": "trackarr/" + config.Build.Version,
+			"User-Agent": "trackarr/" + bV,
 		})
 	}
 
