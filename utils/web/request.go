@@ -152,8 +152,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 		// check status code vs retryable ones
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
-			// close response body
-			_ = resp.Response().Body.Close()
+			// drain & close response body
+			DrainAndClose(resp.Response().Body)
 
 			// retry
 			d := retry.Duration()
@@ -169,8 +169,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			contentType := resp.Response().Header.Get("Content-Type")
 			if !strings.Contains(strings.ToLower(contentType), strings.ToLower(retry.ExpectedContentType)) &&
 				!strings.EqualFold(contentType, retry.ExpectedContentType) {
-				// close response body
-				_ = resp.Response().Body.Close()
+				// drain & close response body
+				DrainAndClose(resp.Response().Body)
 
 				// retry
 				d := retry.Duration()
@@ -193,11 +193,7 @@ func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interf
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err := resp.Response().Body.Close(); err != nil {
-			log.WithError(err).Errorf("Failed to close response body for url: %q", requestUrl)
-		}
-	}()
+	defer DrainAndClose(resp.Response().Body)
 
 	// process response
 	body, err := ioutil.ReadAll(resp.Response().Body)

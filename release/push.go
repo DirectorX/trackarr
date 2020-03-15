@@ -87,7 +87,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) 
 		return
 	}
 
-	defer resp.Response().Body.Close()
+	defer web.DrainAndClose(resp.Response().Body)
 
 	// validate response
 	if resp.Response().StatusCode != 200 {
