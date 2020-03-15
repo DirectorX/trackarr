@@ -132,9 +132,13 @@ func Torrent(c echo.Context) error {
 			Error:   true,
 			Message: fmt.Sprintf("Failed retrieving torrent: %v", err),
 		})
-	} else if resp.Response().StatusCode != 200 {
-		defer webutils.DrainAndClose(resp.Response().Body)
+	}
 
+	// ensure response is drained & closed
+	defer webutils.DrainAndClose(resp.Response().Body)
+
+	// validate response status-code
+	if resp.Response().StatusCode != 200 {
 		log.Errorf("Failed retrieving torrent stream: %s (response: %s)", url, resp.Response().Status)
 		return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 			Error:   true,
@@ -145,8 +149,6 @@ func Torrent(c echo.Context) error {
 	// validate response content-type
 	respContentType := resp.Response().Header.Get("Content-Type")
 	if respContentType == "" || !strings.Contains(respContentType, "torrent") {
-		defer webutils.DrainAndClose(resp.Response().Body)
-
 		log.Errorf("Failed retrieving torrent stream: %s (Content-Type: %s)", url, respContentType)
 		return c.JSON(http.StatusInternalServerError, &ErrorResponse{
 			Error:   true,
