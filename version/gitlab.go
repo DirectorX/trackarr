@@ -31,7 +31,7 @@ func gitlabReleases(apiUrl string, privateToken string) ([]GitlabRelease, error)
 		return nil, errors.Wrapf(err, "invalid gitlab releases response from: %q", apiUrl)
 	}
 
-	defer resp.Response().Body.Close()
+	defer web.DrainAndClose(resp.Response().Body)
 
 	// validate response
 	if resp.Response().StatusCode != 200 {

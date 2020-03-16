@@ -1,6 +1,7 @@
 package web
 
 import (
+	"gitlab.com/cloudb0x/trackarr/config"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -66,6 +67,7 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	inputs = append(inputs, &client)
 
 	// prepare request
+	setUserAgent := false
 	var retry Retry
 	for _, vv := range v {
 		switch vT := vv.(type) {
@@ -73,9 +75,38 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			retry = *vT
 		case Retry:
 			retry = vT
+		case req.Header:
+			if config.Build == nil || vT == nil {
+				continue
+			}
+
+			vT["User-Agent"] = "trackarr/" + config.Build.Version
+			inputs = append(inputs, vT)
+			setUserAgent = true
+		case *req.Header:
+			if config.Build == nil || vT == nil {
+				continue
+			}
+
+			(*vT)["User-Agent"] = "trackarr/" + config.Build.Version
+			inputs = append(inputs, vT)
+			setUserAgent = true
 		default:
 			inputs = append(inputs, vT)
 		}
+	}
+
+	if !setUserAgent {
+		bV := ""
+		if config.Build != nil {
+			bV = config.Build.Version
+		} else {
+			bV = "v1.0.0"
+		}
+
+		inputs = append(inputs, req.Header{
+			"User-Agent": "trackarr/" + bV,
+		})
 	}
 
 	// Response var
@@ -121,8 +152,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 		// check status code vs retryable ones
 		if lists.IntListContains(resp.Response().StatusCode, retry.RetryableStatusCodes) {
-			// close response body
-			_ = resp.Response().Body.Close()
+			// drain & close response body
+			DrainAndClose(resp.Response().Body)
 
 			// retry
 			d := retry.Duration()
@@ -138,8 +169,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			contentType := resp.Response().Header.Get("Content-Type")
 			if !strings.Contains(strings.ToLower(contentType), strings.ToLower(retry.ExpectedContentType)) &&
 				!strings.EqualFold(contentType, retry.ExpectedContentType) {
-				// close response body
-				_ = resp.Response().Body.Close()
+				// drain & close response body
+				DrainAndClose(resp.Response().Body)
 
 				// retry
 				d := retry.Duration()
@@ -162,11 +193,7 @@ func GetBodyBytes(method HTTPMethod, requestUrl string, timeout int, v ...interf
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err := resp.Response().Body.Close(); err != nil {
-			log.WithError(err).Errorf("Failed to close response body for url: %q", requestUrl)
-		}
-	}()
+	defer DrainAndClose(resp.Response().Body)
 
 	// process response
 	body, err := ioutil.ReadAll(resp.Response().Body)
