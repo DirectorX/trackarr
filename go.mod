@@ -10,7 +10,7 @@ require (
 	github.com/antchfx/xmlquery v1.2.3
 	github.com/antchfx/xpath v1.1.4 // indirect
 	github.com/antonmedv/expr v1.8.0
-	github.com/asdine/storm/v3 v3.1.0
+	github.com/asdine/storm/v3 v3.1.1
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
 	github.com/foolin/goview v0.3.0
