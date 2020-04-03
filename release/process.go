@@ -2,12 +2,12 @@ package release
 
 import (
 	"gitlab.com/cloudb0x/trackarr/cache"
+	"gitlab.com/cloudb0x/trackarr/utils/tracker"
 	"net/url"
 	"strings"
 
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/torrent"
-	"gitlab.com/cloudb0x/trackarr/utils/torrent/ptp"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
 
 	"github.com/docker/go-units"
@@ -54,18 +54,28 @@ func (r *Release) Process() {
 		r.Info.TorrentURL = strings.Replace(r.Info.TorrentURL, "https:", "http:", 1)
 	}
 
-	// Retrieve PTP missing data to avoid torrent downloads
-	if r.Info.TrackerName == "PtP" {
-		ptpInfo, err := ptp.GetReleaseDetails(r.Info.TorrentId, r.Tracker, TorrentFileTimeout)
-		if err != nil || ptpInfo == nil {
-			// abort release as we are unable to retrieve the information we need
-			r.Log.WithError(err).Error("Failed getting Ptp missing info")
-			return
+	// retrieve api for this tracker (if set)
+	trackerApi, err := tracker.GetApi(r.Tracker)
+	if err == nil {
+		// lookup torrent info via api
+		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info.TorrentId)
+		if err != nil {
+			// api lookup for torrent failed
+			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %v", r.Info.TorrentId)
+			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
+				// bencode is disabled so no fallback
+				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %v", r.Info.TorrentId)
+				return
+			}
+
+			// bencode is enabled, so continue legacy behaviour
+		} else {
+			r.Log.Debugf("Retrieved torrent info via api: %+v", torrentInfo)
+
+			// set info from api lookup
+			r.Info.TorrentName = torrentInfo.Name
+			r.Info.SizeString = torrentInfo.Size
 		}
-		r.Log.Debugf("PTP Release Size : %s", ptpInfo.Size)
-		r.Log.Debugf("PTP Release Name : %s", ptpInfo.ReleaseName)
-		r.Info.SizeString = ptpInfo.Size
-		r.Info.TorrentName = ptpInfo.ReleaseName
 	}
 
 	// convert parsed release size string to bytes (required by pvr)
