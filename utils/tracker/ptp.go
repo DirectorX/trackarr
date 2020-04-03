@@ -15,8 +15,9 @@ import (
 
 /* Const */
 const (
-	ptpTorrentUrl = "https://passthepopcorn.me/torrents.php?torrentid="
-	ptpTimeout    = 30
+	ptpTorrentUrl   = "https://passthepopcorn.me/torrents.php?torrentid="
+	ptpTimeout      = 30
+	ptpApiRateLimit = 1
 )
 
 /* Var */
@@ -52,9 +53,9 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 			ExpectedContentType: "application/json",
 			Backoff: backoff.Backoff{
 				Jitter: true,
-				Min:    3 * time.Second,
-				Max:    10 * time.Second,
-			}}, headers)
+				Min:    1 * time.Second,
+				Max:    5 * time.Second,
+			}}, headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentId)
 	}
@@ -73,7 +74,7 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 		return nil, err
 	}
 
-	t.log.Tracef("Torrent Lookup Response: %+v", ptpInfo)
+	t.log.Tracef("API GetReleaseInfo Response: %+v", ptpInfo)
 
 	// find torrent in parsed response
 	for _, v := range ptpInfo.Torrents {

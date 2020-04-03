@@ -2,6 +2,7 @@ package web
 
 import (
 	"gitlab.com/cloudb0x/trackarr/config"
+	"go.uber.org/ratelimit"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -68,9 +69,15 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// prepare request
 	setUserAgent := false
+	var rl ratelimit.Limiter = nil
 	var retry Retry
+
 	for _, vv := range v {
 		switch vT := vv.(type) {
+		case *ratelimit.Limiter:
+			rl = *vT
+		case ratelimit.Limiter:
+			rl = vT
 		case *Retry:
 			retry = *vT
 		case Retry:
@@ -118,8 +125,16 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		// do request
 		switch method {
 		case GET:
+			if rl != nil {
+				rl.Take()
+			}
+
 			resp, err = req.Get(requestUrl, inputs...)
 		case POST:
+			if rl != nil {
+				rl.Take()
+			}
+
 			resp, err = req.Post(requestUrl, inputs...)
 		default:
 			log.Error("Request method has not been implemented")
