@@ -9,7 +9,7 @@ import (
 
 /* Interface */
 type Interface interface {
-	GetReleaseInfo(string) (*TorrentInfo, error)
+	GetReleaseInfo(info *config.ReleaseInfo) (*TorrentInfo, error)
 }
 
 /* Struct */

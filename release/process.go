@@ -59,13 +59,13 @@ func (r *Release) Process() {
 	trackerApi, err := tracker.GetApi(r.Tracker)
 	if err == nil {
 		// lookup torrent info via api
-		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info.TorrentId)
+		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info)
 		if err != nil {
 			// api lookup for torrent failed
-			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %v", r.Info.TorrentId)
+			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %q", r.Info.TorrentId)
 			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
 				// bencode is disabled so no fallback
-				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %v", r.Info.TorrentId)
+				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentId)
 				return
 			}
 

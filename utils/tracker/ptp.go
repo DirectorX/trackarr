@@ -28,7 +28,12 @@ type Ptp struct {
 
 /* Interface */
 
-func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
+func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) {
+	// validate torrent has required information
+	if torrent.TorrentId == "" {
+		return nil, fmt.Errorf("missing mandatory torrentId: %#v", torrent)
+	}
+
 	// prepare request
 	apiUser, err := maps.GetStringMapValue(t.tracker.Config.Settings, "api_user", false)
 	if err != nil {
@@ -47,7 +52,8 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 	}
 
 	// send request
-	ptpReleaseAsBytes, err := web.GetBodyBytes(web.GET, fmt.Sprintf("%s%s", ptpTorrentUrl, torrentId), ptpTimeout,
+	ptpReleaseAsBytes, err := web.GetBodyBytes(web.GET, fmt.Sprintf("%s%s", ptpTorrentUrl,
+		torrent.TorrentId), ptpTimeout,
 		&web.Retry{
 			MaxAttempts:         6,
 			ExpectedContentType: "application/json",
@@ -57,7 +63,7 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 				Max:    6 * time.Second,
 			}}, headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentId)
+		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrent.TorrentId)
 	}
 
 	// parse response
@@ -78,7 +84,7 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 
 	// find torrent in parsed response
 	for _, v := range ptpInfo.Torrents {
-		if v.Id == torrentId {
+		if v.Id == torrent.TorrentId {
 			return &TorrentInfo{
 				Name: v.ReleaseName,
 				Size: v.Size,
@@ -86,5 +92,5 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("no release found with id: %s", torrentId)
+	return nil, fmt.Errorf("no release found with id: %s", torrent.TorrentId)
 }
