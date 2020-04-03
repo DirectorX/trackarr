@@ -31,13 +31,13 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 	// prepare request
 	apiUser, err := maps.GetStringMapValue(t.tracker.Config.Settings, "api_user", false)
 	if err != nil {
-		t.log.WithError(err).Error("api_user value missing")
-		return nil, errors.Wrap(err, "api_user value missing")
+		t.log.WithError(err).Error("api_user setting missing")
+		return nil, errors.Wrap(err, "api_user setting missing")
 	}
 	apiKey, err := maps.GetStringMapValue(t.tracker.Config.Settings, "api_key", false)
 	if err != nil {
-		t.log.WithError(err).Error("api_key value missing")
-		return nil, errors.Wrap(err, "api_key value missing")
+		t.log.WithError(err).Error("api_key setting missing")
+		return nil, errors.Wrap(err, "api_key setting missing")
 	}
 
 	headers := req.Header{

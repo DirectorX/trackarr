@@ -45,6 +45,7 @@ func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, erro
 
 func (r *Release) Process() {
 	bencodeUsed := false
+	apiUsed := false
 	addedToCache := false
 
 	r.Log.Tracef("Pre-processing: %s", r.Info.TorrentName)
@@ -75,6 +76,8 @@ func (r *Release) Process() {
 			// set info from api lookup
 			r.Info.TorrentName = torrentInfo.Name
 			r.Info.SizeString = torrentInfo.Size
+
+			apiUsed = true
 		}
 	}
 
@@ -91,7 +94,7 @@ func (r *Release) Process() {
 	}
 
 	// bencode torrent name and size? (we must enforce this functionality when a bytes size was not determined)
-	if (r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) || r.Info.SizeBytes == 0 {
+	if ((r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) && !apiUsed) || r.Info.SizeBytes == 0 {
 		// retrieve cookie if set for this tracker
 		headers := req.Header{}
 		if cookie, ok := r.Tracker.Config.Settings["cookie"]; ok {
