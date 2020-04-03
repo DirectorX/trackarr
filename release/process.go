@@ -7,6 +7,7 @@ import (
 
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/torrent"
+	"gitlab.com/cloudb0x/trackarr/utils/torrent/ptp"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
 
 	"github.com/docker/go-units"
@@ -51,6 +52,20 @@ func (r *Release) Process() {
 	// replace https torrent urls with http (if ForceHTTP set)
 	if r.Tracker.Config.ForceHTTP {
 		r.Info.TorrentURL = strings.Replace(r.Info.TorrentURL, "https:", "http:", 1)
+	}
+
+	// Retrieve PTP missing data to avoid torrent downloads
+	if r.Info.TrackerName == "PtP" {
+		ptpInfo, err := ptp.GetReleaseDetails(r.Info.TorrentId, r.Tracker, TorrentFileTimeout)
+		if err != nil || ptpInfo == nil {
+			// abort release as we are unable to retrieve the information we need
+			r.Log.WithError(err).Error("Failed getting Ptp missing info")
+			return
+		}
+		r.Log.Debugf("PTP Release Size : %s", ptpInfo.Size)
+		r.Log.Debugf("PTP Release Name : %s", ptpInfo.ReleaseName)
+		r.Info.SizeString = ptpInfo.Size
+		r.Info.TorrentName = ptpInfo.ReleaseName
 	}
 
 	// convert parsed release size string to bytes (required by pvr)

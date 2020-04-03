@@ -5,6 +5,7 @@ type ReleaseInfo struct {
 	ReleaseTime string
 	TorrentName string
 	TorrentURL  string
+	TorrentId   string
 	SizeString  string
 	SizeBytes   int64
 	Category    string
