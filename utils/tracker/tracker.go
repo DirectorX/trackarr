@@ -34,10 +34,10 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	mtx.Lock()
 	defer mtx.Unlock()
 
-	// determine name to check
-	name := tracker.Name
+	// determine tracker name to check
+	trackerName := strings.ToLower(tracker.Name)
 	if tracker.Info.LongName != "" {
-		name = tracker.Info.LongName
+		trackerName = strings.ToLower(tracker.Info.LongName)
 	}
 
 	// ensure tracker api map is initialized
@@ -47,27 +47,27 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	}
 
 	// api already initialized?
-	if api, ok := apiInterfaces[name]; ok {
+	if api, ok := apiInterfaces[trackerName]; ok {
 		// return already initialized api
 		return api, nil
 	}
 
 	// get appropriate api interface
 	var api Interface
-	switch strings.ToLower(name) {
+	switch trackerName {
 	case "passthepopcorn":
 		api = &Ptp{
-			log:     log.WithField("api", name),
+			log:     log.WithField("api", trackerName),
 			tracker: tracker,
 		}
 
-		log.Debugf("Initialized API Interface for tracker: %q", name)
+		log.Debugf("Initialized API Interface for tracker: %q", trackerName)
 
 	default:
-		return nil, fmt.Errorf("api not implemented for tracker: %q", name)
+		return nil, fmt.Errorf("api not implemented for tracker: %q", trackerName)
 
 	}
 
-	apiInterfaces[name] = api
+	apiInterfaces[trackerName] = api
 	return api, nil
 }
