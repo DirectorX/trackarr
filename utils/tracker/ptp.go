@@ -53,8 +53,8 @@ func (t *Ptp) GetReleaseInfo(torrentId string) (*TorrentInfo, error) {
 			ExpectedContentType: "application/json",
 			Backoff: backoff.Backoff{
 				Jitter: true,
-				Min:    1 * time.Second,
-				Max:    5 * time.Second,
+				Min:    2 * time.Second,
+				Max:    6 * time.Second,
 			}}, headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrentId)
