@@ -2,6 +2,7 @@ package release
 
 import (
 	"gitlab.com/cloudb0x/trackarr/cache"
+	"gitlab.com/cloudb0x/trackarr/utils/tracker"
 	"net/url"
 	"strings"
 
@@ -44,6 +45,7 @@ func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, erro
 
 func (r *Release) Process() {
 	bencodeUsed := false
+	apiUsed := false
 	addedToCache := false
 
 	r.Log.Tracef("Pre-processing: %s", r.Info.TorrentName)
@@ -51,6 +53,32 @@ func (r *Release) Process() {
 	// replace https torrent urls with http (if ForceHTTP set)
 	if r.Tracker.Config.ForceHTTP {
 		r.Info.TorrentURL = strings.Replace(r.Info.TorrentURL, "https:", "http:", 1)
+	}
+
+	// retrieve api for this tracker (if set)
+	trackerApi, err := tracker.GetApi(r.Tracker)
+	if err == nil {
+		// lookup torrent info via api
+		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info.TorrentId)
+		if err != nil {
+			// api lookup for torrent failed
+			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %v", r.Info.TorrentId)
+			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
+				// bencode is disabled so no fallback
+				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %v", r.Info.TorrentId)
+				return
+			}
+
+			// bencode is enabled, so continue legacy behaviour
+		} else {
+			r.Log.Debugf("Retrieved torrent info via api: %+v", torrentInfo)
+
+			// set info from api lookup
+			r.Info.TorrentName = torrentInfo.Name
+			r.Info.SizeString = torrentInfo.Size
+
+			apiUsed = true
+		}
 	}
 
 	// convert parsed release size string to bytes (required by pvr)
@@ -66,7 +94,7 @@ func (r *Release) Process() {
 	}
 
 	// bencode torrent name and size? (we must enforce this functionality when a bytes size was not determined)
-	if (r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) || r.Info.SizeBytes == 0 {
+	if ((r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) && !apiUsed) || r.Info.SizeBytes == 0 {
 		// retrieve cookie if set for this tracker
 		headers := req.Header{}
 		if cookie, ok := r.Tracker.Config.Settings["cookie"]; ok {

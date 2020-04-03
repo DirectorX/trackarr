@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	jsoniter "github.com/json-iterator/go"
-	"gitlab.com/cloudb0x/trackarr/logger"
 	"github.com/olahol/melody"
+	"gitlab.com/cloudb0x/trackarr/logger"
 )
 
 var (

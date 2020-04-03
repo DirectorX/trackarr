@@ -8,8 +8,8 @@ import (
 	"gitlab.com/cloudb0x/trackarr/database/models"
 	"gitlab.com/cloudb0x/trackarr/ws"
 
-	"github.com/asdine/storm/v3/q"
 	"github.com/asdine/storm/v3"
+	"github.com/asdine/storm/v3/q"
 )
 
 type TaskPruner struct {

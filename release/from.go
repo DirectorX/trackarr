@@ -25,6 +25,14 @@ func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars map[string]strin
 	}
 
 	// parse mandatory fields
+	if torrentId, err := maps.GetFirstStringMapValue(vars, []string{"torrentId", "$torrentId"},
+		false); err != nil {
+		release.Log.WithError(err).Error("Failed parsing required field from parse match")
+		return nil, errors.Wrap(err, "failed parsing required field")
+	} else {
+		release.Info.TorrentId = torrentId
+	}
+
 	if torrentName, err := maps.GetFirstStringMapValue(vars, []string{"torrentName", "$torrentName"},
 		false); err != nil {
 		release.Log.WithError(err).Error("Failed parsing required field from parse match")
