@@ -23,10 +23,10 @@ const (
 
 /* Struct */
 type Ptp struct {
-	log         *logrus.Entry
-	tracker     *config.TrackerInstance
-	headers     req.Header
-	ratelimiter *ratelimit.Limiter
+	log     *logrus.Entry
+	tracker *config.TrackerInstance
+	headers req.Header
+	rl      *ratelimit.Limiter
 }
 
 /* Private */
@@ -54,7 +54,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
-		ratelimiter: web.GetRateLimiter(tracker.Name, ptpApiRateLimit),
+		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit),
 	}, nil
 }
 
@@ -76,7 +76,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 				Jitter: true,
 				Min:    2 * time.Second,
 				Max:    6 * time.Second,
-			}}, t.headers, t.ratelimiter)
+			}}, t.headers, t.rl)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrent.TorrentId)
 	}
