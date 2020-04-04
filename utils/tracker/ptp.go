@@ -20,10 +20,39 @@ const (
 	ptpApiRateLimit = 1
 )
 
-/* Var */
+/* Struct */
 type Ptp struct {
 	log     *logrus.Entry
 	tracker *config.TrackerInstance
+	headers req.Header
+}
+
+/* Private */
+
+func newPtp(tracker *config.TrackerInstance) (Interface, error) {
+	log := log.WithField("api", tracker.Name)
+
+	// validate required tracker settings available
+	apiUser, err := maps.GetStringMapValue(tracker.Config.Settings, "api_user", false)
+	if err != nil {
+		log.WithError(err).Error("api_user setting missing")
+		return nil, errors.Wrap(err, "api_user setting missing")
+	}
+	apiKey, err := maps.GetStringMapValue(tracker.Config.Settings, "api_key", false)
+	if err != nil {
+		log.WithError(err).Error("api_key setting missing")
+		return nil, errors.Wrap(err, "api_key setting missing")
+	}
+
+	// return api instance
+	return &Ptp{
+		log:     log,
+		tracker: tracker,
+		headers: req.Header{
+			"ApiUser": apiUser,
+			"ApiKey":  apiKey,
+		},
+	}, nil
 }
 
 /* Interface */
@@ -34,34 +63,17 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 		return nil, fmt.Errorf("missing mandatory torrentId: %#v", torrent)
 	}
 
-	// prepare request
-	apiUser, err := maps.GetStringMapValue(t.tracker.Config.Settings, "api_user", false)
-	if err != nil {
-		t.log.WithError(err).Error("api_user setting missing")
-		return nil, errors.Wrap(err, "api_user setting missing")
-	}
-	apiKey, err := maps.GetStringMapValue(t.tracker.Config.Settings, "api_key", false)
-	if err != nil {
-		t.log.WithError(err).Error("api_key setting missing")
-		return nil, errors.Wrap(err, "api_key setting missing")
-	}
-
-	headers := req.Header{
-		"ApiUser": apiUser,
-		"ApiKey":  apiKey,
-	}
-
 	// send request
 	ptpReleaseAsBytes, err := web.GetBodyBytes(web.GET, fmt.Sprintf("%s%s", ptpTorrentUrl,
 		torrent.TorrentId), ptpTimeout,
 		&web.Retry{
-			MaxAttempts:         6,
+			MaxAttempts:         5,
 			ExpectedContentType: "application/json",
 			Backoff: backoff.Backoff{
 				Jitter: true,
 				Min:    2 * time.Second,
 				Max:    6 * time.Second,
-			}}, headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
+			}}, t.headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrent.TorrentId)
 	}
@@ -80,7 +92,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 		return nil, err
 	}
 
-	t.log.Tracef("API GetReleaseInfo Response: %+v", ptpInfo)
+	t.log.Tracef("GetReleaseInfo Response: %+v", ptpInfo)
 
 	// find torrent in parsed response
 	for _, v := range ptpInfo.Torrents {

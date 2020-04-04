@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/logger"
 	"strings"
@@ -43,7 +44,7 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	// ensure tracker api map is initialized
 	if apiInterfaces == nil {
 		apiInterfaces = make(map[string]Interface)
-		log.Trace("Initialized tracker apiInterfaces map")
+		log.Trace("Initialized apiInterfaces map")
 	}
 
 	// api already initialized?
@@ -54,17 +55,19 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 
 	// get appropriate api interface
 	var api Interface
+	var err error
+
 	switch trackerName {
 	case "passthepopcorn":
-		api = &Ptp{
-			log:     log.WithField("api", trackerName),
-			tracker: tracker,
+		api, err = newPtp(tracker)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed initializing api for: %q", trackerName)
 		}
 
-		log.Debugf("Initialized API Interface for tracker: %q", trackerName)
+		log.Debugf("Initialized API for: %q", trackerName)
 
 	default:
-		return nil, fmt.Errorf("api not implemented for tracker: %q", trackerName)
+		return nil, fmt.Errorf("api not implemented for: %q", trackerName)
 
 	}
 
