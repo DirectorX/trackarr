@@ -70,7 +70,7 @@ func TestCookieLeak(t *testing.T) {
 		t.Errorf("GetBodyString() error = %v", err)
 		return
 	} else if !strings.Contains(body, "leaked") {
-		t.Errorf("GetBodyString() unexpected response = %v", body)
+		t.Errorf("GetBodyString() unexpected set-cookie response = %v", body)
 		return
 	}
 
@@ -80,7 +80,7 @@ func TestCookieLeak(t *testing.T) {
 		t.Errorf("GetBodyString() error = %v", err)
 		return
 	} else if strings.Contains(body, "leaked") {
-		t.Errorf("GetBodyString() cookies leaked from previous request = %v", body)
+		t.Errorf("GetBodyString() cookies leaked from initial request = %v", body)
 		return
 	}
 
@@ -91,6 +91,29 @@ func TestCookieLeak(t *testing.T) {
 		return
 	} else if !strings.Contains(body, "leaked") {
 		t.Errorf("GetBodyString() cookies not retained from initial set request = %v", body)
+		return
+	}
+}
+
+func TestNoRedirect(t *testing.T) {
+	// test noredirect
+	body, err := GetBodyString(GET, "https://httpbin.org/redirect-to?url=https%3A%2F%2Fwww.google.com", 5,
+		WithNoRedirect)
+	if err != nil {
+		t.Errorf("GetBodyString() error = %v", err)
+		return
+	} else if strings.Contains(body, "Google") {
+		t.Errorf("GetBodyString() unexpected no-redirect response = %v", body)
+		return
+	}
+
+	// test redirect
+	body, err = GetBodyString(GET, "https://httpbin.org/redirect-to?url=https%3A%2F%2Fwww.google.com", 5)
+	if err != nil {
+		t.Errorf("GetBodyString() error = %v", err)
+		return
+	} else if !strings.Contains(body, "Google") {
+		t.Errorf("GetBodyString() unexpected redirect response = %v", body)
 		return
 	}
 }

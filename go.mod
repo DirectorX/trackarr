@@ -13,6 +13,7 @@ require (
 	github.com/asdine/storm/v3 v3.1.1
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/docker/go-units v0.4.0
+	github.com/dustin/go-humanize v1.0.0
 	github.com/foolin/goview v0.3.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-playground/validator/v10 v10.2.0

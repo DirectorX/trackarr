@@ -1,7 +1,6 @@
 package tracker
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/imroc/req"
 	"github.com/jpillora/backoff"
@@ -16,7 +15,7 @@ import (
 
 /* Const */
 const (
-	ptpTorrentUrl   = "https://passthepopcorn.me/torrents.php?torrentid="
+	ptpTorrentUrl   = "https://passthepopcorn.me/torrents.php"
 	ptpTimeout      = 30
 	ptpApiRateLimit = 1
 )
@@ -66,18 +65,18 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	}
 
 	// send request
-	ptpReleaseAsBytes, err := web.GetBodyBytes(web.GET, fmt.Sprintf("%s%s", ptpTorrentUrl,
-		torrent.TorrentId), ptpTimeout,
-		&web.Retry{
-			MaxAttempts:         5,
-			ExpectedContentType: "application/json",
-			Backoff: backoff.Backoff{
-				Jitter: true,
-				Min:    2 * time.Second,
-				Max:    6 * time.Second,
-			}}, t.headers, t.rl)
+	ptpReleaseAsBytes, err := web.GetBodyBytes(web.GET, ptpTorrentUrl, ptpTimeout, req.QueryParam{
+		"torrentid": torrent.TorrentId,
+	}, &web.Retry{
+		MaxAttempts:         5,
+		ExpectedContentType: "application/json",
+		Backoff: backoff.Backoff{
+			Jitter: true,
+			Min:    2 * time.Second,
+			Max:    6 * time.Second,
+		}}, t.headers, t.rl)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrent.TorrentId)
+		return nil, errors.Wrapf(err, "failed retrieving torrent info bytes for: %s", torrent.TorrentId)
 	}
 
 	// parse response
@@ -90,7 +89,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	}
 
 	if err := json.Unmarshal(ptpReleaseAsBytes, &ptpInfo); err != nil {
-		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", ptpReleaseAsBytes)
+		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", string(ptpReleaseAsBytes))
 		return nil, err
 	}
 
@@ -100,8 +99,9 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	for _, v := range ptpInfo.Torrents {
 		if v.Id == torrent.TorrentId {
 			return &TorrentInfo{
-				Name: v.ReleaseName,
-				Size: v.Size,
+				Name:     v.ReleaseName,
+				Category: "",
+				Size:     v.Size,
 			}, nil
 		}
 	}

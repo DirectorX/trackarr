@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/logger"
@@ -16,14 +17,16 @@ type Interface interface {
 
 /* Struct */
 type TorrentInfo struct {
-	Name string
-	Size string
+	Name     string
+	Category string
+	Size     string
 }
 
 /* Var */
 var (
 	// Logging
-	log = logger.GetLogger("tracker")
+	log  = logger.GetLogger("tracker")
+	json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	// Runtime internals
 	apiInterfaces map[string]Interface
@@ -58,21 +61,24 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	switch trackerName {
 	case "passthepopcorn":
 		api, err = newPtp(tracker)
-		if err != nil {
-			// we dont want to keep trying to init api for this tracker
-			apiInterfaces[trackerName] = nil
-			log.WithError(err).Errorf("Failed initializing API for: %q", trackerName)
-			return nil, errors.Wrapf(err, "failed initializing api for: %q", trackerName)
-		}
-
-		log.Debugf("Initialized API for: %q", trackerName)
-
+	case "morethan.tv":
+		api, err = newMtv(tracker)
 	default:
 		// we dont want to keep trying to init api for this tracker
 		apiInterfaces[trackerName] = nil
 		return nil, fmt.Errorf("api not implemented for: %q", trackerName)
 
 	}
+
+	// validate api was loaded
+	if err != nil {
+		// we dont want to keep trying to init api for this tracker
+		apiInterfaces[trackerName] = nil
+		log.WithError(err).Errorf("Failed initializing API for: %q", trackerName)
+		return nil, errors.Wrapf(err, "failed initializing api for: %q", trackerName)
+	}
+
+	log.Debugf("Initialized API for: %q", trackerName)
 
 	// store initialized api for future calls
 	apiInterfaces[trackerName] = api

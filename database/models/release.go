@@ -20,7 +20,7 @@ type PushedRelease struct {
 
 /* Struct Methods */
 func (r PushedRelease) DurationSinceCreated() string {
-	return stringutils.TimeDiffDurationString(time.Now(), r.CreatedAt, true)
+	return stringutils.TimeDiffDurationString(time.Now().UTC(), r.CreatedAt, true)
 }
 
 /* Methods */

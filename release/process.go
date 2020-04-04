@@ -2,6 +2,7 @@ package release
 
 import (
 	"gitlab.com/cloudb0x/trackarr/cache"
+	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
 	"gitlab.com/cloudb0x/trackarr/utils/tracker"
 	"net/url"
 	"strings"
@@ -62,33 +63,35 @@ func (r *Release) Process() {
 		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info)
 		if err != nil {
 			// api lookup for torrent failed
-			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %q", r.Info.TorrentId)
+			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %q", r.Info.TorrentName)
 			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
 				// bencode is disabled so no fallback
-				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentId)
+				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentName)
 				return
 			}
 
 			// bencode is enabled, so continue legacy behaviour
+		} else if torrentInfo == nil {
+			// api lookup failed for some known reason - fallback to bencode if enabled
+			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
+				// bencode is disabled so no fallback
+				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentName)
+				return
+			}
 		} else {
+			// api lookup was successful, process it
 			r.Log.Debugf("Retrieved torrent info via api: %+v", torrentInfo)
 
 			// set info from api lookup
-			if torrentInfo.Name != "" {
-				// only over-ride announce parsed name if we got a name from the api lookup
-				r.Info.TorrentName = torrentInfo.Name
-			}
-
-			if torrentInfo.Size != "" {
-				// only over-ride announce parsed size if we got a size from the api lookup
-				r.Info.SizeString = torrentInfo.Size
-			}
+			r.Info.TorrentName = stringutils.NewOrExisting(&torrentInfo.Name, r.Info.TorrentName)
+			r.Info.Category = stringutils.NewOrExisting(&torrentInfo.Category, r.Info.Category)
+			r.Info.SizeString = stringutils.NewOrExisting(&torrentInfo.Size, r.Info.SizeString)
 
 			// validate required information was parsed
 			if r.Info.SizeString == "" && (!r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size) {
 				// no size string was retrieved from api, however, bencode is disabled, so we cannot proceed
 				r.Log.Warnf("Aborting push of release as api response was incomplete and bencode disabled"+
-					" for torrent: %q", r.Info.TorrentId)
+					" for torrent: %q", r.Info.TorrentName)
 				return
 			}
 

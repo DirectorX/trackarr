@@ -65,9 +65,8 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 	if timeout > 0 {
 		client.Timeout = time.Duration(timeout) * time.Second
 	}
-	inputs = append(inputs, &client)
 
-	// prepare request
+	// prepare request inputs
 	setUserAgent := false
 	var rl ratelimit.Limiter = nil
 	var retry Retry
@@ -98,6 +97,10 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 			(*vT)["User-Agent"] = "trackarr/" + config.Build.Version
 			inputs = append(inputs, vT)
 			setUserAgent = true
+		case Option:
+			setOption(vT, &client)
+		case *Option:
+			setOption(*vT, &client)
 		default:
 			inputs = append(inputs, vT)
 		}
@@ -116,11 +119,16 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 		})
 	}
 
+	// add client to inputs
+	inputs = append(inputs, &client)
+	copy(inputs[1:], inputs)
+	inputs[0] = &client
+
 	// Response var
 	var resp *req.Resp
 	var err error
 
-	// Exponential backoff
+	// Exponential back-off
 	for {
 		// do request
 		switch method {
