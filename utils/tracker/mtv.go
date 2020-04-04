@@ -226,7 +226,6 @@ func (t *Mtv) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 			Torrent struct {
 				ID       int    `json:"id"`
 				Size     int64  `json:"size"`
-				FilePath string `json:"filePath"`
 			} `json:"torrent"`
 		} `json:"response"`
 	}
