@@ -7,11 +7,14 @@ import (
 
 func GetRegexGroups(regEx, data string) (paramsMap map[string]string) {
 	/* Credits: https://stackoverflow.com/a/39635221 */
-	var compRegEx = regexp.MustCompile(regEx)
-
-	match := compRegEx.FindStringSubmatch(data)
 	paramsMap = make(map[string]string)
 
+	compRegEx, err := regexp.Compile(regEx)
+	if err != nil {
+		return paramsMap
+	}
+
+	match := compRegEx.FindStringSubmatch(data)
 	for i, name := range compRegEx.SubexpNames() {
 		if i > 0 && i <= len(match) {
 			paramsMap[name] = match[i]
