@@ -10,6 +10,7 @@ import (
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/maps"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
+	"go.uber.org/ratelimit"
 	"time"
 )
 
@@ -22,9 +23,10 @@ const (
 
 /* Struct */
 type Ptp struct {
-	log     *logrus.Entry
-	tracker *config.TrackerInstance
-	headers req.Header
+	log         *logrus.Entry
+	tracker     *config.TrackerInstance
+	headers     req.Header
+	ratelimiter *ratelimit.Limiter
 }
 
 /* Private */
@@ -52,6 +54,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
+		ratelimiter: web.GetRateLimiter(tracker.Name, ptpApiRateLimit),
 	}, nil
 }
 
@@ -73,7 +76,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 				Jitter: true,
 				Min:    2 * time.Second,
 				Max:    6 * time.Second,
-			}}, t.headers, web.GetRateLimiter(t.tracker.Name, ptpApiRateLimit))
+			}}, t.headers, t.ratelimiter)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed retrieving torrent bytes from: %s", torrent.TorrentId)
 	}
