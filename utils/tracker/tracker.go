@@ -63,6 +63,13 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 		api, err = newPtp(tracker)
 	case "morethan.tv":
 		api, err = newMtv(tracker)
+	case "btn":
+		api = &Btn{
+			log:     log.WithField("api", trackerName),
+			tracker: tracker,
+		}
+
+		log.Debugf("Initialized API Interface for tracker: %q", trackerName)
 	default:
 		// we dont want to keep trying to init api for this tracker
 		apiInterfaces[trackerName] = nil
