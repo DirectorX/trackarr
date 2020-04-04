@@ -40,6 +40,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 		log.WithError(err).Error("api_user setting missing")
 		return nil, errors.Wrap(err, "api_user setting missing")
 	}
+
 	apiKey, err := maps.GetStringMapValue(tracker.Config.Settings, "api_key", false)
 	if err != nil {
 		log.WithError(err).Error("api_key setting missing")
@@ -91,7 +92,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	}
 
 	if err := json.Unmarshal(ptpReleaseAsBytes, &ptpInfo); err != nil {
-		t.log.WithError(err).Errorf("Failed unmarshalling data received: %#v", ptpReleaseAsBytes)
+		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", ptpReleaseAsBytes)
 		return nil, err
 	}
 

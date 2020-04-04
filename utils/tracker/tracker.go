@@ -24,7 +24,8 @@ type TorrentInfo struct {
 var (
 	// Logging
 	log = logger.GetLogger("tracker")
-	// API Interfaces
+
+	// Runtime internals
 	apiInterfaces map[string]Interface
 	mtx           sync.Mutex
 )
