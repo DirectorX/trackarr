@@ -191,7 +191,7 @@ func (t *Mtv) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	// validate session cookie / re-login
 	if err := t.login(); err != nil {
 		if err == errMtvMaxLoginAttempts {
-			t.log.Tracef("Aborting api lookup as max login attempts has been reached")
+			t.log.Trace("Aborting api lookup as max login attempts has been reached")
 			return nil, nil
 		}
 
