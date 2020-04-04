@@ -52,12 +52,12 @@ func newMtv(tracker *config.TrackerInstance) (Interface, error) {
 	// validate required tracker settings available
 	siteUser, err := maps.GetStringMapValue(tracker.Config.Settings, "site_user", false)
 	if err != nil {
-		return nil, errors.WithMessage(err, "api_user setting missing")
+		return nil, errors.WithMessage(err, "site_user setting missing")
 	}
 
 	sitePass, err := maps.GetStringMapValue(tracker.Config.Settings, "site_pass", false)
 	if err != nil {
-		return nil, errors.WithMessage(err, "api_key setting missing")
+		return nil, errors.WithMessage(err, "site_pass setting missing")
 	}
 
 	// return api instance
@@ -233,7 +233,7 @@ func (t *Mtv) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	if err := json.Unmarshal(mtvReleaseAsBytes, &mtvInfo); err != nil {
 		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", string(mtvReleaseAsBytes))
 		t.checkResponseBytes(mtvReleaseAsBytes)
-		return nil, errors.Wrapf(err, "failed unmarshalling response")
+		return nil, errors.Wrap(err, "failed unmarshalling response")
 	}
 
 	t.log.Tracef("GetReleaseInfo Response: %+v", mtvInfo)

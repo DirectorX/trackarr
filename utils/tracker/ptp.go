@@ -90,7 +90,7 @@ func (t *Ptp) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 
 	if err := json.Unmarshal(ptpReleaseAsBytes, &ptpInfo); err != nil {
 		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", string(ptpReleaseAsBytes))
-		return nil, err
+		return nil, errors.Wrap(err, "failed unmarshalling response")
 	}
 
 	t.log.Tracef("GetReleaseInfo Response: %+v", ptpInfo)
