@@ -56,8 +56,8 @@ func (r *Release) Process() {
 	}
 
 	// retrieve api for this tracker (if set)
-	trackerApi, err := tracker.GetApi(r.Tracker)
-	if err == nil {
+	trackerApi, _ := tracker.GetApi(r.Tracker)
+	if trackerApi != nil {
 		// lookup torrent info via api
 		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info)
 		if err != nil {

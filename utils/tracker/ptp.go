@@ -37,14 +37,12 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 	// validate required tracker settings available
 	apiUser, err := maps.GetStringMapValue(tracker.Config.Settings, "api_user", false)
 	if err != nil {
-		log.WithError(err).Error("api_user setting missing")
-		return nil, errors.Wrap(err, "api_user setting missing")
+		return nil, errors.WithMessage(err, "api_user setting missing")
 	}
 
 	apiKey, err := maps.GetStringMapValue(tracker.Config.Settings, "api_key", false)
 	if err != nil {
-		log.WithError(err).Error("api_key setting missing")
-		return nil, errors.Wrap(err, "api_key setting missing")
+		return nil, errors.WithMessage(err, "api_key setting missing")
 	}
 
 	// return api instance

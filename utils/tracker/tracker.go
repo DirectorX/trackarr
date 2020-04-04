@@ -46,11 +46,8 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	if apiInterfaces == nil {
 		apiInterfaces = make(map[string]Interface)
 		log.Trace("Initialized apiInterfaces map")
-	}
-
-	// api already initialized?
-	if api, ok := apiInterfaces[trackerName]; ok {
-		// return already initialized api
+	} else if api, ok := apiInterfaces[trackerName]; ok {
+		// api was initialized before for this tracker, return same result
 		return api, nil
 	}
 
@@ -62,16 +59,22 @@ func GetApi(tracker *config.TrackerInstance) (Interface, error) {
 	case "passthepopcorn":
 		api, err = newPtp(tracker)
 		if err != nil {
+			// we dont want to keep trying to init api for this tracker
+			apiInterfaces[trackerName] = nil
+			log.WithError(err).Errorf("Failed initializing API for: %q", trackerName)
 			return nil, errors.Wrapf(err, "failed initializing api for: %q", trackerName)
 		}
 
 		log.Debugf("Initialized API for: %q", trackerName)
 
 	default:
+		// we dont want to keep trying to init api for this tracker
+		apiInterfaces[trackerName] = nil
 		return nil, fmt.Errorf("api not implemented for: %q", trackerName)
 
 	}
 
+	// store initialized api for future calls
 	apiInterfaces[trackerName] = api
 	return api, nil
 }
