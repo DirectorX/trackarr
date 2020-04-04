@@ -1,6 +1,7 @@
 package web
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/jpillora/backoff"
@@ -59,6 +60,38 @@ func TestGetResponse(t *testing.T) {
 				t.Errorf("GetResponse() StatusCode = %v, wanted %v", got.Response().StatusCode, 200)
 			}
 		})
+	}
+}
+
+func TestCookieLeak(t *testing.T) {
+	// set cookies in first request
+	body, err := GetBodyString(GET, "https://httpbin.org/cookies/set/test/leaked", 5)
+	if err != nil {
+		t.Errorf("GetBodyString() error = %v", err)
+		return
+	} else if !strings.Contains(body, "leaked") {
+		t.Errorf("GetBodyString() unexpected response = %v", body)
+		return
+	}
+
+	// get cookies from subsequent request (cookies set above should not be there)
+	body, err = GetBodyString(GET, "https://postman-echo.com/cookies", 5)
+	if err != nil {
+		t.Errorf("GetBodyString() error = %v", err)
+		return
+	} else if strings.Contains(body, "leaked") {
+		t.Errorf("GetBodyString() cookies leaked from previous request = %v", body)
+		return
+	}
+
+	// get cookies from first request (cookies set initially should be there)
+	body, err = GetBodyString(GET, "https://httpbin.org/cookies", 5)
+	if err != nil {
+		t.Errorf("GetBodyString() error = %v", err)
+		return
+	} else if !strings.Contains(body, "leaked") {
+		t.Errorf("GetBodyString() cookies not retained from initial set request = %v", body)
+		return
 	}
 }
 
