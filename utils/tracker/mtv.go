@@ -174,7 +174,7 @@ func (t *Mtv) checkResponseBytes(response []byte) {
 	defer t.mtx.Unlock()
 
 	t.cookieExpiry = nil
-	t.log.Warn("Cookie appears to be invalid, next release will begin the login process...")
+	t.log.Warn("Session cookie appears to be invalid, next release will restart the login process...")
 }
 
 /* Interface */
