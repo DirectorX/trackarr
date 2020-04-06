@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"gitlab.com/cloudb0x/trackarr/config"
@@ -26,6 +27,15 @@ func parseSettings(t *config.TrackerInfo, doc *xmlquery.Node) error {
 		if listutils.StringListContains(skipSettings, settingName, true) {
 			log.Tracef("Skipping tracker setting: %q", settingName)
 			continue
+		}
+
+		// is this a textbox setting?
+		if strings.EqualFold(settingName, "textbox") {
+			if s := n.SelectAttr("name"); s == "" {
+				return fmt.Errorf("failed parsing tracker setting: %s", n.OutputXML(true))
+			} else {
+				settingName = s
+			}
 		}
 
 		log.Tracef("Found tracker setting: %q", settingName)
