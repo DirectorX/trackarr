@@ -44,10 +44,7 @@ func parsePattern(t *config.TrackerInfo, nodes []*xmlquery.Node, patternType con
 			continue
 		}
 
-		optional := false
-		if n.SelectAttr("optional") == "true" {
-			optional = true
-		}
+		optional := n.SelectAttr("optional") == "true"
 
 		rxp, err := regexp.Compile(lineRegex)
 		if err != nil {

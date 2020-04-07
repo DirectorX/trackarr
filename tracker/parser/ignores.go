@@ -19,10 +19,7 @@ func parseIgnores(t *config.TrackerInfo, doc *xmlquery.Node) error {
 			continue
 		}
 
-		expected := false
-		if n.SelectAttr("expected") != "false" {
-			expected = true
-		}
+		expected := n.SelectAttr("expected") != "false"
 
 		log.Tracef("Found tracker ignore (expected: %v): %s", expected, ignoreRegex)
 
