@@ -47,15 +47,20 @@ variables:
     policy: pull
     paths: *cache_vendor_path
 
-# Only/Except
-.only-default: &only-default
+# Rules
+.rules-branch: &rules-branch
   rules:
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "develop"
     # Allow external MRs
     - if: $CI_EXTERNAL_PULL_REQUEST_IID
-    # Internal MRs run on branch
-    - if: $CI_MERGE_REQUEST_ID
-      when: never
+    - when: never
+
+.rules-all: &rules-all
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    # Allow external MRs
+    - if: $CI_EXTERNAL_PULL_REQUEST_IID
+    - when: never
 
 .only_master: &only_master
   only:
@@ -116,7 +121,7 @@ vendor:
     - apk add --no-cache make git
     - make vendor
   <<: *cache_vendor
-  <<: *only-default
+  <<: *rules-all
 
 # Test
 test:test:
@@ -125,7 +130,7 @@ test:test:
   script:
     - make test
   <<: *cache_vendor_pull
-  <<: *only-default
+  <<: *rules-all
 
 # Lint
 test:lint:
@@ -134,7 +139,7 @@ test:lint:
   script:
     - make lint
   <<: *cache_vendor_pull
-  <<: *only-default
+  <<: *rules-all
 
 # Build web
 build-web:web:
@@ -155,7 +160,7 @@ build-web:web:
     name: web_${CI_COMMIT_SHORT_SHA}
     paths:
       - web/trackarr-ui/dist/
-  <<: *only-default
+  <<: *rules-all
 
 # Build binary template
 .build-binary:
@@ -205,7 +210,7 @@ build:develop:
 
 build:branch:
   extends: .build-binary
-  <<: *only-default
+  <<: *rules-branch
 
 # Build image template
 .build-image:
