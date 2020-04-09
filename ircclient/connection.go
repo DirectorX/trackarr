@@ -50,6 +50,13 @@ func (c *IRCClient) Start() error {
 			c.Conn.TLSConfig = nil
 		}
 
+		if c.Tracker.Config.IRC.Sasl.User != "" && c.Tracker.Config.IRC.Sasl.Pass != "" {
+			// enable sasl authentication
+			c.Conn.UseSASL = true
+			c.Conn.SASLLogin = c.Tracker.Config.IRC.Sasl.User
+			c.Conn.SASLPassword = c.Tracker.Config.IRC.Sasl.Pass
+		}
+
 		// handle connection to configured server
 		c.log.Infof("Connecting to %s (ssl: %v)", connString, useSsl)
 		if err := c.Conn.Connect(connString); err != nil {
