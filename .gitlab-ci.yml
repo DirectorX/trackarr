@@ -1,15 +1,31 @@
 ###
 # Stages
 ###
+
 stages:
   - vendor
   - test
   - build-web
   - build
   - build-image
+
+
+###
+# Variables
+###
+
+variables:
+  DOCKER_DRIVER: "overlay2"
+  DOCKER_HOST: "tcp://docker:2376"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_CERT_PATH: "/certs/client"
+  DOCKER_CLI_EXPERIMENTAL: "enabled"
+
 ###
 # Anchors
 ###
+
 # Cache
 .cache_vendor_key: &cache_vendor_key
   key:
@@ -32,6 +48,15 @@ stages:
     paths: *cache_vendor_path
 
 # Only/Except
+.only-default: &only-default
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "develop"
+    # Allow external MRs
+    - if: $CI_EXTERNAL_PULL_REQUEST_IID
+    # Internal MRs run on branch
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
+
 .only_master: &only_master
   only:
     - master
@@ -66,8 +91,18 @@ stages:
 
 # Docker
 .docker_build_push: &docker_build_push |-
-  docker build --pull -f build/Dockerfile -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}" .
-  docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+  # AMD64
+  docker build --pull --platform "linux/amd64" -f build/Dockerfile --build-arg="ARCH=amd64" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-amd64" .
+  docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-amd64"
+  # ARM64
+  docker build --pull --platform "linux/arm64" -f build/Dockerfile --build-arg="ARCH=arm64" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-arm64" .
+  docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-arm64"
+  # ARMV7
+  docker build --pull --platform "linux/arm/v7" -f build/Dockerfile --build-arg="ARCH=arm_7" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-armv7" .
+  docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-armv7"
+  # Manifest
+  docker manifest create "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-amd64" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-arm64" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-armv7"
+  docker manifest push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
 
 ###
 # Jobs
@@ -81,6 +116,7 @@ vendor:
     - apk add --no-cache make git
     - make vendor
   <<: *cache_vendor
+  <<: *only-default
 
 # Test
 test:test:
@@ -89,6 +125,7 @@ test:test:
   script:
     - make test
   <<: *cache_vendor_pull
+  <<: *only-default
 
 # Lint
 test:lint:
@@ -97,6 +134,7 @@ test:lint:
   script:
     - make lint
   <<: *cache_vendor_pull
+  <<: *only-default
 
 # Build web
 build-web:web:
@@ -117,6 +155,7 @@ build-web:web:
     name: web_${CI_COMMIT_SHORT_SHA}
     paths:
       - web/trackarr-ui/dist/
+  <<: *only-default
 
 # Build binary template
 .build-binary:
@@ -166,17 +205,18 @@ build:develop:
 
 build:branch:
   extends: .build-binary
-  <<: *only_branches
-  when: manual
+  <<: *only-default
 
 # Build image template
 .build-image:
   stage: build-image
   image: docker:stable
   services:
-    - docker:stable-dind
+    - name: docker:stable-dind
+      command: ["--experimental"]
   before_script:
     - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" ${CI_REGISTRY}
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 build-image:master-publish:
   extends: .build-image
