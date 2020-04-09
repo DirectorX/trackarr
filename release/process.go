@@ -1,18 +1,14 @@
 package release
 
 import (
+	"github.com/docker/go-units"
 	"gitlab.com/cloudb0x/trackarr/cache"
-	stringutils "gitlab.com/cloudb0x/trackarr/utils/strings"
-	"gitlab.com/cloudb0x/trackarr/utils/tracker"
 	"net/url"
 	"strings"
 
 	"gitlab.com/cloudb0x/trackarr/config"
-	"gitlab.com/cloudb0x/trackarr/utils/torrent"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
 
-	"github.com/docker/go-units"
-	"github.com/imroc/req"
 	"github.com/pkg/errors"
 )
 
@@ -45,8 +41,9 @@ func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, erro
 /* Public */
 
 func (r *Release) Process() {
-	bencodeUsed := false
-	apiUsed := false
+	var err error
+	usedBencode := false
+	usedApi := false
 	addedToCache := false
 
 	r.Log.Tracef("Pre-processing: %s", r.Info.TorrentName)
@@ -56,47 +53,11 @@ func (r *Release) Process() {
 		r.Info.TorrentURL = strings.Replace(r.Info.TorrentURL, "https:", "http:", 1)
 	}
 
-	// retrieve api for this tracker (if set)
-	trackerApi, _ := tracker.GetApi(r.Tracker)
-	if trackerApi != nil {
-		// lookup torrent info via the associated api interface
-		torrentInfo, err := trackerApi.GetReleaseInfo(r.Info)
-		if err != nil {
-			// api lookup for torrent failed due to an error
-			r.Log.WithError(err).Errorf("Failed looking up missing info via api for torrent: %q", r.Info.TorrentName)
-			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
-				// bencode is disabled so no fallback
-				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentName)
-				return
-			}
-			// bencode is enabled, so continue legacy behaviour
-		} else if torrentInfo == nil {
-			// api lookup failed for some known reason (max login attempts etc..) - fallback to bencode if enabled
-			if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
-				// bencode is disabled so no fallback
-				r.Log.Warnf("Aborting push of release as bencode disabled for torrent: %q", r.Info.TorrentName)
-				return
-			}
-			// bencode is enabled, so continue legacy behaviour
-		} else {
-			// api lookup was successful, process response
-			r.Log.Debugf("Retrieved torrent info via api: %+v", torrentInfo)
-
-			// set info from api lookup
-			r.Info.TorrentName = stringutils.NewOrExisting(&torrentInfo.Name, r.Info.TorrentName)
-			r.Info.Category = stringutils.NewOrExisting(&torrentInfo.Category, r.Info.Category)
-			r.Info.SizeString = stringutils.NewOrExisting(&torrentInfo.Size, r.Info.SizeString)
-
-			// validate required information was parsed
-			if r.Info.SizeString == "" && (!r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size) {
-				// no size string was retrieved from api, however, bencode is disabled, so we cannot proceed
-				r.Log.Warnf("Aborting push of release as api response was incomplete and bencode disabled"+
-					" for torrent: %q", r.Info.TorrentName)
-				return
-			}
-
-			apiUsed = true
-		}
+	// api lookup if available for this tracker
+	usedApi, err = r.apiLookup()
+	if err != nil {
+		// abort processing this release as an error occurred and bencode was disabled
+		return
 	}
 
 	// convert parsed release size string to bytes (required by pvr)
@@ -111,47 +72,18 @@ func (r *Release) Process() {
 		}
 	}
 
-	// bencode torrent name and size?
-	if (r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) && !apiUsed {
-		// retrieve cookie if set for this tracker
-		headers := req.Header{}
-		if cookie, ok := r.Tracker.Config.Settings["cookie"]; ok {
-			headers["Cookie"] = cookie
-		}
-
-		torrentData, err := torrent.GetTorrentDetails(r.Info.TorrentURL, TorrentFileTimeout, headers)
+	// bencode lookup if enabled and api was not used successfully before
+	if !usedApi {
+		usedBencode, addedToCache, err = r.bencodeLookup()
 		if err != nil {
-			// abort release as we are unable to retrieve the information we need
-			r.Log.WithError(err).Error("Failed decoding details from torrent file")
+			r.Log.WithError(err).Error("Failed performing bencode lookup")
 			return
 		}
+	}
 
-		// store parsed torrent files in release
-		r.Info.Files = torrentData.Files
-
-		// set release information from decoded torrent data
-		if r.Tracker.Config.Bencode.Name {
-			// bencode name was set to true
-			r.Info.TorrentName = torrentData.Name
-		}
-
-		if r.Tracker.Config.Bencode.Size || r.Info.SizeBytes == 0 {
-			// bencode size was set to true (or we had no size from parsed release)
-			r.Info.SizeBytes = torrentData.Size
-		}
-
-		// add torrent to cache
-		go cache.AddItem(r.Info.TorrentURL, &cache.CacheItem{
-			Name:    r.Info.TorrentName,
-			Data:    torrentData.Bytes,
-			Release: r.Info,
-		})
-
-		addedToCache = true
-		bencodeUsed = true
-	} else if r.Info.SizeBytes == 0 {
-		r.Log.Warnf("Failed determining release size for %q as no size parsed from announcement and"+
-			" bencode was disabled.", r.Info.TorrentName)
+	// was a size available?
+	if r.Info.SizeBytes == 0 {
+		r.Log.Warnf("Failed determining release size for %q, using 0 byte size...", r.Info.TorrentName)
 	}
 
 	r.Log.Debugf("Processing release: %s", r.Info.TorrentName)
@@ -202,7 +134,7 @@ func (r *Release) Process() {
 		// was bencode used / tracker requires a cookie / bencode should be used later on (to evaluate against torrent file data)
 		torrentUrl := r.Info.TorrentURL
 		cookie, hasCookie := r.Tracker.Config.Settings["cookie"]
-		if bencodeUsed || hasCookie || (!bencodeUsed && pvr.HasFileExpressions) {
+		if usedBencode || hasCookie || (!usedBencode && pvr.HasFileExpressions) {
 			// we will proxy this torrent via the /api/torrent endpoint
 			proxiedURL, err := r.getProxiedTorrentURL(&cookie, pvr.Config.Name)
 			if err != nil {
