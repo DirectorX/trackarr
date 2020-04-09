@@ -6,6 +6,8 @@ import (
 	"gitlab.com/cloudb0x/trackarr/utils/tracker"
 )
 
+/* Private */
+
 func (r *Release) apiLookup() (bool, error) {
 	// retrieve tracker api
 	trackerApi, _ := tracker.GetApi(r.Tracker)

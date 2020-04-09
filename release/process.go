@@ -12,9 +12,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-/* Const */
-const TorrentFileTimeout = 30
-
 /* Private */
 
 func (r *Release) getProxiedTorrentURL(cookie *string, pvr string) (string, error) {

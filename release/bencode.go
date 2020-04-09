@@ -7,6 +7,11 @@ import (
 	"gitlab.com/cloudb0x/trackarr/utils/torrent"
 )
 
+/* Const */
+const TorrentFileTimeout = 30
+
+/* Private */
+
 func (r *Release) bencodeLookup() (bool, bool, error) {
 	// was bencode enabled for this tracker?
 	if !r.Tracker.Config.Bencode.Name && !r.Tracker.Config.Bencode.Size {
