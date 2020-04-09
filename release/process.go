@@ -111,8 +111,8 @@ func (r *Release) Process() {
 		}
 	}
 
-	// bencode torrent name and size? (we must enforce this functionality when a bytes size was not determined)
-	if ((r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) && !apiUsed) || r.Info.SizeBytes == 0 {
+	// bencode torrent name and size?
+	if (r.Tracker.Config.Bencode.Name || r.Tracker.Config.Bencode.Size) && !apiUsed {
 		// retrieve cookie if set for this tracker
 		headers := req.Header{}
 		if cookie, ok := r.Tracker.Config.Settings["cookie"]; ok {
@@ -149,6 +149,9 @@ func (r *Release) Process() {
 
 		addedToCache = true
 		bencodeUsed = true
+	} else if r.Info.SizeBytes == 0 {
+		r.Log.Warnf("Failed determining release size for %q as no size parsed from announcement and"+
+			" bencode was disabled.", r.Info.TorrentName)
 	}
 
 	r.Log.Debugf("Processing release: %s", r.Info.TorrentName)
