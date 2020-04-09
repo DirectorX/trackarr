@@ -58,7 +58,7 @@ func (c *IRCClient) Start() error {
 		}
 
 		// handle connection to configured server
-		c.log.Infof("Connecting to %s (ssl: %v)", connString, useSsl)
+		c.log.Infof("Connecting to %s (ssl: %v / sasl: %v)", connString, useSsl, c.Conn.UseSASL)
 		if err := c.Conn.Connect(connString); err != nil {
 			c.log.WithError(err).Errorf("failed connecting to server: %s", connString)
 			continue
