@@ -8,7 +8,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.0.3
 	github.com/ReneKroon/ttlcache v1.6.0
 	github.com/antchfx/xmlquery v1.2.3
-	github.com/antchfx/xpath v1.1.4 // indirect
+	github.com/antchfx/xpath v1.1.5 // indirect
 	github.com/antonmedv/expr v1.8.2
 	github.com/asdine/storm/v3 v3.1.1
 	github.com/daaku/go.zipexe v1.0.1 // indirect
@@ -44,10 +44,10 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.uber.org/atomic v1.6.0
 	go.uber.org/ratelimit v0.1.0
-	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
+	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71 // indirect
 	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
-	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d // indirect
+	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
 	golang.org/x/tools v0.0.0-20200225022059-a0ec867d517c // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
