@@ -34,8 +34,13 @@ type TrackerIrcConfig struct {
 	Commands   []string
 	Host       *string
 	Port       *string
-	Sasl       TrackerSaslConfig
+	Sasl       TrackerIrcSaslConfig
 	Verbose    bool
+}
+
+type TrackerIrcSaslConfig struct {
+	User string
+	Pass string
 }
 
 type TrackerInfo struct {
@@ -52,11 +57,6 @@ type TrackerInfo struct {
 	MultiLinePatterns []TrackerPattern
 
 	LineMatchedRules *xmlquery.Node
-}
-
-type TrackerSaslConfig struct {
-	User string
-	Pass string
 }
 
 type TrackerIgnore struct {
