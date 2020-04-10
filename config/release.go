@@ -13,6 +13,7 @@ type ReleaseInfo struct {
 	Resolution  string
 	Container   string
 	Origin      string
+	Source      string
 	Tags        string
 	Files       []string
 }

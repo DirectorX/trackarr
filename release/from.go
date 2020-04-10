@@ -78,6 +78,11 @@ func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars map[string]strin
 		release.Info.Origin = torrentOrigin
 	}
 
+	if torrentSource, err := maps.GetFirstStringMapValue(vars, []string{"source", "$source"},
+		false); err == nil {
+		release.Info.Source = torrentSource
+	}
+
 	if torrentTags, err := maps.GetFirstStringMapValue(vars, []string{"$releaseTags", "$tags", "releaseTags", "tags"},
 		false); err == nil {
 		release.Info.Tags = torrentTags
