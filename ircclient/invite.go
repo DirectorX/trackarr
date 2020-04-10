@@ -9,14 +9,12 @@ import (
 /* Private */
 
 func (c *IRCClient) handleInvite(event *irc.Event) {
-	// parse channel invited too
-	channel := "Unknown"
-	if len(event.Arguments) >= 2 && len(event.Arguments[1]) >= 2 && event.Arguments[1][0] == '#' {
-		channel = event.Arguments[1]
-	} else {
+	// validate the invite destination is to a channel
+	if len(event.Arguments) < 2 || (len(event.Arguments[1]) <= 2 || event.Arguments[1][0] != '#') {
 		// we should always know what channel we have been invited too
 		return
 	}
+	channel := event.Arguments[1]
 
 	// validate invite to an expected announce channel
 	if !lists.StringListContains(c.Tracker.Info.Channels, channel, false) {
