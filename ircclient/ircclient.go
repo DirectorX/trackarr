@@ -94,6 +94,8 @@ func New(t *config.TrackerInstance) (*IRCClient, error) {
 	conn.AddCallback("001", client.handleConnected)
 	// - mode
 	conn.AddCallback("MODE", client.handleMode)
+	// - invite
+	conn.AddCallback("INVITE", client.handleInvite)
 	// - join
 	conn.AddCallback("366", client.handleJoined)
 	conn.AddCallback("448", client.handleJoinFailure)
