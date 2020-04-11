@@ -58,6 +58,7 @@ variables:
 .rules-all: &rules-all
   rules:
     - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
     # Allow external MRs
     - if: $CI_EXTERNAL_PULL_REQUEST_IID
     - when: never
