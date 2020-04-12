@@ -1,6 +1,7 @@
 package pvr
 
 import (
+	"fmt"
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/logger"
 	"strings"
@@ -17,13 +18,18 @@ var (
 
 func Init() error {
 	for _, p := range config.Config.Pvr {
-		// skip disabled trackers
+		// skip disabled pvr
 		if !p.Enabled {
 			log.Debugf("Skipping disabled PVR: %s", p.Name)
-
 			continue
 		}
 
+		// check if pvr has already been loaded (duplicate pvr name)
+		if _, exists := config.Pvr[p.Name]; exists {
+			return fmt.Errorf("pvr with the same name already loaded: %q", p.Name)
+		}
+
+		// init pvr instance
 		p2 := p
 		config.Pvr[p.Name] = &config.PvrInstance{
 			Config: &p2,
