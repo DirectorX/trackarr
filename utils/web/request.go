@@ -2,7 +2,6 @@ package web
 
 import (
 	"gitlab.com/cloudb0x/trackarr/config"
-	"golang.org/x/time/rate"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -18,9 +17,8 @@ import (
 
 var (
 	// Logging
-	log              = logger.GetLogger("web")
-	httpClient       = *req.Client()
-	defaultRateLimit = rate.NewLimiter(rate.Inf, 0)
+	log        = logger.GetLogger("web")
+	httpClient = *req.Client()
 )
 
 /* Structs */
