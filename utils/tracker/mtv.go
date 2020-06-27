@@ -70,7 +70,7 @@ func newMtv(tracker *config.TrackerInstance) (Interface, error) {
 			"login":      "Log in",
 			"keeplogged": 1,
 		},
-		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit),
+		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, 1),
 		loginAttempts: 0,
 	}, nil
 }

@@ -52,7 +52,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
-		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit),
+		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, 1),
 	}, nil
 }
 

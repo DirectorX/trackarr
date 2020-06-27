@@ -1,10 +1,12 @@
 package web
 
 import (
-	"github.com/sirupsen/logrus"
-	"go.uber.org/ratelimit"
 	"strings"
 	"sync"
+	"time"
+
+	"github.com/sirupsen/logrus"
+	"go.uber.org/ratelimit"
 )
 
 var (
@@ -12,7 +14,7 @@ var (
 	mtx          sync.Mutex
 )
 
-func GetRateLimiter(name string, newRateLimit int) *ratelimit.Limiter {
+func GetRateLimiter(name string, newRateLimit int, limitSeconds int) *ratelimit.Limiter {
 	// acquire lock
 	mtx.Lock()
 	defer mtx.Unlock()
@@ -30,7 +32,7 @@ func GetRateLimiter(name string, newRateLimit int) *ratelimit.Limiter {
 
 	rl, ok = rateLimiters[lowerName]
 	if !ok {
-		rl = ratelimit.New(newRateLimit, ratelimit.WithoutSlack)
+		rl = ratelimit.New(newRateLimit, ratelimit.WithoutSlack, ratelimit.Per(time.Duration(limitSeconds)*time.Second))
 		rateLimiters[lowerName] = rl
 
 		log.WithFields(logrus.Fields{
