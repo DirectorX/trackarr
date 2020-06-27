@@ -23,6 +23,7 @@ const (
 	mtvLoginUrl         = "https://www.morethan.tv/login.php"
 	mtvTorrentUrl       = "https://www.morethan.tv/ajax.php"
 	mtvTimeout          = 30
+	mtvApiRateLimitPer  = 1
 	mtvApiRateLimit     = 1
 	mtvMaxLoginAttempts = 5
 )
@@ -70,7 +71,7 @@ func newMtv(tracker *config.TrackerInstance) (Interface, error) {
 			"login":      "Log in",
 			"keeplogged": 1,
 		},
-		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, 1),
+		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, mtvApiRateLimitPer),
 		loginAttempts: 0,
 	}, nil
 }

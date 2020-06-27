@@ -15,9 +15,10 @@ import (
 
 /* Const */
 const (
-	ptpTorrentUrl   = "https://passthepopcorn.me/torrents.php"
-	ptpTimeout      = 30
-	ptpApiRateLimit = 1
+	ptpTorrentUrl      = "https://passthepopcorn.me/torrents.php"
+	ptpTimeout         = 30
+	ptpApiRateLimitPer = 1
+	ptpApiRateLimit    = 1
 )
 
 /* Struct */
@@ -52,7 +53,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
-		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, 1),
+		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, ptpApiRateLimitPer),
 	}, nil
 }
 
