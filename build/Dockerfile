@@ -1,4 +1,4 @@
-FROM sc4h/alpine-s6overlay:3.11
+FROM sc4h/alpine-s6overlay:3.12
 
 ARG ARCH
 
