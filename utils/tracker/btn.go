@@ -16,9 +16,10 @@ import (
 
 /* Const */
 const (
-	btnApiUrl       = "https://api.broadcasthe.net/"
-	btnTimeout      = 60
-	btnApiRateLimit = 150
+	btnApiUrl          = "https://api.broadcasthe.net/"
+	btnTimeout         = 60
+	btnApiRateLimitPer = 3600
+	btnApiRateLimit    = 150
 )
 
 /* Struct */
@@ -49,6 +50,7 @@ func newBtn(tracker *config.TrackerInstance) (Interface, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "api_key setting missing")
 	}
+
 	// return api instance
 	return &Btn{
 		log:     log,
@@ -62,7 +64,7 @@ func newBtn(tracker *config.TrackerInstance) (Interface, error) {
 			Method:  "getTorrentById",
 			Params:  [2]string{apiKey},
 		},
-		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit),
+		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit, btnApiRateLimitPer),
 	}, nil
 }
 
@@ -74,6 +76,7 @@ func (t *Btn) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	if err != nil {
 		return nil, fmt.Errorf("malformed URL: %s", torrent.TorrentURL)
 	}
+
 	// validate torrentId
 	torrentId := torrentUrl.Query().Get("id")
 	if torrentId == "" {
@@ -84,6 +87,7 @@ func (t *Btn) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 	// prepare request
 	t.postRequest.Params[1] = torrentId
 	t.log.Tracef("Request Body as JSON : %#v", req.BodyJSON(t.postRequest))
+
 	// send request
 	btnReleaseAsBytes, err := web.GetBodyBytes(web.POST, btnApiUrl, btnTimeout, req.BodyJSON(t.postRequest),
 		&web.Retry{
@@ -108,11 +112,13 @@ func (t *Btn) GetReleaseInfo(torrent *config.ReleaseInfo) (*TorrentInfo, error) 
 			ReleaseName string // "Shahs.of.Sunset.S08E09.iNTERNAL.1080p.WEB.h264-TRUMP",
 		}
 	}
+
 	if err := json.Unmarshal(btnReleaseAsBytes, &btnInfo); err != nil {
 		t.log.WithError(err).Errorf("Failed unmarshalling response: %#v", btnReleaseAsBytes)
 		return nil, errors.Wrap(err, "failed unmarshalling response")
 	}
 	t.log.Tracef("GetReleaseInfo Response: %+v", btnInfo)
+
 	return &TorrentInfo{
 		Name: btnInfo.Result.ReleaseName,
 		Size: btnInfo.Result.Size,
