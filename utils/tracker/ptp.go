@@ -9,16 +9,16 @@ import (
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/maps"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
-	"go.uber.org/ratelimit"
+	"golang.org/x/time/rate"
 	"time"
 )
 
 /* Const */
 const (
-	ptpTorrentUrl      = "https://passthepopcorn.me/torrents.php"
-	ptpTimeout         = 30
-	ptpApiRateLimitPer = 1
-	ptpApiRateLimit    = 1
+	ptpTorrentUrl           = "https://passthepopcorn.me/torrents.php"
+	ptpTimeout              = 30
+	ptpApiRateLimitDuration = time.Second
+	ptpApiRateLimit         = 1
 )
 
 /* Struct */
@@ -26,7 +26,7 @@ type Ptp struct {
 	log     *logrus.Entry
 	tracker *config.TrackerInstance
 	headers req.Header
-	rl      *ratelimit.Limiter
+	rl      *rate.Limiter
 }
 
 /* Private */
@@ -53,7 +53,7 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
-		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, ptpApiRateLimitPer),
+		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, ptpApiRateLimitDuration),
 	}, nil
 }
 

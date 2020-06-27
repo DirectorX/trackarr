@@ -1,45 +1,47 @@
 package web
 
 import (
+	"golang.org/x/time/rate"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"go.uber.org/ratelimit"
 )
 
 var (
-	rateLimiters map[string]ratelimit.Limiter
+	rateLimiters map[string]*rate.Limiter
 	mtx          sync.Mutex
 )
 
-func GetRateLimiter(name string, newRateLimit int, limitSeconds int) *ratelimit.Limiter {
+func GetRateLimiter(name string, limit int, duration time.Duration) *rate.Limiter {
 	// acquire lock
 	mtx.Lock()
 	defer mtx.Unlock()
 
 	// init map
 	if rateLimiters == nil {
-		rateLimiters = make(map[string]ratelimit.Limiter)
+		rateLimiters = make(map[string]*rate.Limiter)
 		log.Trace("Initialized rateLimiters map")
 	}
 
 	// retrieve or create new ratelimit
-	var rl ratelimit.Limiter
+	var rl *rate.Limiter
 	ok := false
 	lowerName := strings.ToLower(name)
 
 	rl, ok = rateLimiters[lowerName]
 	if !ok {
-		rl = ratelimit.New(newRateLimit, ratelimit.WithoutSlack, ratelimit.Per(time.Duration(limitSeconds)*time.Second))
+		l := rate.Every(duration / time.Duration(limit))
+		rl = rate.NewLimiter(l, 1)
+
 		rateLimiters[lowerName] = rl
 
 		log.WithFields(logrus.Fields{
 			"name":  name,
-			"limit": newRateLimit,
+			"limit": limit,
 		}).Trace("Created new ratelimit")
 	}
 
-	return &rl
+	return rl
 }

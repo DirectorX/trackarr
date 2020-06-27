@@ -2,7 +2,7 @@ package web
 
 import (
 	"gitlab.com/cloudb0x/trackarr/config"
-	"go.uber.org/ratelimit"
+	"golang.org/x/time/rate"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -18,8 +18,9 @@ import (
 
 var (
 	// Logging
-	log        = logger.GetLogger("web")
-	httpClient = *req.Client()
+	log              = logger.GetLogger("web")
+	httpClient       = *req.Client()
+	defaultRateLimit = rate.NewLimiter(rate.Inf, 0)
 )
 
 /* Structs */
@@ -68,15 +69,15 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// prepare request inputs
 	setUserAgent := false
-	var rl ratelimit.Limiter = nil
+	var rl *rate.Limiter
 	var retry Retry
 
 	for _, vv := range v {
 		switch vT := vv.(type) {
-		case *ratelimit.Limiter:
-			rl = *vT
-		case ratelimit.Limiter:
+		case *rate.Limiter:
 			rl = vT
+		case rate.Limiter:
+			rl = &vT
 		case *Retry:
 			retry = *vT
 		case Retry:
@@ -130,17 +131,22 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// Exponential back-off
 	for {
+		// ensure rate limiter set
+		if rl == nil {
+			rl = defaultRateLimit
+		}
+
 		// do request
 		switch method {
 		case GET:
-			if rl != nil {
-				rl.Take()
+			if !rl.Allow() {
+				return nil, errors.New("rate limit reached, too many requests to the host")
 			}
 
 			resp, err = req.Get(requestUrl, inputs...)
 		case POST:
-			if rl != nil {
-				rl.Take()
+			if !rl.Allow() {
+				return nil, errors.New("rate limit reached, too many requests to the host")
 			}
 
 			resp, err = req.Post(requestUrl, inputs...)

@@ -9,24 +9,24 @@ import (
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/maps"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
-	"go.uber.org/ratelimit"
+	"golang.org/x/time/rate"
 	"net/url"
 	"time"
 )
 
 /* Const */
 const (
-	btnApiUrl          = "https://api.broadcasthe.net/"
-	btnTimeout         = 60
-	btnApiRateLimitPer = 3600
-	btnApiRateLimit    = 150
+	btnApiUrl               = "https://api.broadcasthe.net/"
+	btnTimeout              = 60
+	btnApiRateLimitDuration = time.Hour
+	btnApiRateLimit         = 150
 )
 
 /* Struct */
 type Btn struct {
 	log         *logrus.Entry
 	tracker     *config.TrackerInstance
-	rl          *ratelimit.Limiter
+	rl          *rate.Limiter
 	postRequest btnRequest
 	headers     req.Header
 }
@@ -64,7 +64,7 @@ func newBtn(tracker *config.TrackerInstance) (Interface, error) {
 			Method:  "getTorrentById",
 			Params:  [2]string{apiKey},
 		},
-		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit, btnApiRateLimitPer),
+		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit, btnApiRateLimitDuration),
 	}, nil
 }
 

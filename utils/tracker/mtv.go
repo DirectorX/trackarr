@@ -10,7 +10,7 @@ import (
 	"gitlab.com/cloudb0x/trackarr/config"
 	"gitlab.com/cloudb0x/trackarr/utils/maps"
 	"gitlab.com/cloudb0x/trackarr/utils/web"
-	"go.uber.org/ratelimit"
+	"golang.org/x/time/rate"
 	"net/url"
 	"strconv"
 	"strings"
@@ -20,12 +20,12 @@ import (
 
 /* Const */
 const (
-	mtvLoginUrl         = "https://www.morethan.tv/login.php"
-	mtvTorrentUrl       = "https://www.morethan.tv/ajax.php"
-	mtvTimeout          = 30
-	mtvApiRateLimitPer  = 1
-	mtvApiRateLimit     = 1
-	mtvMaxLoginAttempts = 5
+	mtvLoginUrl             = "https://www.morethan.tv/login.php"
+	mtvTorrentUrl           = "https://www.morethan.tv/ajax.php"
+	mtvTimeout              = 30
+	mtvApiRateLimitDuration = time.Second
+	mtvApiRateLimit         = 1
+	mtvMaxLoginAttempts     = 5
 )
 
 /* Var */
@@ -39,7 +39,7 @@ type Mtv struct {
 	log           *logrus.Entry
 	tracker       *config.TrackerInstance
 	loginBody     req.Param
-	rl            *ratelimit.Limiter
+	rl            *rate.Limiter
 	mtx           sync.Mutex
 	cookieExpiry  *time.Time
 	loginAttempts int
@@ -71,7 +71,7 @@ func newMtv(tracker *config.TrackerInstance) (Interface, error) {
 			"login":      "Log in",
 			"keeplogged": 1,
 		},
-		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, mtvApiRateLimitPer),
+		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, mtvApiRateLimitDuration),
 		loginAttempts: 0,
 	}, nil
 }
