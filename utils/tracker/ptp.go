@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"context"
 	"fmt"
 	"github.com/imroc/req"
 	"github.com/jpillora/backoff"
@@ -26,7 +27,7 @@ type Ptp struct {
 	log     *logrus.Entry
 	tracker *config.TrackerInstance
 	headers req.Header
-	rl      *rate.Limiter
+	rl      *web.RateLimiter
 }
 
 /* Private */
@@ -53,7 +54,9 @@ func newPtp(tracker *config.TrackerInstance) (Interface, error) {
 			"ApiUser": apiUser,
 			"ApiKey":  apiKey,
 		},
-		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, ptpApiRateLimitDuration),
+		rl: web.GetRateLimiter(tracker.Name, ptpApiRateLimit, ptpApiRateLimitDuration, 1, func(rl *rate.Limiter) error {
+			return rl.Wait(context.Background())
+		}),
 	}, nil
 }
 

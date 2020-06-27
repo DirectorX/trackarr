@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"context"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/imroc/req"
@@ -39,7 +40,7 @@ type Mtv struct {
 	log           *logrus.Entry
 	tracker       *config.TrackerInstance
 	loginBody     req.Param
-	rl            *rate.Limiter
+	rl            *web.RateLimiter
 	mtx           sync.Mutex
 	cookieExpiry  *time.Time
 	loginAttempts int
@@ -71,7 +72,9 @@ func newMtv(tracker *config.TrackerInstance) (Interface, error) {
 			"login":      "Log in",
 			"keeplogged": 1,
 		},
-		rl:            web.GetRateLimiter(tracker.Name, mtvApiRateLimit, mtvApiRateLimitDuration),
+		rl: web.GetRateLimiter(tracker.Name, mtvApiRateLimit, mtvApiRateLimitDuration, 1, func(rl *rate.Limiter) error {
+			return rl.Wait(context.Background())
+		}),
 		loginAttempts: 0,
 	}, nil
 }

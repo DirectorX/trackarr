@@ -69,14 +69,14 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// prepare request inputs
 	setUserAgent := false
-	var rl *rate.Limiter
+	var rl *RateLimiter = nil
 	var retry Retry
 
 	for _, vv := range v {
 		switch vT := vv.(type) {
-		case *rate.Limiter:
+		case *RateLimiter:
 			rl = vT
-		case rate.Limiter:
+		case RateLimiter:
 			rl = &vT
 		case *Retry:
 			retry = *vT
@@ -131,22 +131,21 @@ func GetResponse(method HTTPMethod, requestUrl string, timeout int, v ...interfa
 
 	// Exponential back-off
 	for {
-		// ensure rate limiter set
-		if rl == nil {
-			rl = defaultRateLimit
-		}
-
 		// do request
 		switch method {
 		case GET:
-			if !rl.Allow() {
-				return nil, errors.New("rate limit reached, too many requests to the host")
+			if rl != nil {
+				if err := rl.Take(rl.limiter); err != nil {
+					return nil, err
+				}
 			}
 
 			resp, err = req.Get(requestUrl, inputs...)
 		case POST:
-			if !rl.Allow() {
-				return nil, errors.New("rate limit reached, too many requests to the host")
+			if rl != nil {
+				if err := rl.Take(rl.limiter); err != nil {
+					return nil, err
+				}
 			}
 
 			resp, err = req.Post(requestUrl, inputs...)

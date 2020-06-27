@@ -10,32 +10,36 @@ import (
 )
 
 var (
-	rateLimiters map[string]*rate.Limiter
+	rateLimiters map[string]*RateLimiter
 	mtx          sync.Mutex
 )
 
-func GetRateLimiter(name string, limit int, duration time.Duration) *rate.Limiter {
+type RateLimitCallback func(rl *rate.Limiter) error
+
+type RateLimiter struct {
+	limiter *rate.Limiter
+	Take    func(rl *rate.Limiter) error
+}
+
+func GetRateLimiter(name string, limit int, duration time.Duration, burst int, check RateLimitCallback) *RateLimiter {
 	// acquire lock
 	mtx.Lock()
 	defer mtx.Unlock()
 
 	// init map
 	if rateLimiters == nil {
-		rateLimiters = make(map[string]*rate.Limiter)
+		rateLimiters = make(map[string]*RateLimiter)
 		log.Trace("Initialized rateLimiters map")
 	}
 
 	// retrieve or create new ratelimit
-	var rl *rate.Limiter
+	var rl *RateLimiter
 	ok := false
 	lowerName := strings.ToLower(name)
 
 	rl, ok = rateLimiters[lowerName]
 	if !ok {
-		l := rate.Every(duration / time.Duration(limit))
-		rl = rate.NewLimiter(l, 1)
-
-		rateLimiters[lowerName] = rl
+		rateLimiters[lowerName] = newRateLimiter(limit, duration, burst, check)
 
 		log.WithFields(logrus.Fields{
 			"name":  name,
@@ -44,4 +48,11 @@ func GetRateLimiter(name string, limit int, duration time.Duration) *rate.Limite
 	}
 
 	return rl
+}
+
+func newRateLimiter(limit int, duration time.Duration, burst int, check RateLimitCallback) *RateLimiter {
+	return &RateLimiter{
+		limiter: rate.NewLimiter(rate.Every(duration/time.Duration(limit)), burst),
+		Take:    check,
+	}
 }

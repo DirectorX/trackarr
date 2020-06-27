@@ -26,7 +26,7 @@ const (
 type Btn struct {
 	log         *logrus.Entry
 	tracker     *config.TrackerInstance
-	rl          *rate.Limiter
+	rl          *web.RateLimiter
 	postRequest btnRequest
 	headers     req.Header
 }
@@ -64,7 +64,13 @@ func newBtn(tracker *config.TrackerInstance) (Interface, error) {
 			Method:  "getTorrentById",
 			Params:  [2]string{apiKey},
 		},
-		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit, btnApiRateLimitDuration),
+		rl: web.GetRateLimiter(tracker.Name, btnApiRateLimit, btnApiRateLimitDuration, btnApiRateLimit, func(rl *rate.Limiter) error {
+			if !rl.Allow() {
+				return errors.New("rate limit reached, too many requests to the host")
+			}
+
+			return nil
+		}),
 	}, nil
 }
 
