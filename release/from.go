@@ -89,7 +89,7 @@ func FromMap(t *config.TrackerInstance, log *logrus.Entry, vars map[string]strin
 
 	if torrentFreeLeech, err := maps.GetFirstStringMapValue(vars, []string{"$freeleech", "freeleech"},
 		false); err == nil {
-		release.Info.FreeLeech = torrentFreeLeech == "true"
+		release.Info.FreeLeech = strings.EqualFold(torrentFreeLeech, "true")
 	}
 
 	return release, nil
