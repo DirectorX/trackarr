@@ -16,4 +16,5 @@ type ReleaseInfo struct {
 	Source      string
 	Tags        string
 	Files       []string
+	FreeLeech   bool
 }
