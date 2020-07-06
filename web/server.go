@@ -128,6 +128,9 @@ func Listen(cfg *config.Configuration, logLevel int) {
 	// - Debug routes
 	gui.GET("/debug/pprof/*", echo.WrapHandler(http.DefaultServeMux))
 
+	// - PVR Routes
+	gui.Any("/pvr/test", handler.Test)
+
 	// setup log hook
 	if err := runtime.Loghook.Start(); err != nil {
 		log.WithError(err).Error("Failed starting loghook")
