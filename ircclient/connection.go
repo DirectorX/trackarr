@@ -16,6 +16,7 @@ func (c *IRCClient) Start() error {
 	for _, serverString := range c.Tracker.Info.Servers {
 		connString := ""
 		useSsl := false
+		usePassword := false
 
 		// was a port specified ?
 		if !strings.Contains(serverString, ":") {
@@ -57,8 +58,14 @@ func (c *IRCClient) Start() error {
 			c.Conn.SASLPassword = c.Tracker.Config.IRC.Sasl.Pass
 		}
 
+		if c.Tracker.Config.IRC.Password != "" {
+			// use irc server password
+			usePassword = true
+			c.Conn.Password = c.Tracker.Config.IRC.Password
+		}
+
 		// handle connection to configured server
-		c.log.Infof("Connecting to %s (ssl: %v / sasl: %v)", connString, useSsl, c.Conn.UseSASL)
+		c.log.Infof("Connecting to %s (ssl: %v / sasl: %v / pass: %v)", connString, useSsl, c.Conn.UseSASL, usePassword)
 		if err := c.Conn.Connect(connString); err != nil {
 			c.log.WithError(err).Errorf("failed connecting to server: %s", connString)
 			continue
