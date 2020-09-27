@@ -85,6 +85,7 @@ func (p *Processor) processExtractRule(node *xmlquery.Node, vars map[string]stri
 
 		// add var to result
 		results[varName] = matches[matchPos]
+		matchPos++
 	}
 
 	// set result in vars map
