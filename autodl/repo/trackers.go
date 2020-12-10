@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
+	"encoding/json"
 
 	"gitlab.com/cloudb0x/trackarr/database"
 	models "gitlab.com/cloudb0x/trackarr/database/models"
@@ -20,8 +20,8 @@ import (
 
 // AutodlTracker -- Struct representation of the autodl trackers directory
 type AutodlTracker struct {
-	Name    string
-	Version string
+	Name    string `json:"name"`
+	Version string `json:"sha"`
 	URL     string
 }
 
@@ -30,7 +30,7 @@ var (
 	log = logger.GetLogger("autodl")
 )
 
-const trackersRepository = "https://github.com/autodl-community/autodl-trackers/tree/master/trackers"
+const trackersRepository = "https://api.github.com/repos/autodl-community/autodl-trackers/contents/trackers"
 
 /* Public */
 
@@ -107,29 +107,31 @@ func PullTrackers(trackersPath string) error {
 func getAvailableTrackers() (map[string]*AutodlTracker, error) {
 	// retrieve trackers page
 	log.Infof("Finding available trackers from: %s", trackersRepository)
-	body, err := web.GetBodyString(web.GET, trackersRepository, 30)
+	body, err := web.GetBodyBytes(web.GET, trackersRepository, 30)
 	if err != nil {
 		return nil, err
 	}
 
 	// parse trackers from body
-	rxp := regexp.MustCompile(
-		`title="(?P<Name>.+)\.tracker" id="(?P<Version>.+)" href="(?P<URL>.+\.tracker)">.+</a>`)
-	matches := rxp.FindAllStringSubmatch(body, -1)
+	var parsedTrackers []AutodlTracker
+	err = json.Unmarshal(body, &parsedTrackers)
+	if err != nil {
+		return nil, err
+	}
 
 	// build trackers map
 	trackers := make(map[string]*AutodlTracker)
-	for _, match := range matches {
+	for _, parsed := range parsedTrackers {
 		// sanitize tracker name
-		sanitizedTracker := strings.Replace(match[1], ".", "", -1)
+		sanitizedTracker := strings.Replace(parsed.Name, ".tracker", "", -1)
+		sanitizedTracker = strings.Replace(sanitizedTracker, ".", "", -1)
 		sanitizedTracker = strings.Replace(sanitizedTracker, " ", "", -1)
 
 		// parse tracker from match
 		tracker := &AutodlTracker{
 			Name:    sanitizedTracker,
-			Version: match[2],
-			URL: fmt.Sprintf("https://raw.githubusercontent.com%s",
-				strings.Replace(match[3], "/blob/", "/", -1)),
+			Version: parsed.Version,
+			URL: fmt.Sprintf("https://cdn.jsdelivr.net/gh/autodl-community/autodl-trackers@master/trackers/%s", parsed.Name),
 		}
 		log.Tracef("Available tracker: %q - Version: %q - URL: %s", tracker.Name, tracker.Version, tracker.URL)
 
