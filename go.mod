@@ -6,7 +6,7 @@ require (
 	github.com/GeertJohan/go.rice v1.0.1
 	github.com/IncSW/go-bencode v0.1.0
 	github.com/Masterminds/semver/v3 v3.1.1
-	github.com/ReneKroon/ttlcache v1.7.0
+	github.com/ReneKroon/ttlcache/v2 v2.1.0
 	github.com/antchfx/xmlquery v1.3.3
 	github.com/antchfx/xpath v1.1.11 // indirect
 	github.com/antonmedv/expr v1.8.9

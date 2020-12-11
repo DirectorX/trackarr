@@ -1,11 +1,12 @@
 package cache
 
 import (
+	"fmt"
 	"time"
 
 	"gitlab.com/cloudb0x/trackarr/logger"
 
-	"github.com/ReneKroon/ttlcache"
+	"github.com/ReneKroon/ttlcache/v2"
 )
 
 var (
@@ -15,16 +16,16 @@ var (
 
 /* Public */
 func Close() {
-	cache.Close()
+	_ = cache.Close()
 }
 
 func AddItem(key string, value *CacheItem) {
-	cache.Set(key, *value)
+	_ = cache.Set(key, *value)
 }
 
 func GetItem(key string) (*CacheItem, bool) {
-	result, ok := cache.Get(key)
-	if !ok {
+	result, err := cache.Get(key)
+	if err != nil {
 		return nil, false
 	}
 
@@ -42,9 +43,11 @@ func GetItem(key string) (*CacheItem, bool) {
 func Init() error {
 	cache = ttlcache.NewCache()
 
-	cache.SetTTL(60 * time.Second)
-	cache.SetExpirationCallback(cacheItemExpired)
+	if err := cache.SetTTL(60 * time.Second); err != nil {
+		return fmt.Errorf("set ttl: %w", err)
+	}
 
+	cache.SetExpirationCallback(cacheItemExpired)
 	return nil
 }
 
