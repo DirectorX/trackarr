@@ -34,6 +34,7 @@ type TrackerIrcConfig struct {
 	Commands   []string
 	Host       *string
 	Port       *string
+	Password   string
 	Sasl       TrackerIrcSaslConfig
 	Verbose    bool
 }
