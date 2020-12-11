@@ -117,7 +117,7 @@ variables:
 # Vendor
 vendor:
   stage: vendor
-  image: golang:1.14-alpine
+  image: golang:1.15-alpine
   script:
     - apk add --no-cache make git
     - make vendor
@@ -127,7 +127,7 @@ vendor:
 # Test
 test:test:
   stage: test
-  image: golang:1.14-buster
+  image: golang:1.15-buster
   script:
     - make test
   <<: *cache_vendor_pull
@@ -170,7 +170,7 @@ build-web:web:
     - "build-web:web"
   dependencies:
     - build-web:web
-  image: golang:1.14-alpine
+  image: golang:1.15-alpine
   before_script:
     # Install dependencies
     - apk add --no-cache make git curl
