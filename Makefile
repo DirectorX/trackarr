@@ -123,7 +123,7 @@ publish: check_goreleaser fetch rice ## Generate a release, and publish
 
 .PHONY: snapshot
 snapshot: check_goreleaser fetch rice ## Generate a snapshot release
-	goreleaser --snapshot --skip-validate --skip-publish --rm-dist
+	goreleaser --snapshot --skip-publish --rm-dist
 
 .PHONY: help
 help:

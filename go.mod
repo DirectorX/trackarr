@@ -3,7 +3,7 @@ module gitlab.com/cloudb0x/trackarr
 go 1.15
 
 require (
-	github.com/GeertJohan/go.rice v1.0.1
+	github.com/GeertJohan/go.rice v1.0.2
 	github.com/IncSW/go-bencode v0.1.0
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/ReneKroon/ttlcache/v2 v2.1.0
@@ -43,8 +43,8 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.etcd.io/bbolt v1.3.5 // indirect
 	go.uber.org/atomic v1.7.0
-	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9 // indirect
-	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
+	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
+	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
 	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	golang.org/x/text v0.3.4 // indirect
