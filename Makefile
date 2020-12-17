@@ -115,11 +115,11 @@ fetch: ## Fetch vendor files
 
 .PHONY: release
 release: check_goreleaser fetch rice ## Generate a release, but don't publish
-	goreleaser --skip-validate --skip-publish --rm-dist
+	goreleaser --skip-publish --rm-dist
 
 .PHONY: publish
 publish: check_goreleaser fetch rice ## Generate a release, and publish
-	goreleaser --skip-validate --rm-dist
+	goreleaser --rm-dist
 
 .PHONY: snapshot
 snapshot: check_goreleaser fetch rice ## Generate a snapshot release
