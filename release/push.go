@@ -2,7 +2,6 @@ package release
 
 import (
 	"gitlab.com/cloudb0x/trackarr/utils/defaults"
-	"strconv"
 	"strings"
 	"time"
 
@@ -26,7 +25,7 @@ type (
 	pushRequest struct {
 		Title            string `json:"title"`
 		DownloadUrl      string `json:"downloadUrl"`
-		Size             string `json:"size"`
+		Size             int64  `json:"size"`
 		Indexer          string `json:"indexer"`
 		DownloadProtocol string `json:"downloadProtocol"`
 		Protocol         string `json:"protocol"`
@@ -47,7 +46,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) 
 	pvrRequest := pushRequest{
 		Title:            r.Info.TorrentName,
 		DownloadUrl:      *torrentUrl,
-		Size:             "0",
+		Size:             0,
 		Indexer:          r.Tracker.Info.LongName,
 		DownloadProtocol: "torrent",
 		Protocol:         "torrent",
@@ -55,7 +54,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) 
 	}
 
 	if r.Info.SizeBytes > 0 {
-		pvrRequest.Size = strconv.FormatInt(r.Info.SizeBytes, 10)
+		pvrRequest.Size = r.Info.SizeBytes
 	}
 
 	requestUrl := ""
