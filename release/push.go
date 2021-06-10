@@ -59,7 +59,7 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) 
 
 	requestUrl := ""
 	if !strings.Contains(pvr.URL, "/api/") {
-		requestUrl = web.JoinURL(pvr.URL, "api/release/push")
+		requestUrl = web.JoinURL(pvr.URL, "api/v3/release/push")
 	} else {
 		requestUrl = pvr.URL
 	}
@@ -96,22 +96,25 @@ func (r *Release) Push(pvr *config.PvrConfig, delay *int64, torrentUrl *string) 
 	}
 
 	// decode response
-	pvrResp := &pvrResponse{}
+	pvrResp := make([]pvrResponse, 0)
 	if err := resp.ToJSON(&pvrResp); err != nil {
 		r.Log.WithError(err).Errorf("Failed decoding push response: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
+		return
+	} else if len(pvrResp) < 1 {
+		r.Log.Errorf("Failed processing push response: %s (pvr: %s)", r.Info.TorrentName, pvr.Name)
 		return
 	}
 
 	// log result
-	r.Log.Infof("Pushed: %s (pvr: %s - approved: %v)", r.Info.TorrentName, pvr.Name, pvrResp.Approved)
-	if len(pvrResp.Rejections) > 0 {
+	r.Log.Infof("Pushed: %s (pvr: %s - approved: %v)", r.Info.TorrentName, pvr.Name, pvrResp[0].Approved)
+	if len(pvrResp[0].Rejections) > 0 {
 		r.Log.Tracef("Push rejected: %s (pvr: %s - reasons: %q)", r.Info.TorrentName, pvr.Name,
-			strings.Join(pvrResp.Rejections, ", "))
+			strings.Join(pvrResp[0].Rejections, ", "))
 	}
 
 	// save to database
 	dbRelease, err := models.NewPushedRelease(database.DB, r.Info.TorrentName, r.Info.TrackerName, pvr.Name,
-		pvrResp.Approved)
+		pvrResp[0].Approved)
 	if err != nil {
 		r.Log.WithError(err).Errorf("Failed saving release in database: %q", r.Info.TorrentName)
 		return
