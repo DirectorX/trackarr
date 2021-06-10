@@ -7,7 +7,7 @@ import (
 	"github.com/jpillora/backoff"
 )
 
-var testURL = "http://ovh.net/files/1Mio.dat"
+var testURL = "http://proof.ovh.net/files/1Mio.dat"
 
 func TestGetResponse(t *testing.T) {
 	type args struct {
