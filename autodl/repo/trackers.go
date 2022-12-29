@@ -49,53 +49,53 @@ func PullTrackers(trackersPath string) error {
 	// retrieve trackers
 	trackers, err := getAvailableTrackers()
 	if err != nil {
-		return err
-	}
-
-	// process found trackers
-	trackerPulls := 0
-	trackerErrors := 0
-	for _, trackerData := range trackers {
-		log.Tracef("Processing tracker: %s", trackerData.Name)
-
-		// retrieve tracker from database
-		tracker, err := models.NewOrExistingTracker(database.DB, trackerData.Name)
-		if err != nil {
-			log.WithError(err).Errorf("Failed retrieving tracker from database: %q", trackerData.Name)
-			return errors.Wrap(err, "failed retrieving tracker from database")
-		}
-
-		// grab tracker if required
-		trackerPath := filepath.Join(trackersPath, trackerData.Name+".tracker")
-		if _, err := os.Stat(trackerPath); os.IsNotExist(err) || tracker.Version != trackerData.Version {
-			// the tracker file did not exist, or we were using an old version, we must download it
-			log.Infof("Pulling tracker: %s -> %q", trackerData.Name, trackerPath)
-
-			if err := pullTracker(trackerData.URL, trackerPath); err != nil {
-				// failed to pull this tracker
-				trackerErrors++
-				continue
-			}
-
-			// update tracker in database
-			tracker.Version = trackerData.Version
-			if err := database.DB.Save(tracker); err != nil {
-				log.WithError(err).Errorf("Failed saving tracker %q, version: %s", tracker.Name, tracker.Version)
-				trackerErrors++
-				continue
-			}
-
-			trackerPulls++
-		} else {
-			log.Tracef("No pull required for tracker: %s", trackerData.Name)
-		}
-	}
-
-	if trackerPulls > 0 || trackerErrors > 0 {
-		log.Infof("Pulled %d %s with %d %s", trackerPulls, stringutils.Pluralize("tracker", trackerPulls),
-			trackerErrors, stringutils.Pluralize("failure", trackerErrors))
+		log.WithError(err).Error("Failed to pull available trackers")
 	} else {
-		log.Info("Trackers are up to date")
+		// process found trackers
+		trackerPulls := 0
+		trackerErrors := 0
+		for _, trackerData := range trackers {
+			log.Tracef("Processing tracker: %s", trackerData.Name)
+
+			// retrieve tracker from database
+			tracker, err := models.NewOrExistingTracker(database.DB, trackerData.Name)
+			if err != nil {
+				log.WithError(err).Errorf("Failed retrieving tracker from database: %q", trackerData.Name)
+				return errors.Wrap(err, "failed retrieving tracker from database")
+			}
+
+			// grab tracker if required
+			trackerPath := filepath.Join(trackersPath, trackerData.Name+".tracker")
+			if _, err := os.Stat(trackerPath); os.IsNotExist(err) || tracker.Version != trackerData.Version {
+				// the tracker file did not exist, or we were using an old version, we must download it
+				log.Infof("Pulling tracker: %s -> %q", trackerData.Name, trackerPath)
+
+				if err := pullTracker(trackerData.URL, trackerPath); err != nil {
+					// failed to pull this tracker
+					trackerErrors++
+					continue
+				}
+
+				// update tracker in database
+				tracker.Version = trackerData.Version
+				if err := database.DB.Save(tracker); err != nil {
+					log.WithError(err).Errorf("Failed saving tracker %q, version: %s", tracker.Name, tracker.Version)
+					trackerErrors++
+					continue
+				}
+
+				trackerPulls++
+			} else {
+				log.Tracef("No pull required for tracker: %s", trackerData.Name)
+			}
+		}
+
+		if trackerPulls > 0 || trackerErrors > 0 {
+			log.Infof("Pulled %d %s with %d %s", trackerPulls, stringutils.Pluralize("tracker", trackerPulls),
+				trackerErrors, stringutils.Pluralize("failure", trackerErrors))
+		} else {
+			log.Info("Trackers are up to date")
+		}
 	}
 
 	return nil
